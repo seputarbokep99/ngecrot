@@ -39,11 +39,14 @@ button {
 /* ---------- header ---------- */
 
 .site-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
   padding: 28px 48px 24px;
   border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .site-header .mark {
@@ -59,12 +62,62 @@ button {
   font-weight: 500;
 }
 
-.site-header .tagline {
+.bio {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+/* ---------- category nav ---------- */
+
+.category-nav {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 8px;
+  padding: 18px 48px;
+  border-bottom: 1px solid var(--border);
+  scrollbar-width: none;
+}
+
+.category-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.category-nav[hidden] {
+  display: none;
+}
+
+.chip {
+  flex: none;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-faint);
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 7px 16px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.chip:hover,
+.chip:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+  font-weight: 500;
+}
+
+@media (max-width: 600px) {
+  .category-nav {
+    padding: 14px 20px;
+  }
 }
 
 /* ---------- filter bar ---------- */
