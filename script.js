@@ -15,6 +15,7 @@ const playerCast = document.getElementById('playerCast');
 const playerCastWrap = document.getElementById('playerCastWrap');
 const playerTags = document.getElementById('playerTags');
 const downloadBtn = document.getElementById('downloadBtn');
+const downloadCmd = document.getElementById('downloadCmd');
 const closeBtn = document.getElementById('closeBtn');
 
 const PLAY_ICON = `
@@ -204,7 +205,10 @@ function openPlayer(video) {
     });
   });
 
-  downloadBtn.href = `https://9xbuddy.site/process?url=${encodeURIComponent(video.url)}`;
+  const ytdlpCmd = `yt-dlp "${video.url}"`;
+  downloadCmd.textContent = ytdlpCmd;
+  downloadBtn.dataset.cmd = ytdlpCmd;
+  downloadBtn.textContent = 'Salin Perintah yt-dlp';
 
   overlay.hidden = false;
   document.body.style.overflow = 'hidden';
@@ -216,6 +220,18 @@ function closePlayer() {
   playerFrame.innerHTML = ''; // stop pemutaran saat ditutup
   document.body.style.overflow = '';
 }
+
+downloadBtn.addEventListener('click', async () => {
+  const cmd = downloadBtn.dataset.cmd || '';
+  try {
+    await navigator.clipboard.writeText(cmd);
+    downloadBtn.textContent = 'Tersalin ✓';
+  } catch (err) {
+    // clipboard API gagal (mis. tidak ada izin) -> biarkan user copy manual dari teks di bawah tombol
+    downloadBtn.textContent = 'Salin manual di bawah';
+  }
+  setTimeout(() => { downloadBtn.textContent = 'Salin Perintah yt-dlp'; }, 1800);
+});
 
 closeBtn.addEventListener('click', closePlayer);
 overlay.addEventListener('click', e => {
