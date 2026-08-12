@@ -12,6 +12,7 @@ const playerFrame = document.getElementById('playerFrame');
 const playerTitle = document.getElementById('playerTitle');
 const playerDesc = document.getElementById('playerDesc');
 const playerCast = document.getElementById('playerCast');
+const playerCastWrap = document.getElementById('playerCastWrap');
 const playerTags = document.getElementById('playerTags');
 const downloadBtn = document.getElementById('downloadBtn');
 const closeBtn = document.getElementById('closeBtn');
@@ -181,6 +182,7 @@ function openPlayer(video) {
   playerDesc.textContent = video.deskripsi || '';
 
   const cast = toArray(video.pemeran);
+  playerCastWrap.hidden = cast.length === 0;
   playerCast.innerHTML = cast.map(name =>
     `<button type="button" class="tag cast-tag${activeFilter && activeFilter.type === 'pemeran' && activeFilter.value === name ? ' active' : ''}" data-name="${escapeHtml(name)}">${escapeHtml(name)}</button>`
   ).join('');
