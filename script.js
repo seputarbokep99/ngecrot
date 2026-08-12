@@ -60,7 +60,7 @@ function openPlayer(index) {
     playerFrame.innerHTML = `<video src="${video.url}" controls autoplay playsinline></video>`;
   } else {
     // link halaman embed (YouTube, Vimeo, dll) -> pakai <iframe>
-    playerFrame.innerHTML = `<iframe src="${video.url}" title="${escapeHtml(video.title)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+    playerFrame.innerHTML = `<iframe src="${video.url}" title="${escapeHtml(video.title)}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock" frameborder="0" allowfullscreen></iframe>`;
   }
 
   playerTitle.textContent = video.title;
