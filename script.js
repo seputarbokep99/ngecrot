@@ -28,7 +28,7 @@ const PLAY_ICON = `
 const DIRECT_VIDEO_EXT = /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i;
 
 // vkvideo.ru pakai link embed (video_ext.php?oid=..&id=..) buat iframe,
-// tapi yt-dlp butuh link watch-page biasa (video{oid}_{id}) -> konversi otomatis
+// tapi yt-dlp butuh link watch-page biasa (video{oid}_{id}, oid tetap pakai tanda minus) -> konversi otomatis
 function toDownloadUrl(url) {
   try {
     const u = new URL(url);
@@ -36,7 +36,7 @@ function toDownloadUrl(url) {
       const oid = u.searchParams.get('oid');
       const id = u.searchParams.get('id');
       if (oid && id) {
-        return `https://vkvideo.ru/video${oid.replace('-', '')}_${id}`;
+        return `https://vkvideo.ru/video${oid}_${id}`;
       }
     }
   } catch (err) {
@@ -226,7 +226,7 @@ function openPlayer(video) {
   const ytdlpCmd = `yt-dlp "${toDownloadUrl(video.url)}"`;
   downloadCmd.textContent = ytdlpCmd;
   downloadBtn.dataset.cmd = ytdlpCmd;
-  downloadBtn.textContent = 'Salin Perintah yt-dlp';
+  downloadBtn.textContent = '⧉';
 
   overlay.hidden = false;
   document.body.style.overflow = 'hidden';
@@ -243,12 +243,12 @@ downloadBtn.addEventListener('click', async () => {
   const cmd = downloadBtn.dataset.cmd || '';
   try {
     await navigator.clipboard.writeText(cmd);
-    downloadBtn.textContent = 'Tersalin ✓';
+    downloadBtn.textContent = '✓';
   } catch (err) {
-    // clipboard API gagal (mis. tidak ada izin) -> biarkan user copy manual dari teks di bawah tombol
-    downloadBtn.textContent = 'Salin manual di bawah';
+    // clipboard API gagal (mis. tidak ada izin) -> user tetap bisa select teks di kotak kode secara manual
+    downloadBtn.textContent = '!';
   }
-  setTimeout(() => { downloadBtn.textContent = 'Salin Perintah yt-dlp'; }, 1800);
+  setTimeout(() => { downloadBtn.textContent = '⧉'; }, 1500);
 });
 
 closeBtn.addEventListener('click', closePlayer);
