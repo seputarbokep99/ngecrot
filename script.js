@@ -3,6 +3,7 @@ const PAGE_SIZE = 8; // jumlah video per halaman — ubah sesuai kebutuhan
 const grid = document.getElementById('grid');
 const pagination = document.getElementById('pagination');
 const filterBar = document.getElementById('filterBar');
+const filterLabel = document.getElementById('filterLabel');
 const filterValue = document.getElementById('filterValue');
 const filterClear = document.getElementById('filterClear');
 
@@ -25,7 +26,7 @@ const PLAY_ICON = `
 const DIRECT_VIDEO_EXT = /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i;
 
 let videos = [];
-let activeCategory = null;
+let activeFilter = null; // { type: 'kategori' | 'pemeran', value: string }
 let currentPage = 1;
 
 async function init() {
@@ -48,8 +49,8 @@ function toArray(k) {
 }
 
 function getFiltered() {
-  if (!activeCategory) return videos;
-  return videos.filter(v => toArray(v.kategori).includes(activeCategory));
+  if (!activeFilter) return videos;
+  return videos.filter(v => toArray(v[activeFilter.type]).includes(activeFilter.value));
 }
 
 function render() {
@@ -67,9 +68,11 @@ function render() {
 }
 
 function renderFilterBar() {
-  if (activeCategory) {
+  if (activeFilter) {
     filterBar.hidden = false;
-    filterValue.textContent = activeCategory;
+    filterLabel.textContent = activeFilter.type === 'pemeran' ? 'Pemeran:' : 'Kategori:';
+    filterValue.textContent = activeFilter.value;
+    filterValue.style.color = activeFilter.type === 'pemeran' ? 'var(--accent-cast)' : 'var(--accent)';
   } else {
     filterBar.hidden = true;
   }
@@ -107,13 +110,13 @@ function renderGrid(items, totalCount) {
         <span class="card-title">${escapeHtml(video.title)}</span>
       </button>
       <span class="card-tags">
-        ${categories.map(cat => `<button type="button" class="tag${cat === activeCategory ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`).join('')}
+        ${categories.map(cat => `<button type="button" class="tag${activeFilter && activeFilter.type === 'kategori' && activeFilter.value === cat ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`).join('')}
       </span>
     `;
 
     meta.querySelector('.card-title-btn').addEventListener('click', () => openPlayer(video));
     meta.querySelectorAll('.tag').forEach(btn => {
-      btn.addEventListener('click', () => setCategory(btn.dataset.cat));
+      btn.addEventListener('click', () => setFilter('kategori', btn.dataset.cat));
     });
 
     card.appendChild(poster);
@@ -153,14 +156,16 @@ function goToPage(page) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function setCategory(cat) {
-  activeCategory = activeCategory === cat ? null : cat;
+function setFilter(type, value) {
+  activeFilter = (activeFilter && activeFilter.type === type && activeFilter.value === value)
+    ? null
+    : { type, value };
   currentPage = 1;
   render();
 }
 
 filterClear.addEventListener('click', () => {
-  activeCategory = null;
+  activeFilter = null;
   currentPage = 1;
   render();
 });
@@ -176,12 +181,26 @@ function openPlayer(video) {
   playerDesc.textContent = video.deskripsi || '';
 
   const cast = toArray(video.pemeran);
-  playerCast.innerHTML = cast.length
-    ? `<span class="label">Pemeran</span>${escapeHtml(cast.join(', '))}`
-    : '';
+  playerCast.innerHTML = cast.map(name =>
+    `<button type="button" class="tag cast-tag${activeFilter && activeFilter.type === 'pemeran' && activeFilter.value === name ? ' active' : ''}" data-name="${escapeHtml(name)}">${escapeHtml(name)}</button>`
+  ).join('');
+  playerCast.querySelectorAll('.cast-tag').forEach(btn => {
+    btn.addEventListener('click', () => {
+      closePlayer();
+      setFilter('pemeran', btn.dataset.name);
+    });
+  });
 
   const categories = toArray(video.kategori);
-  playerTags.innerHTML = categories.map(cat => `<span class="tag">${escapeHtml(cat)}</span>`).join('');
+  playerTags.innerHTML = categories.map(cat =>
+    `<button type="button" class="tag${activeFilter && activeFilter.type === 'kategori' && activeFilter.value === cat ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`
+  ).join('');
+  playerTags.querySelectorAll('.tag').forEach(btn => {
+    btn.addEventListener('click', () => {
+      closePlayer();
+      setFilter('kategori', btn.dataset.cat);
+    });
+  });
 
   downloadBtn.href = `https://9xbuddy.site/process?url=${encodeURIComponent(video.url)}`;
 
