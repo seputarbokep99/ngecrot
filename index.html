@@ -1,32 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reel — Streaming</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ngecrot-terus.fun</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
   <header class="site-header">
-    <div class="mark">reel<span>.</span></div>
-    <div class="tagline">Now Screening</div>
+    <div class="mark">Reel<span>Now</span></div>
+    <div class="tagline">Screening</div>
   </header>
 
-  <main class="grid" id="grid">
-    <!-- diisi otomatis dari data.json -->
+  <main>
+    <section id="grid" class="grid" aria-label="Daftar video"></section>
   </main>
 
-  <div class="player-overlay" id="overlay" hidden>
-    <div class="player-panel">
-      <button class="close-btn" id="closeBtn" aria-label="Tutup player">&times;</button>
-      <div class="player-frame" id="playerFrame"></div>
+  <div id="overlay" class="player-overlay" hidden>
+    <div class="player-panel" role="dialog" aria-modal="true" aria-labelledby="playerTitle">
+      <button id="closeBtn" class="close-btn" type="button" aria-label="Tutup player">
+        &times;
+      </button>
+
+      <div id="playerFrame" class="player-frame"></div>
+
       <div class="player-info">
         <div>
-          <h1 id="playerTitle">—</h1>
-          <p class="player-desc" id="playerDesc"></p>
+          <h1 id="playerTitle"></h1>
+          <p id="playerDesc" class="player-desc"></p>
         </div>
-        <span class="player-cat" id="playerCat"></span>
+        <span id="playerCat" class="player-cat"></span>
       </div>
     </div>
   </div>
