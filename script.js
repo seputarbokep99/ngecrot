@@ -30,7 +30,7 @@ async function init() {
 
 function renderGrid() {
   grid.innerHTML = '';
-  videos.forEach(video => {
+  videos.forEach((video, index) => {
     const card = document.createElement('button');
     card.className = 'card';
     card.setAttribute('aria-label', `Putar ${video.title}`);
@@ -38,26 +38,25 @@ function renderGrid() {
       <span class="card-poster">
         <img src="${video.poster}" alt="" loading="lazy">
         <span class="play-mark">${PLAY_ICON}</span>
-        <span class="duration-tag">${escapeHtml(video.duration || '')}</span>
       </span>
       <span class="card-meta">
         <span class="card-title">${escapeHtml(video.title)}</span>
-        <span class="card-sub">${escapeHtml(video.category || '')}${video.year ? ' · ' + escapeHtml(video.year) : ''}</span>
+        <span class="card-sub">${escapeHtml(video.kategori || '')}</span>
       </span>
     `;
-    card.addEventListener('click', () => openPlayer(video.id));
+    card.addEventListener('click', () => openPlayer(index));
     grid.appendChild(card);
   });
 }
 
-function openPlayer(id) {
-  const video = videos.find(v => v.id === id);
+function openPlayer(index) {
+  const video = videos[index];
   if (!video) return;
 
   playerFrame.innerHTML = `<iframe src="${video.url}?autoplay=1" title="${escapeHtml(video.title)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
   playerTitle.textContent = video.title;
-  playerDesc.textContent = video.description || '';
-  playerCat.textContent = video.category || '';
+  playerDesc.textContent = video.deskripsi || '';
+  playerCat.textContent = video.kategori || '';
 
   overlay.hidden = false;
   document.body.style.overflow = 'hidden';
