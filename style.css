@@ -9,6 +9,7 @@
   --text-dim: #8b9199;
   --text-faint: #565d64;
   --accent: #e8a33d;
+  --accent-cast: #e0c22e;
   --accent-text: #1c1509;
   --border: #262b31;
   --radius: 4px;
@@ -459,16 +460,28 @@ button {
 }
 
 .player-cast {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.03em;
-  color: var(--text-faint);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
 }
 
-.player-cast .label {
-  text-transform: uppercase;
-  color: var(--text-dim);
-  margin-right: 6px;
+.cast-tag {
+  color: var(--accent-cast);
+  border-color: rgba(224, 194, 46, 0.35);
+}
+
+.cast-tag:hover,
+.cast-tag:focus-visible {
+  border-color: var(--accent-cast);
+  color: var(--accent-cast);
+}
+
+.cast-tag.active {
+  background: var(--accent-cast);
+  border-color: var(--accent-cast);
+  color: var(--accent-text);
+  font-weight: 500;
 }
 
 .player-tags {
@@ -477,10 +490,6 @@ button {
   flex-wrap: wrap;
   gap: 6px;
   justify-content: flex-end;
-}
-
-.player-tags .tag {
-  cursor: default;
 }
 
 .download-btn {
