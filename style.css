@@ -300,10 +300,10 @@ button {
   font-family: 'Fraunces', serif;
   font-size: 15px;
   font-weight: 400;
+  line-height: 1.35;
   color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .card-title-btn:hover .card-title,
