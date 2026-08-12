@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ngecrot.fun</title>
+<title>Reel — Streaming</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,9 +13,19 @@
     <div class="tagline">Now Screening</div>
   </header>
 
+  <div class="filter-bar" id="filterBar" hidden>
+    <span class="filter-label">Kategori:</span>
+    <span class="filter-value" id="filterValue"></span>
+    <button class="filter-clear" id="filterClear">Hapus filter &times;</button>
+  </div>
+
   <main class="grid" id="grid">
     <!-- diisi otomatis dari data.json -->
   </main>
+
+  <nav class="pagination" id="pagination" aria-label="Navigasi halaman">
+    <!-- diisi otomatis -->
+  </nav>
 
   <div class="player-overlay" id="overlay" hidden>
     <div class="player-panel">
@@ -25,8 +35,9 @@
         <div>
           <h1 id="playerTitle">—</h1>
           <p class="player-desc" id="playerDesc"></p>
+          <p class="player-cast" id="playerCast"></p>
         </div>
-        <span class="player-cat" id="playerCat"></span>
+        <div class="player-tags" id="playerTags"></div>
       </div>
     </div>
   </div>
