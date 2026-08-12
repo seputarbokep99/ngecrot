@@ -1,61 +1,99 @@
-/* ===== reset beneran ===== */
-*,
-*::before,
-*::after {
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #14181c;
+  --bg-elevated: #1b2025;
+  --bg-panel: #1c2126;
+  --text: #ece8e0;
+  --text-dim: #8b9199;
+  --text-faint: #565d64;
+  --accent: #e8a33d;
+  --border: #262b31;
+  --radius: 4px;
+}
+
+/* FIX: Reset asli lo selector-nya kosong {}, gue tambahin * */
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* ===== grid biar card nggak melar aneh ===== */
+html { color-scheme: dark; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+/* ---------- header ---------- */
+.site-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 28px 48px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.site-header .mark {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: 0.01em;
+}
+.site-header .mark span {
+  color: var(--accent);
+  font-style: italic;
+  font-weight: 500;
+}
+.site-header .tagline {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* ---------- grid ---------- */
 .grid {
   display: grid;
+  /* FIX: Tambah min() biar gak overflow di layar kecil */
   grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
   gap: 28px 20px;
   padding: 40px 48px 64px;
-  align-items: start;
 }
 
-/* ===== card ===== */
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(140px, 100%), 1fr));
+    gap: 20px 12px;
+    padding: 28px 20px 48px;
+  }
+}
+
 .card {
-  width: 100%;
-  min-width: 0;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  text-align: left;
+  font: inherit;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 10px;
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  cursor: pointer;
-  text-align: left;
-  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  /* FIX: Wajib ada ini biar card gak melar melebihi kolom grid */
+  min-width: 0; 
+  width: 100%;
 }
 
-.card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(232, 163, 61, 0.45);
-}
-
-.card:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--accent);
-}
-
-.card:focus-visible .card-poster {
-  box-shadow: none;
-}
-
-/* ===== poster ===== */
 .card-poster {
   position: relative;
   aspect-ratio: 2 / 3;
-  border-radius: 10px;
+  border-radius: var(--radius);
   overflow: hidden;
   background: var(--bg-elevated);
   border: 1px solid var(--border);
 }
-
 .card-poster img {
   width: 100%;
   height: 100%;
@@ -63,62 +101,178 @@
   display: block;
   transition: transform 0.35s ease, filter 0.35s ease;
 }
-
-/* ===== meta / judul / tag ===== */
-.card-meta {
-  width: 100%;
-  min-width: 0;
-  margin-top: 0;
-  padding: 0 2px 2px;
+.card-poster::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(20, 24, 28, 0.92) 0%, rgba(20, 24, 28, 0) 46%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.card-poster .play-mark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.card-poster .play-mark svg {
+  width: 34px;
+  height: 34px;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
 }
 
-/* judul maksimal 2 baris, lebih dari itu dipotong */
+.card:hover .card-poster img,
+.card:focus-visible .card-poster img {
+  transform: scale(1.04);
+  filter: brightness(0.55);
+}
+.card:hover .card-poster::after,
+.card:focus-visible .card-poster::after,
+.card:hover .card-poster .play-mark,
+.card:focus-visible .card-poster .play-mark {
+  opacity: 1;
+}
+
+.card:focus-visible { outline: none; }
+.card:focus-visible .card-poster { box-shadow: 0 0 0 2px var(--accent); }
+
+.card-meta {
+  margin-top: 10px;
+  /* FIX: Wajib ada ini biar ellipsis judul bekerja di dalam flex */
+  min-width: 0;
+  width: 100%;
+}
+
 .card-title {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  overflow-wrap: anywhere;
-  white-space: normal;
-  min-height: 2.7em;
-  line-height: 1.35;
   font-family: 'Fraunces', serif;
   font-size: 15px;
   font-weight: 400;
   color: var(--text);
-}
-
-/* tag/kategori 1 baris aja */
-.card-sub {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  margin-top: 5px;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+.card-sub {
+  margin-top: 3px;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 10px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--text-faint);
+  /* Tambahan biar tag juga rapi */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* ===== mobile ===== */
+/* ---------- overlay / player ---------- */
+.player-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 14, 0.86);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  z-index: 100;
+}
+.player-overlay[hidden] { display: none; }
+
+.player-panel {
+  position: relative;
+  width: 100%;
+  max-width: 920px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: rgba(20, 24, 28, 0.8);
+  color: var(--text);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.close-btn:hover,
+.close-btn:focus-visible {
+  background: var(--bg-hover, #22282e);
+  border-color: var(--accent);
+}
+
+.player-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+.player-frame iframe,
+.player-frame video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+}
+
+.player-info {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px 24px;
+}
+.player-info h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 400;
+  font-size: 22px;
+}
+.player-desc {
+  margin-top: 8px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-dim);
+  max-width: 56ch;
+}
+.player-cat {
+  flex: none;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  white-space: nowrap;
+  margin-top: 4px;
+}
+
 @media (max-width: 600px) {
-  .grid {
-    grid-template-columns: repeat(auto-fill, minmax(min(140px, 100%), 1fr));
-    gap: 18px 12px;
-    padding: 24px 18px 48px;
+  .player-overlay { padding: 0; }
+  .player-panel {
+    max-width: none;
+    height: 100%;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
-
-  .card {
-    padding: 8px;
-    border-radius: 12px;
-  }
-
-  .card-title {
-    font-size: 14px;
-    min-height: 2.6em;
-  }
+  .player-info { flex-direction: column; }
 }
