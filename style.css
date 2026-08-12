@@ -235,9 +235,20 @@ button {
 
 .card-tags {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
   gap: 5px;
   margin-top: 8px;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.card-tags::-webkit-scrollbar {
+  display: none;
+}
+
+.card-tags .tag {
+  flex: none;
 }
 
 .tag {
