@@ -191,7 +191,14 @@ button {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(20, 24, 28, 0.95) 0%, rgba(20, 24, 28, 0) 55%);
+  background: linear-gradient(to top, rgba(20, 24, 28, 0.7) 0%, rgba(20, 24, 28, 0) 55%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.card:hover .poster-open::after,
+.poster-open:focus-visible::after {
+  opacity: 1;
 }
 
 .poster-open .play-mark {
@@ -227,14 +234,10 @@ button {
 }
 
 .card-tags {
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  bottom: 8px;
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-  z-index: 2;
+  margin-top: 8px;
 }
 
 .tag {
@@ -267,9 +270,16 @@ button {
 .card-meta {
   min-width: 0;
   padding: 10px 12px 12px;
+}
+
+.card-title-btn {
+  display: block;
+  width: 100%;
+  min-width: 0;
   text-align: left;
   background: none;
   border: none;
+  padding: 0;
   cursor: pointer;
 }
 
@@ -285,12 +295,12 @@ button {
   text-overflow: ellipsis;
 }
 
-.card-meta:hover .card-title,
-.card-meta:focus-visible .card-title {
+.card-title-btn:hover .card-title,
+.card-title-btn:focus-visible .card-title {
   color: var(--accent);
 }
 
-.card-meta:focus-visible {
+.card-title-btn:focus-visible {
   outline: none;
 }
 
