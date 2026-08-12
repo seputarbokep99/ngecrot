@@ -12,6 +12,7 @@ const playerTitle = document.getElementById('playerTitle');
 const playerDesc = document.getElementById('playerDesc');
 const playerCast = document.getElementById('playerCast');
 const playerTags = document.getElementById('playerTags');
+const downloadBtn = document.getElementById('downloadBtn');
 const closeBtn = document.getElementById('closeBtn');
 
 const PLAY_ICON = `
@@ -181,6 +182,8 @@ function openPlayer(video) {
 
   const categories = toArray(video.kategori);
   playerTags.innerHTML = categories.map(cat => `<span class="tag">${escapeHtml(cat)}</span>`).join('');
+
+  downloadBtn.href = `https://9xbuddy.site/process?url=${encodeURIComponent(video.url)}`;
 
   overlay.hidden = false;
   document.body.style.overflow = 'hidden';
