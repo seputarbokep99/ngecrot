@@ -431,12 +431,7 @@ button {
 }
 
 .player-info {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
   padding: 20px 24px 24px;
-  flex-wrap: wrap;
 }
 
 .player-info h1 {
@@ -450,11 +445,20 @@ button {
   font-size: 13.5px;
   line-height: 1.5;
   color: var(--text-dim);
-  max-width: 56ch;
+  max-width: 62ch;
+}
+
+.player-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
 }
 
 .player-cast {
-  margin-top: 10px;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 11px;
   letter-spacing: 0.03em;
@@ -472,7 +476,6 @@ button {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  max-width: 180px;
   justify-content: flex-end;
 }
 
@@ -490,11 +493,11 @@ button {
     max-height: none;
     border-radius: 0;
   }
-  .player-info {
+  .player-meta-row {
     flex-direction: column;
+    align-items: flex-start;
   }
   .player-tags {
-    max-width: none;
     justify-content: flex-start;
   }
 }
