@@ -2,6 +2,7 @@ const PAGE_SIZE = 8; // jumlah video per halaman — ubah sesuai kebutuhan
 
 const grid = document.getElementById('grid');
 const pagination = document.getElementById('pagination');
+const categoryNav = document.getElementById('categoryNav');
 const filterBar = document.getElementById('filterBar');
 const filterLabel = document.getElementById('filterLabel');
 const filterValue = document.getElementById('filterValue');
@@ -82,9 +83,31 @@ function render() {
   const start = (currentPage - 1) * PAGE_SIZE;
   const pageItems = filtered.slice(start, start + PAGE_SIZE);
 
+  renderCategoryNav();
   renderFilterBar();
   renderGrid(pageItems, filtered.length);
   renderPagination(totalPages);
+}
+
+function getAllCategories() {
+  const set = new Set();
+  videos.forEach(v => toArray(v.kategori).forEach(cat => set.add(cat)));
+  return Array.from(set);
+}
+
+function renderCategoryNav() {
+  const categories = getAllCategories();
+  if (categories.length === 0) {
+    categoryNav.hidden = true;
+    return;
+  }
+  categoryNav.hidden = false;
+  categoryNav.innerHTML = categories.map(cat =>
+    `<button type="button" class="chip${activeFilter && activeFilter.type === 'kategori' && activeFilter.value === cat ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`
+  ).join('');
+  categoryNav.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => setFilter('kategori', btn.dataset.cat));
+  });
 }
 
 function renderFilterBar() {
