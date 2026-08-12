@@ -1,9 +1,17 @@
+const PAGE_SIZE = 8; // jumlah video per halaman — ubah sesuai kebutuhan
+
 const grid = document.getElementById('grid');
+const pagination = document.getElementById('pagination');
+const filterBar = document.getElementById('filterBar');
+const filterValue = document.getElementById('filterValue');
+const filterClear = document.getElementById('filterClear');
+
 const overlay = document.getElementById('overlay');
 const playerFrame = document.getElementById('playerFrame');
 const playerTitle = document.getElementById('playerTitle');
 const playerDesc = document.getElementById('playerDesc');
-const playerCat = document.getElementById('playerCat');
+const playerCast = document.getElementById('playerCast');
+const playerTags = document.getElementById('playerTags');
 const closeBtn = document.getElementById('closeBtn');
 
 const PLAY_ICON = `
@@ -13,7 +21,11 @@ const PLAY_ICON = `
   </svg>
 `;
 
+const DIRECT_VIDEO_EXT = /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i;
+
 let videos = [];
+let activeCategory = null;
+let currentPage = 1;
 
 async function init() {
   try {
@@ -21,51 +33,150 @@ async function init() {
     if (!res.ok) throw new Error('Gagal memuat data.json');
     const data = await res.json();
     videos = data.videos || [];
-    renderGrid();
+    render();
   } catch (err) {
-    grid.innerHTML = `<p style="font-family:'IBM Plex Mono',monospace;color:#8b9199;font-size:13px">Tidak bisa memuat data.json</p>`;
+    grid.innerHTML = `<p class="grid-empty">Tidak bisa memuat data.json</p>`;
     console.error(err);
   }
 }
 
-function renderGrid() {
+function toArray(k) {
+  if (Array.isArray(k)) return k.filter(Boolean);
+  if (k) return [k];
+  return [];
+}
+
+function getFiltered() {
+  if (!activeCategory) return videos;
+  return videos.filter(v => toArray(v.kategori).includes(activeCategory));
+}
+
+function render() {
+  const filtered = getFiltered();
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  if (currentPage > totalPages) currentPage = totalPages;
+  if (currentPage < 1) currentPage = 1;
+
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = filtered.slice(start, start + PAGE_SIZE);
+
+  renderFilterBar();
+  renderGrid(pageItems, filtered.length);
+  renderPagination(totalPages);
+}
+
+function renderFilterBar() {
+  if (activeCategory) {
+    filterBar.hidden = false;
+    filterValue.textContent = activeCategory;
+  } else {
+    filterBar.hidden = true;
+  }
+}
+
+function renderGrid(items, totalCount) {
   grid.innerHTML = '';
-  videos.forEach((video, index) => {
-    const card = document.createElement('button');
+
+  if (totalCount === 0) {
+    grid.innerHTML = `<p class="grid-empty">Tidak ada video untuk kategori ini.</p>`;
+    return;
+  }
+
+  items.forEach(video => {
+    const categories = toArray(video.kategori);
+
+    const card = document.createElement('div');
     card.className = 'card';
-    card.setAttribute('aria-label', `Putar ${video.title}`);
-    card.innerHTML = `
-      <span class="card-poster">
+
+    const poster = document.createElement('div');
+    poster.className = 'card-poster';
+    poster.innerHTML = `
+      <button class="poster-open" aria-label="Putar ${escapeHtml(video.title)}">
         <img src="${video.poster}" alt="" loading="lazy">
         <span class="play-mark">${PLAY_ICON}</span>
-      </span>
-      <span class="card-meta">
-        <span class="card-title">${escapeHtml(video.title)}</span>
-        <span class="card-sub">${escapeHtml(video.kategori || '')}</span>
+      </button>
+      <span class="card-tags">
+        ${categories.map(cat => `<button type="button" class="tag${cat === activeCategory ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`).join('')}
       </span>
     `;
-    card.addEventListener('click', () => openPlayer(index));
+
+    poster.querySelector('.poster-open').addEventListener('click', () => openPlayer(video));
+    poster.querySelectorAll('.tag').forEach(btn => {
+      btn.addEventListener('click', () => setCategory(btn.dataset.cat));
+    });
+
+    const meta = document.createElement('button');
+    meta.type = 'button';
+    meta.className = 'card-meta';
+    meta.innerHTML = `<span class="card-title">${escapeHtml(video.title)}</span>`;
+    meta.addEventListener('click', () => openPlayer(video));
+
+    card.appendChild(poster);
+    card.appendChild(meta);
     grid.appendChild(card);
   });
 }
 
-const DIRECT_VIDEO_EXT = /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i;
+function renderPagination(totalPages) {
+  pagination.innerHTML = '';
+  if (totalPages <= 1) return;
 
-function openPlayer(index) {
-  const video = videos[index];
-  if (!video) return;
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'page-btn';
+  prevBtn.textContent = '← Sebelumnya';
+  prevBtn.disabled = currentPage === 1;
+  prevBtn.addEventListener('click', () => goToPage(currentPage - 1));
 
+  const status = document.createElement('span');
+  status.className = 'page-status';
+  status.innerHTML = `Halaman <span class="current">${currentPage}</span> / ${totalPages}`;
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'page-btn';
+  nextBtn.textContent = 'Berikutnya →';
+  nextBtn.disabled = currentPage === totalPages;
+  nextBtn.addEventListener('click', () => goToPage(currentPage + 1));
+
+  pagination.appendChild(prevBtn);
+  pagination.appendChild(status);
+  pagination.appendChild(nextBtn);
+}
+
+function goToPage(page) {
+  currentPage = page;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function setCategory(cat) {
+  activeCategory = activeCategory === cat ? null : cat;
+  currentPage = 1;
+  render();
+}
+
+filterClear.addEventListener('click', () => {
+  activeCategory = null;
+  currentPage = 1;
+  render();
+});
+
+function openPlayer(video) {
   if (DIRECT_VIDEO_EXT.test(video.url)) {
-    // link file video langsung -> pakai tag <video>
     playerFrame.innerHTML = `<video src="${video.url}" controls autoplay playsinline></video>`;
   } else {
-    // link halaman embed (YouTube, Vimeo, dll) -> pakai <iframe>
     playerFrame.innerHTML = `<iframe src="${video.url}" title="${escapeHtml(video.title)}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock" frameborder="0" allowfullscreen></iframe>`;
   }
 
   playerTitle.textContent = video.title;
   playerDesc.textContent = video.deskripsi || '';
-  playerCat.textContent = video.kategori || '';
+
+  const cast = toArray(video.pemeran);
+  playerCast.innerHTML = cast.length
+    ? `<span class="label">Pemeran</span>${escapeHtml(cast.join(', '))}`
+    : '';
+
+  const categories = toArray(video.kategori);
+  playerTags.innerHTML = categories.map(cat => `<span class="tag">${escapeHtml(cat)}</span>`).join('');
 
   overlay.hidden = false;
   document.body.style.overflow = 'hidden';
