@@ -95,21 +95,25 @@ function renderGrid(items, totalCount) {
         <img src="${video.poster}" alt="" loading="lazy">
         <span class="play-mark">${PLAY_ICON}</span>
       </button>
+    `;
+
+    poster.querySelector('.poster-open').addEventListener('click', () => openPlayer(video));
+
+    const meta = document.createElement('div');
+    meta.className = 'card-meta';
+    meta.innerHTML = `
+      <button type="button" class="card-title-btn">
+        <span class="card-title">${escapeHtml(video.title)}</span>
+      </button>
       <span class="card-tags">
         ${categories.map(cat => `<button type="button" class="tag${cat === activeCategory ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`).join('')}
       </span>
     `;
 
-    poster.querySelector('.poster-open').addEventListener('click', () => openPlayer(video));
-    poster.querySelectorAll('.tag').forEach(btn => {
+    meta.querySelector('.card-title-btn').addEventListener('click', () => openPlayer(video));
+    meta.querySelectorAll('.tag').forEach(btn => {
       btn.addEventListener('click', () => setCategory(btn.dataset.cat));
     });
-
-    const meta = document.createElement('button');
-    meta.type = 'button';
-    meta.className = 'card-meta';
-    meta.innerHTML = `<span class="card-title">${escapeHtml(video.title)}</span>`;
-    meta.addEventListener('click', () => openPlayer(video));
 
     card.appendChild(poster);
     card.appendChild(meta);
