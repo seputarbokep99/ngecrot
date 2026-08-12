@@ -1,0 +1,32 @@
+{
+  "videos": [
+    {
+      "id": "v1",
+      "title": "Big Buck Bunny",
+      "category": "Animasi",
+      "duration": "9:56",
+      "url": "https://www.youtube.com/embed/YE7VzlLtp-4"
+    },
+    {
+      "id": "v2",
+      "title": "Sintel",
+      "category": "Fantasi",
+      "duration": "14:48",
+      "url": "https://www.youtube.com/embed/eRsGyueVLvQ"
+    },
+    {
+      "id": "v3",
+      "title": "Tears of Steel",
+      "category": "Sci-Fi",
+      "duration": "12:14",
+      "url": "https://www.youtube.com/embed/R6MlUcmOul8"
+    },
+    {
+      "id": "v4",
+      "title": "Elephants Dream",
+      "category": "Eksperimental",
+      "duration": "10:53",
+      "url": "https://www.youtube.com/embed/TLkA0RELQ1g"
+    }
+  ]
+}
