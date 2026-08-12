@@ -1,10 +1,19 @@
-const sidebar = document.getElementById('sidebar');
+const grid = document.getElementById('grid');
+const overlay = document.getElementById('overlay');
 const playerFrame = document.getElementById('playerFrame');
 const playerTitle = document.getElementById('playerTitle');
+const playerDesc = document.getElementById('playerDesc');
 const playerCat = document.getElementById('playerCat');
+const closeBtn = document.getElementById('closeBtn');
+
+const PLAY_ICON = `
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="11" stroke="#ece8e0" stroke-width="1.4"/>
+    <path d="M10 8.5L16 12L10 15.5V8.5Z" fill="#ece8e0"/>
+  </svg>
+`;
 
 let videos = [];
-let activeId = null;
 
 async function init() {
   try {
@@ -12,46 +21,62 @@ async function init() {
     if (!res.ok) throw new Error('Gagal memuat data.json');
     const data = await res.json();
     videos = data.videos || [];
-    renderList();
-    if (videos.length) playVideo(videos[0].id);
+    renderGrid();
   } catch (err) {
-    sidebar.innerHTML = `<div class="player-empty" style="padding:24px">Tidak bisa memuat data.json</div>`;
+    grid.innerHTML = `<p style="font-family:'IBM Plex Mono',monospace;color:#8b9199;font-size:13px">Tidak bisa memuat data.json</p>`;
     console.error(err);
   }
 }
 
-function renderList() {
-  sidebar.innerHTML = '';
+function renderGrid() {
+  grid.innerHTML = '';
   videos.forEach(video => {
-    const item = document.createElement('button');
-    item.className = 'video-item';
-    item.dataset.id = video.id;
-    item.innerHTML = `
-      <span class="bulb"></span>
-      <span class="meta">
-        <span class="title">${escapeHtml(video.title)}</span>
-        <span class="sub">${escapeHtml(video.category || '')}${video.duration ? ' · ' + escapeHtml(video.duration) : ''}</span>
+    const card = document.createElement('button');
+    card.className = 'card';
+    card.setAttribute('aria-label', `Putar ${video.title}`);
+    card.innerHTML = `
+      <span class="card-poster">
+        <img src="${video.poster}" alt="" loading="lazy">
+        <span class="play-mark">${PLAY_ICON}</span>
+        <span class="duration-tag">${escapeHtml(video.duration || '')}</span>
+      </span>
+      <span class="card-meta">
+        <span class="card-title">${escapeHtml(video.title)}</span>
+        <span class="card-sub">${escapeHtml(video.category || '')}${video.year ? ' · ' + escapeHtml(video.year) : ''}</span>
       </span>
     `;
-    item.addEventListener('click', () => playVideo(video.id));
-    sidebar.appendChild(item);
+    card.addEventListener('click', () => openPlayer(video.id));
+    grid.appendChild(card);
   });
 }
 
-function playVideo(id) {
+function openPlayer(id) {
   const video = videos.find(v => v.id === id);
   if (!video) return;
 
-  activeId = id;
-
-  playerFrame.innerHTML = `<iframe src="${video.url}" title="${escapeHtml(video.title)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+  playerFrame.innerHTML = `<iframe src="${video.url}?autoplay=1" title="${escapeHtml(video.title)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
   playerTitle.textContent = video.title;
+  playerDesc.textContent = video.description || '';
   playerCat.textContent = video.category || '';
 
-  document.querySelectorAll('.video-item').forEach(el => {
-    el.classList.toggle('active', el.dataset.id === id);
-  });
+  overlay.hidden = false;
+  document.body.style.overflow = 'hidden';
+  closeBtn.focus();
 }
+
+function closePlayer() {
+  overlay.hidden = true;
+  playerFrame.innerHTML = ''; // stop pemutaran saat ditutup
+  document.body.style.overflow = '';
+}
+
+closeBtn.addEventListener('click', closePlayer);
+overlay.addEventListener('click', e => {
+  if (e.target === overlay) closePlayer();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !overlay.hidden) closePlayer();
+});
 
 function escapeHtml(str) {
   const div = document.createElement('div');
