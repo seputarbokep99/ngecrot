@@ -49,11 +49,20 @@ function renderGrid() {
   });
 }
 
+const DIRECT_VIDEO_EXT = /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i;
+
 function openPlayer(index) {
   const video = videos[index];
   if (!video) return;
 
-  playerFrame.innerHTML = `<iframe src="${video.url}?autoplay=1" title="${escapeHtml(video.title)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+  if (DIRECT_VIDEO_EXT.test(video.url)) {
+    // link file video langsung -> pakai tag <video>
+    playerFrame.innerHTML = `<video src="${video.url}" controls autoplay playsinline></video>`;
+  } else {
+    // link halaman embed (YouTube, Vimeo, dll) -> pakai <iframe>
+    playerFrame.innerHTML = `<iframe src="${video.url}" title="${escapeHtml(video.title)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+  }
+
   playerTitle.textContent = video.title;
   playerDesc.textContent = video.deskripsi || '';
   playerCat.textContent = video.kategori || '';
