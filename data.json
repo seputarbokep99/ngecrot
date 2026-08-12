@@ -5,6 +5,9 @@
       "title": "Big Buck Bunny",
       "category": "Animasi",
       "duration": "9:56",
+      "year": "2008",
+      "poster": "https://picsum.photos/seed/bigbuckbunny/500/750",
+      "description": "Kelinci raksasa yang santai membalas dendam pada tiga tikus hutan yang usil.",
       "url": "https://www.youtube.com/embed/YE7VzlLtp-4"
     },
     {
@@ -12,6 +15,9 @@
       "title": "Sintel",
       "category": "Fantasi",
       "duration": "14:48",
+      "year": "2010",
+      "poster": "https://picsum.photos/seed/sintel/500/750",
+      "description": "Seorang gadis menjelajahi dunia berbahaya untuk mencari naga muda yang hilang.",
       "url": "https://www.youtube.com/embed/eRsGyueVLvQ"
     },
     {
@@ -19,6 +25,9 @@
       "title": "Tears of Steel",
       "category": "Sci-Fi",
       "duration": "12:14",
+      "year": "2012",
+      "poster": "https://picsum.photos/seed/tearsofsteel/500/750",
+      "description": "Sekelompok prajurit dan ilmuwan berkumpul di Amsterdam masa depan untuk mengubah masa lalu.",
       "url": "https://www.youtube.com/embed/R6MlUcmOul8"
     },
     {
@@ -26,7 +35,30 @@
       "title": "Elephants Dream",
       "category": "Eksperimental",
       "duration": "10:53",
+      "year": "2006",
+      "poster": "https://picsum.photos/seed/elephantsdream/500/750",
+      "description": "Dua karakter menjelajahi dunia mesin surealis yang terus berubah.",
       "url": "https://www.youtube.com/embed/TLkA0RELQ1g"
+    },
+    {
+      "id": "v5",
+      "title": "Cosmos Laundromat",
+      "category": "Komedi",
+      "duration": "12:11",
+      "year": "2015",
+      "poster": "https://picsum.photos/seed/cosmoslaundromat/500/750",
+      "description": "Seekor domba tua yang depresi mendapat kesempatan kedua yang tak terduga.",
+      "url": "https://www.youtube.com/embed/Y-rmzh0PI3c"
+    },
+    {
+      "id": "v6",
+      "title": "Caminandes",
+      "category": "Animasi",
+      "duration": "3:29",
+      "year": "2013",
+      "poster": "https://picsum.photos/seed/caminandes/500/750",
+      "description": "Llama kecil berjuang melewati pagar yang menghalangi jalan pulangnya.",
+      "url": "https://www.youtube.com/embed/SkVqJ1SGeL0"
     }
   ]
 }
