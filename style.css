@@ -130,19 +130,6 @@ body {
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
 }
 
-.card-poster .duration-tag {
-  position: absolute;
-  left: 10px;
-  bottom: 10px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10.5px;
-  letter-spacing: 0.04em;
-  color: var(--text);
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
 .card:hover .card-poster img,
 .card:focus-visible .card-poster img {
   transform: scale(1.04);
@@ -152,11 +139,8 @@ body {
 .card:hover .card-poster::after,
 .card:focus-visible .card-poster::after,
 .card:hover .card-poster .play-mark,
-.card:focus-visible .card-poster .play-mark,
-.card:hover .card-poster .duration-tag,
-.card:focus-visible .card-poster .duration-tag {
+.card:focus-visible .card-poster .play-mark {
   opacity: 1;
-  transform: translateY(0);
 }
 
 .card:focus-visible {
