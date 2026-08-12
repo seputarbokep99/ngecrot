@@ -459,6 +459,27 @@ button {
   border-top: 1px solid var(--border);
 }
 
+.player-cast-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.player-cast-wrap[hidden] {
+  display: none;
+}
+
+.cast-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  flex: none;
+}
+
 .player-cast {
   display: flex;
   flex-wrap: wrap;
