@@ -27,6 +27,24 @@ const PLAY_ICON = `
 
 const DIRECT_VIDEO_EXT = /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i;
 
+// vkvideo.ru pakai link embed (video_ext.php?oid=..&id=..) buat iframe,
+// tapi yt-dlp butuh link watch-page biasa (video{oid}_{id}) -> konversi otomatis
+function toDownloadUrl(url) {
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes('vkvideo.ru') && u.pathname.includes('video_ext.php')) {
+      const oid = u.searchParams.get('oid');
+      const id = u.searchParams.get('id');
+      if (oid && id) {
+        return `https://vkvideo.ru/video${oid.replace('-', '')}_${id}`;
+      }
+    }
+  } catch (err) {
+    // bukan URL valid / bukan format vkvideo -> pakai url asli apa adanya
+  }
+  return url;
+}
+
 let videos = [];
 let activeFilter = null; // { type: 'kategori' | 'pemeran', value: string }
 let currentPage = 1;
@@ -205,7 +223,7 @@ function openPlayer(video) {
     });
   });
 
-  const ytdlpCmd = `yt-dlp "${video.url}"`;
+  const ytdlpCmd = `yt-dlp "${toDownloadUrl(video.url)}"`;
   downloadCmd.textContent = ytdlpCmd;
   downloadBtn.dataset.cmd = ytdlpCmd;
   downloadBtn.textContent = 'Salin Perintah yt-dlp';
