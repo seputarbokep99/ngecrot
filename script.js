@@ -37,6 +37,110 @@ const PLAY_ICON = `
 
 const DIRECT_VIDEO_EXT = /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i;
 
+/* ---------- cover otomatis dari video (tanpa poster manual di data.json) ----------
+   - YouTube  -> ambil thumbnail resmi dari i.ytimg.com
+   - File video langsung (mp4/webm/dll) -> tangkap 1 frame lewat <video>+<canvas>
+   - Embed lain (mis. vkvideo) -> generate cover placeholder dari judul (tidak bisa
+     "mengintip" isi iframe cross-origin, jadi ini batas paling otomatis yang aman) */
+
+const posterCache = new Map(); // video.url -> src poster
+
+function getYouTubeId(url) {
+  const m = url.match(/(?:youtube\.com\/embed\/|youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{6,})/);
+  return m ? m[1] : null;
+}
+
+function hashString(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
+function placeholderPoster(title) {
+  const hue = hashString(title || 'video') % 360;
+  const label = escapeHtml((title || '').slice(0, 26));
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180">
+    <defs>
+      <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="hsl(${hue},36%,20%)"/>
+        <stop offset="100%" stop-color="hsl(${hue},28%,11%)"/>
+      </linearGradient>
+    </defs>
+    <rect width="320" height="180" fill="url(#g)"/>
+    <text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" font-family="Georgia, serif" font-size="18" fill="rgba(236,232,224,0.55)">${label}</text>
+  </svg>`;
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+
+function captureVideoFrame(url) {
+  return new Promise((resolve, reject) => {
+    const vid = document.createElement('video');
+    vid.crossOrigin = 'anonymous';
+    vid.muted = true;
+    vid.playsInline = true;
+    vid.preload = 'auto';
+    vid.src = url;
+
+    const cleanup = () => { vid.removeAttribute('src'); vid.load(); };
+
+    vid.addEventListener('loadeddata', () => {
+      try {
+        vid.currentTime = Math.min(1, (vid.duration || 2) / 2);
+      } catch (err) {
+        cleanup();
+        reject(err);
+      }
+    });
+
+    vid.addEventListener('seeked', () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = vid.videoWidth || 320;
+        canvas.height = vid.videoHeight || 180;
+        canvas.getContext('2d').drawImage(vid, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+        cleanup();
+        resolve(dataUrl);
+      } catch (err) {
+        cleanup();
+        reject(err);
+      }
+    });
+
+    vid.addEventListener('error', () => { cleanup(); reject(new Error('video gagal dimuat')); });
+  });
+}
+
+function getPosterSrc(video) {
+  if (posterCache.has(video.url)) return posterCache.get(video.url);
+
+  const ytId = getYouTubeId(video.url);
+  if (ytId) {
+    const src = `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`;
+    posterCache.set(video.url, src);
+    return src;
+  }
+
+  const fallback = placeholderPoster(video.title);
+  posterCache.set(video.url, fallback);
+
+  if (DIRECT_VIDEO_EXT.test(video.url)) {
+    captureVideoFrame(video.url)
+      .then(dataUrl => {
+        posterCache.set(video.url, dataUrl);
+        document.querySelectorAll(`img[data-video-url="${encodeURIComponent(video.url)}"]`).forEach(img => {
+          img.src = dataUrl;
+        });
+      })
+      .catch(() => { /* CORS/gagal load — tetap pakai placeholder */ });
+  }
+
+  return fallback;
+}
+
 let videos = [];
 let activeFilter = null; // { type: 'kategori' | 'pemeran' | 'studio', value: string }
 let searchQuery = '';
@@ -149,7 +253,7 @@ function renderCategoryRows() {
       item.className = 'row-card';
       item.innerHTML = `
         <span class="row-poster">
-          <img src="${video.poster}" alt="" loading="lazy">
+          <img src="${getPosterSrc(video)}" data-video-url="${encodeURIComponent(video.url)}" alt="" loading="lazy">
           <span class="play-mark">${PLAY_ICON}</span>
         </span>
         <span class="row-title">${escapeHtml(video.title)}</span>
@@ -197,7 +301,7 @@ function renderGrid(items, totalCount) {
     poster.className = 'card-poster';
     poster.innerHTML = `
       <button class="poster-open" aria-label="Putar ${escapeHtml(video.title)}">
-        <img src="${video.poster}" alt="" loading="lazy">
+        <img src="${getPosterSrc(video)}" data-video-url="${encodeURIComponent(video.url)}" alt="" loading="lazy">
         <span class="play-mark">${PLAY_ICON}</span>
       </button>
     `;
