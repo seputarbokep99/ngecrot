@@ -15,6 +15,7 @@ const filterClear = document.getElementById('filterClear');
 const playerFrame = document.getElementById('playerFrame');
 const playerTitle = document.getElementById('playerTitle');
 const playerDesc = document.getElementById('playerDesc');
+const playerStudio = document.getElementById('playerStudio');
 const playerCastWrap = document.getElementById('playerCastWrap');
 const playerCast = document.getElementById('playerCast');
 const playerTags = document.getElementById('playerTags');
@@ -175,7 +176,6 @@ function renderGrid(items, totalCount) {
       <button type="button" class="card-title-btn">
         <span class="card-title">${escapeHtml(video.title)}</span>
       </button>
-      ${video.studio ? `<span class="card-studio">${escapeHtml(video.studio)}</span>` : ''}
       <span class="card-tags">
         ${categories.map(cat => `<button type="button" class="tag${activeFilter && activeFilter.type === 'kategori' && activeFilter.value === cat ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`).join('')}
       </span>
@@ -288,6 +288,13 @@ function openWatch(video) {
 
   playerTitle.textContent = video.title;
   playerDesc.textContent = video.deskripsi || '';
+
+  if (video.studio) {
+    playerStudio.hidden = false;
+    playerStudio.innerHTML = `<span class="label">Studio:</span> ${escapeHtml(video.studio)}`;
+  } else {
+    playerStudio.hidden = true;
+  }
 
   const cast = toArray(video.pemeran);
   playerCastWrap.hidden = cast.length === 0;
