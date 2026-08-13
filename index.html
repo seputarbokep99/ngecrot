@@ -31,6 +31,8 @@
 
   body{
     min-height:100vh;
+    display: flex;
+    flex-direction: column;
   }
 
   /* subtle film-grain vignette over whole page */
@@ -44,29 +46,31 @@
   }
 
   header{
-    text-align: center;
-    padding: 56px 20px 28px;
+    text-align: left;
+    padding: 40px 20px 24px;
     position: relative;
+    border-bottom: 1px solid var(--line);
   }
-  header::after{
+  .title{
+    margin: 0;
+    font-size: clamp(24px, 4vw, 34px);
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    color: var(--text);
+    position: relative;
+    display: inline-block;
+  }
+  .title::after{
     content:"";
     position:absolute;
-    bottom: 0; left:50%;
-    transform: translateX(-50%);
-    width: 46px; height: 3px;
+    left: 0; bottom: -6px;
+    width: 36px; height: 3px;
     border-radius: 2px;
     background: var(--amber);
     box-shadow: 0 0 12px var(--amber);
   }
-  .title{
-    margin: 0;
-    font-size: clamp(28px, 5vw, 42px);
-    font-weight: 800;
-    letter-spacing: 0.01em;
-    color: var(--text);
-  }
   .bio{
-    margin: 10px 0 0;
+    margin: 16px 0 0;
     color: var(--text-dim);
     font-size: 14px;
     letter-spacing: 0.01em;
@@ -74,9 +78,10 @@
 
   footer{
     text-align: center;
-    padding: 24px 20px 48px;
+    padding: 24px 20px 32px;
     border-top: 1px solid var(--line);
     margin-top: 20px;
+    flex-shrink: 0;
   }
   footer p{
     margin: 0;
@@ -87,6 +92,7 @@
 
   main{
     padding: 24px 20px 60px;
+    flex: 1 0 auto;
   }
 
   .grid{
@@ -281,7 +287,7 @@
 </main>
 
 <footer>
-  <p>Dibuat dengan ☕ dan ❤️  - NGECR💦T.FUN</p>
+  <p>NGECR💦T.FUN — Dibuat dengan ☕ dan ❤️ </p>
 </footer>
 
 <div id="lightbox">
