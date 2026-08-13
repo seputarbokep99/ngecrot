@@ -56,14 +56,19 @@
         <h1 id="playerTitle">—</h1>
         <p class="player-desc" id="playerDesc"></p>
 
-        <p class="player-studio" id="playerStudio"></p>
+        <div class="info-block" id="studioBlock" hidden>
+          <span class="info-label">Studio:</span>
+          <span class="info-tags" id="playerStudioTags"></span>
+        </div>
 
-        <div class="player-meta-row">
-          <div class="player-cast-wrap" id="playerCastWrap">
-            <span class="cast-label">Pemeran:</span>
-            <div class="player-cast" id="playerCast"></div>
-          </div>
-          <div class="player-tags" id="playerTags"></div>
+        <div class="info-block" id="castBlock" hidden>
+          <span class="info-label">Pemeran:</span>
+          <span class="info-tags" id="playerCast"></span>
+        </div>
+
+        <div class="info-block" id="categoryBlock" hidden>
+          <span class="info-label">Kategori:</span>
+          <span class="info-tags" id="playerTags"></span>
         </div>
 
         <div class="download-wrap">
