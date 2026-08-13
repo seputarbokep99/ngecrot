@@ -1,7 +1,7 @@
 const PAGE_SIZE = 8; // jumlah video per halaman — ubah sesuai kebutuhan
 
 // kategori yang tampil sebagai baris di beranda — ganti sesuai kategori andalan kamu
-const FEATURED_CATEGORIES = ['Creampie', 'Bit Tits'];
+const FEATURED_CATEGORIES = ['Creampie', 'Big Tits'];
 
 const homeView = document.getElementById('homeView');
 const watchView = document.getElementById('watchView');
