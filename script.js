@@ -1,7 +1,7 @@
 const PAGE_SIZE = 8; // jumlah video per halaman — ubah sesuai kebutuhan
 
 // kategori yang tampil sebagai baris di beranda — ganti sesuai kategori andalan kamu
-const FEATURED_CATEGORIES = ['Barat', 'Creampie', 'Big Tits', 'Gym'];
+const FEATURED_CATEGORIES = ['Creampie', 'Bit Tits'];
 
 const homeView = document.getElementById('homeView');
 const watchView = document.getElementById('watchView');
@@ -37,18 +37,10 @@ const PLAY_ICON = `
 
 const DIRECT_VIDEO_EXT = /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i;
 
-/* ---------- cover otomatis dari video (tanpa poster manual di data.json) ----------
-   - YouTube  -> ambil thumbnail resmi dari i.ytimg.com
-   - File video langsung (mp4/webm/dll) -> tangkap 1 frame lewat <video>+<canvas>
-   - Embed lain (mis. vkvideo) -> generate cover placeholder dari judul (tidak bisa
-     "mengintip" isi iframe cross-origin, jadi ini batas paling otomatis yang aman) */
-
-const posterCache = new Map(); // video.url -> src poster
-
-function getYouTubeId(url) {
-  const m = url.match(/(?:youtube\.com\/embed\/|youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{6,})/);
-  return m ? m[1] : null;
-}
+/* ---------- cover video ----------
+   Cover diambil langsung dari field "cover" di data.json (hardcode per video).
+   Kalau field "cover" kosong/tidak ada, dipakai placeholder otomatis dari judul
+   sebagai fallback supaya tampilan tidak pecah. */
 
 function hashString(str) {
   let hash = 0;
@@ -75,70 +67,9 @@ function placeholderPoster(title) {
   return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 }
 
-function captureVideoFrame(url) {
-  return new Promise((resolve, reject) => {
-    const vid = document.createElement('video');
-    vid.crossOrigin = 'anonymous';
-    vid.muted = true;
-    vid.playsInline = true;
-    vid.preload = 'auto';
-    vid.src = url;
-
-    const cleanup = () => { vid.removeAttribute('src'); vid.load(); };
-
-    vid.addEventListener('loadeddata', () => {
-      try {
-        vid.currentTime = Math.min(1, (vid.duration || 2) / 2);
-      } catch (err) {
-        cleanup();
-        reject(err);
-      }
-    });
-
-    vid.addEventListener('seeked', () => {
-      try {
-        const canvas = document.createElement('canvas');
-        canvas.width = vid.videoWidth || 320;
-        canvas.height = vid.videoHeight || 180;
-        canvas.getContext('2d').drawImage(vid, 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
-        cleanup();
-        resolve(dataUrl);
-      } catch (err) {
-        cleanup();
-        reject(err);
-      }
-    });
-
-    vid.addEventListener('error', () => { cleanup(); reject(new Error('video gagal dimuat')); });
-  });
-}
-
 function getPosterSrc(video) {
-  if (posterCache.has(video.url)) return posterCache.get(video.url);
-
-  const ytId = getYouTubeId(video.url);
-  if (ytId) {
-    const src = `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`;
-    posterCache.set(video.url, src);
-    return src;
-  }
-
-  const fallback = placeholderPoster(video.title);
-  posterCache.set(video.url, fallback);
-
-  if (DIRECT_VIDEO_EXT.test(video.url)) {
-    captureVideoFrame(video.url)
-      .then(dataUrl => {
-        posterCache.set(video.url, dataUrl);
-        document.querySelectorAll(`img[data-video-url="${encodeURIComponent(video.url)}"]`).forEach(img => {
-          img.src = dataUrl;
-        });
-      })
-      .catch(() => { /* CORS/gagal load — tetap pakai placeholder */ });
-  }
-
-  return fallback;
+  if (video.cover) return video.cover;
+  return placeholderPoster(video.title);
 }
 
 let videos = [];
