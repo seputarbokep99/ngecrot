@@ -73,11 +73,19 @@
   .card:hover{
     border-color: var(--amber-dim);
   }
-  .card:hover .frame{
-    transform: scale(1.035);
-  }
   .card:hover .hover-ring{
     opacity: 1;
+  }
+
+  .cover{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit: cover;
+    display:block;
+    transition: transform .5s cubic-bezier(.2,.7,.2,1);
+  }
+  .card:hover .cover{
+    transform: scale(1.035);
   }
 
   .frame{
@@ -86,7 +94,14 @@
     border:0;
     display:block;
     pointer-events: none;
-    transition: transform .5s cubic-bezier(.2,.7,.2,1);
+    opacity: 0;
+    transition: opacity .25s ease;
+  }
+  .card.hovering .frame{
+    opacity: 1;
+  }
+  .card.hovering .cover{
+    opacity: 0;
   }
 
   .hover-ring{
@@ -96,21 +111,6 @@
     opacity:0;
     transition: opacity .2s ease;
     pointer-events:none;
-  }
-
-  .card .play{
-    position:absolute; inset:0;
-    display:flex; align-items:center; justify-content:center;
-    opacity:0;
-    transition: opacity .2s ease, background .2s ease;
-  }
-  .card:hover .play{
-    opacity:1;
-    background: rgba(0,0,0,0.15);
-  }
-  .play svg{
-    width:38px; height:38px;
-    filter: drop-shadow(0 2px 10px rgba(0,0,0,0.6));
   }
 
   /* Lightbox */
@@ -232,28 +232,56 @@
   lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
   document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeLightbox(); });
 
-  function render(data){
+  function render(items){
     grid.innerHTML = '';
-    if(!data.length){
-      grid.innerHTML = '<div class="empty">data.json kosong — tambahkan url video.</div>';
+    if(!items.length){
+      grid.innerHTML = '<div class="empty">data.json kosong — tambahkan cover & url video.</div>';
       return;
     }
-    data.forEach((url, i) => {
+    items.forEach((item, i) => {
+      const { cover, url } = item;
       const card = document.createElement('div');
       card.className = 'card';
       card.style.animationDelay = (Math.min(i,24) * 25) + 'ms';
 
-      const embed = makeEmbedEl(url, { autoplay: true, muted: true, controls: false });
-      card.appendChild(embed);
+      const img = document.createElement('img');
+      img.className = 'cover';
+      img.src = cover;
+      img.loading = 'lazy';
+      img.alt = '';
+      card.appendChild(img);
 
       const ring = document.createElement('div');
       ring.className = 'hover-ring';
       card.appendChild(ring);
 
-      const play = document.createElement('div');
-      play.className = 'play';
-      play.innerHTML = '<svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>';
-      card.appendChild(play);
+      let previewEl = null;
+      let hoverTimer = null;
+
+      function startPreview(){
+        if(previewEl) return;
+        previewEl = makeEmbedEl(url, { autoplay: true, muted: true, controls: false });
+        card.insertBefore(previewEl, ring);
+        requestAnimationFrame(() => card.classList.add('hovering'));
+      }
+
+      function stopPreview(){
+        card.classList.remove('hovering');
+        if(previewEl){
+          const el = previewEl;
+          previewEl = null;
+          setTimeout(() => el.remove(), 250);
+        }
+      }
+
+      card.addEventListener('mouseenter', () => {
+        hoverTimer = setTimeout(startPreview, 120);
+      });
+      card.addEventListener('mouseleave', () => {
+        clearTimeout(hoverTimer);
+        stopPreview();
+      });
+      card.addEventListener('touchstart', () => { startPreview(); }, { passive: true });
 
       card.addEventListener('click', () => openLightbox(url));
       grid.appendChild(card);
@@ -268,11 +296,11 @@
       return res.json();
     })
     .then(data => {
-      currentData = Array.isArray(data) ? data.map(item => typeof item === 'string' ? item : item.url).filter(Boolean) : [];
+      currentData = Array.isArray(data) ? data.filter(item => item && item.cover && item.url) : [];
       render(shuffle(currentData));
     })
     .catch(err => {
-      grid.innerHTML = '<div class="empty">Gagal memuat data.json.<br>Jalankan file ini lewat local server (bukan dibuka langsung dari file explorer),<br>contoh: <code>python3 -m http.server</code>, lalu buka http://localhost:8000</div>';
+      grid.innerHTML = '<div class="empty">Gagal memuat data.json.<br>Jalankan file ini lewat local server (bukan dibuka langsung dari file explorer),<br>contoh: <code>python3 -m http.server</code>, lalu buka http://localhost:8000<br><br>Pastikan tiap item punya field "cover" dan "url".</div>';
       console.error(err);
     });
 })();
