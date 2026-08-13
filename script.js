@@ -1,5 +1,9 @@
 const PAGE_SIZE = 8; // jumlah video per halaman — ubah sesuai kebutuhan
 
+const homeView = document.getElementById('homeView');
+const watchView = document.getElementById('watchView');
+const backBtn = document.getElementById('backBtn');
+
 const grid = document.getElementById('grid');
 const pagination = document.getElementById('pagination');
 const categoryNav = document.getElementById('categoryNav');
@@ -8,20 +12,19 @@ const filterLabel = document.getElementById('filterLabel');
 const filterValue = document.getElementById('filterValue');
 const filterClear = document.getElementById('filterClear');
 
-const overlay = document.getElementById('overlay');
 const playerFrame = document.getElementById('playerFrame');
 const playerTitle = document.getElementById('playerTitle');
 const playerDesc = document.getElementById('playerDesc');
-const playerCast = document.getElementById('playerCast');
 const playerCastWrap = document.getElementById('playerCastWrap');
+const playerCast = document.getElementById('playerCast');
 const playerTags = document.getElementById('playerTags');
 const downloadBtn = document.getElementById('downloadBtn');
 const downloadCmd = document.getElementById('downloadCmd');
 const playerRecs = document.getElementById('playerRecs');
 const recsRow = document.getElementById('recsRow');
+
 const homeLink = document.getElementById('homeLink');
 const searchInput = document.getElementById('searchInput');
-const closeBtn = document.getElementById('closeBtn');
 
 const PLAY_ICON = `
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -164,8 +167,7 @@ function renderGrid(items, totalCount) {
         <span class="play-mark">${PLAY_ICON}</span>
       </button>
     `;
-
-    poster.querySelector('.poster-open').addEventListener('click', () => openPlayer(video));
+    poster.querySelector('.poster-open').addEventListener('click', () => openWatch(video));
 
     const meta = document.createElement('div');
     meta.className = 'card-meta';
@@ -177,8 +179,7 @@ function renderGrid(items, totalCount) {
         ${categories.map(cat => `<button type="button" class="tag${activeFilter && activeFilter.type === 'kategori' && activeFilter.value === cat ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`).join('')}
       </span>
     `;
-
-    meta.querySelector('.card-title-btn').addEventListener('click', () => openPlayer(video));
+    meta.querySelector('.card-title-btn').addEventListener('click', () => openWatch(video));
     meta.querySelectorAll('.tag').forEach(btn => {
       btn.addEventListener('click', () => setFilter('kategori', btn.dataset.cat));
     });
@@ -225,6 +226,7 @@ function setFilter(type, value) {
     ? null
     : { type, value };
   currentPage = 1;
+  showHome();
   render();
 }
 
@@ -234,7 +236,40 @@ filterClear.addEventListener('click', () => {
   render();
 });
 
-function openPlayer(video) {
+searchInput.addEventListener('input', e => {
+  searchQuery = e.target.value.trim();
+  currentPage = 1;
+  render();
+});
+
+/* ---------- home <-> watch view ---------- */
+
+function showHome() {
+  watchView.hidden = true;
+  homeView.hidden = false;
+  playerFrame.innerHTML = ''; // stop pemutaran saat keluar dari halaman tonton
+}
+
+function showWatch() {
+  homeView.hidden = true;
+  watchView.hidden = false;
+  window.scrollTo(0, 0);
+}
+
+backBtn.addEventListener('click', showHome);
+
+homeLink.addEventListener('click', () => {
+  activeFilter = null;
+  searchQuery = '';
+  searchInput.value = '';
+  currentPage = 1;
+  showHome();
+  render();
+});
+
+/* ---------- halaman tonton ---------- */
+
+function openWatch(video) {
   if (DIRECT_VIDEO_EXT.test(video.url)) {
     playerFrame.innerHTML = `<video src="${video.url}" controls autoplay playsinline></video>`;
   } else {
@@ -250,10 +285,7 @@ function openPlayer(video) {
     `<button type="button" class="tag cast-tag${activeFilter && activeFilter.type === 'pemeran' && activeFilter.value === name ? ' active' : ''}" data-name="${escapeHtml(name)}">${escapeHtml(name)}</button>`
   ).join('');
   playerCast.querySelectorAll('.cast-tag').forEach(btn => {
-    btn.addEventListener('click', () => {
-      closePlayer();
-      setFilter('pemeran', btn.dataset.name);
-    });
+    btn.addEventListener('click', () => setFilter('pemeran', btn.dataset.name));
   });
 
   const categories = toArray(video.kategori);
@@ -261,10 +293,7 @@ function openPlayer(video) {
     `<button type="button" class="tag${activeFilter && activeFilter.type === 'kategori' && activeFilter.value === cat ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`
   ).join('');
   playerTags.querySelectorAll('.tag').forEach(btn => {
-    btn.addEventListener('click', () => {
-      closePlayer();
-      setFilter('kategori', btn.dataset.cat);
-    });
+    btn.addEventListener('click', () => setFilter('kategori', btn.dataset.cat));
   });
 
   const ytdlpCmd = `yt-dlp "${toDownloadUrl(video.url)}"`;
@@ -273,11 +302,7 @@ function openPlayer(video) {
   downloadBtn.textContent = '⧉';
 
   renderRecommendations(video);
-
-  overlay.hidden = false;
-  document.body.style.overflow = 'hidden';
-  closeBtn.focus();
-  overlay.querySelector('.player-panel').scrollTop = 0;
+  showWatch();
 }
 
 function renderRecommendations(current) {
@@ -305,15 +330,9 @@ function renderRecommendations(current) {
       </span>
       <span class="rec-title">${escapeHtml(video.title)}</span>
     `;
-    item.addEventListener('click', () => openPlayer(video));
+    item.addEventListener('click', () => openWatch(video));
     recsRow.appendChild(item);
   });
-}
-
-function closePlayer() {
-  overlay.hidden = true;
-  playerFrame.innerHTML = ''; // stop pemutaran saat ditutup
-  document.body.style.overflow = '';
 }
 
 downloadBtn.addEventListener('click', async () => {
@@ -326,30 +345,6 @@ downloadBtn.addEventListener('click', async () => {
     downloadBtn.textContent = '!';
   }
   setTimeout(() => { downloadBtn.textContent = '⧉'; }, 1500);
-});
-
-searchInput.addEventListener('input', e => {
-  searchQuery = e.target.value.trim();
-  currentPage = 1;
-  render();
-});
-
-homeLink.addEventListener('click', () => {
-  closePlayer();
-  activeFilter = null;
-  searchQuery = '';
-  searchInput.value = '';
-  currentPage = 1;
-  render();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-closeBtn.addEventListener('click', closePlayer);
-overlay.addEventListener('click', e => {
-  if (e.target === overlay) closePlayer();
-});
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && !overlay.hidden) closePlayer();
 });
 
 function escapeHtml(str) {
