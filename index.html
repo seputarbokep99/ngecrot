@@ -208,8 +208,38 @@ img { display:block; }
 .watch-view { display:none; padding:16px 24px 40px; max-width:1400px; margin:0 auto; gap:24px; }
 .watch-view.active { display:grid; grid-template-columns:1fr 380px; }
 .primary { min-width:0; }
-.player-box { width:100%; aspect-ratio:16/9; background:#000; border-radius:var(--radius-lg); overflow:hidden; margin-bottom:16px; }
-.player-box iframe,.player-box video { width:100%; height:100%; border:none; }
+.player-box {
+  width:100%; aspect-ratio:16/9; background:#000;
+  border-radius:var(--radius-lg); overflow:hidden; margin-bottom:16px;
+  position:relative;
+}
+.player-box iframe,.player-box video { width:100%; height:100%; border:none; display:block; }
+
+/* Iframe error fallback */
+.player-fallback {
+  position:absolute; inset:0;
+  display:none; flex-direction:column;
+  align-items:center; justify-content:center;
+  background:var(--bg-secondary); padding:24px; text-align:center;
+}
+.player-fallback.active { display:flex; }
+.player-fallback-icon {
+  width:48px; height:48px; margin-bottom:14px; color:var(--text-muted);
+}
+.player-fallback-title {
+  font-size:0.95rem; font-weight:600; color:var(--text-primary); margin-bottom:8px;
+}
+.player-fallback-desc {
+  font-size:0.8rem; color:var(--text-muted); line-height:1.6; max-width:400px; margin-bottom:16px;
+}
+.player-fallback-link {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:8px 18px; border-radius:var(--radius-sm);
+  background:var(--accent); color:#fff; font-size:0.82rem; font-weight:600;
+  text-decoration:none; transition:opacity var(--transition);
+}
+.player-fallback-link:hover { opacity:0.85; }
+
 .watch-title { font-size:1.25rem; font-weight:700; line-height:1.3; margin-bottom:10px; }
 .watch-detail-row { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-bottom:8px; }
 .detail-label { font-size:0.75rem; color:var(--text-muted); white-space:nowrap; margin-right:2px; }
@@ -324,7 +354,18 @@ img { display:block; }
   </section>
   <div id="watchView" class="watch-view">
     <div class="primary">
-      <div class="player-box" id="playerBox"></div>
+      <div class="player-box" id="playerBox">
+        <!-- Fallback jika iframe gagal -->
+        <div class="player-fallback" id="playerFallback">
+          <svg class="player-fallback-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div class="player-fallback-title">Video tidak dapat diputar</div>
+          <div class="player-fallback-desc">Pemilik video membatasi pemutaran di situs eksternal. Coba buka langsung di sumber aslinya.</div>
+          <a class="player-fallback-link" id="fallbackLink" href="#" target="_blank" rel="noopener noreferrer">
+            Buka di Sumber Asli
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+      </div>
       <h1 class="watch-title" id="wTitle"></h1>
       <div id="wMeta"></div>
     </div>
@@ -342,8 +383,8 @@ img { display:block; }
 let allVideos = [];
 let activeFilter = null;
 let heroDismissed = false;
-let currentView = 'hero'; // 'hero' | 'results' | 'watch'
-let isRestoringState = false; // Flag untuk cegah loop saat restore
+let currentView = 'hero';
+let isRestoringState = false;
 
 const heroOverlay       = document.getElementById('heroOverlay');
 const heroSearch        = document.getElementById('heroSearch');
@@ -357,24 +398,44 @@ const resultsSection    = document.getElementById('resultsSection');
 const resultsCount      = document.getElementById('resultsCount');
 const grid              = document.getElementById('grid');
 const playerBox         = document.getElementById('playerBox');
+const playerFallback    = document.getElementById('playerFallback');
+const fallbackLink      = document.getElementById('fallbackLink');
 const recList           = document.getElementById('recList');
 const watchView         = document.getElementById('watchView');
 const aboutModal        = document.getElementById('aboutModal');
 
+// --- DETEKSI EMBED (updated: tambah vkvideo.ru) ---
 function isEmbed(url) {
-  return /iframe|embed|vk\.ru\/video_ext|youtube\.com\/embed|dailymotion\.com\/embed/i.test(url);
+  return /iframe|embed|vk\.ru\/video_ext|vkvideo\.ru\/video_ext|youtube\.com\/embed|dailymotion\.com\/embed/i.test(url);
 }
+
+// --- Konversi URL VK biasa ke URL embed jika perlu ---
+function normalizeEmbedUrl(url) {
+  // Jika sudah video_ext.php, return langsung
+  if (/video_ext\.php/i.test(url)) return url;
+
+  // Coba konversi vk.com/video-xxx_xxx ke embed URL
+  const vkMatch = url.match(/vk\.(?:com|ru)\/video(-?\d+)_(\d+)/);
+  if (vkMatch) {
+    return `https://vkvideo.ru/video_ext.php?oid=${vkMatch[1]}&id=${vkMatch[2]}&hd=2`;
+  }
+  return url;
+}
+
+// --- Buat URL sumber asli dari embed URL ---
+function getOriginalUrl(embedUrl) {
+  const vkMatch = embedUrl.match(/oid=(-?\d+)&id=(\d+)/);
+  if (vkMatch && /vkvideo\.ru|vk\.ru/.test(embedUrl)) {
+    return `https://vkvideo.ru/video${vkMatch[1]}_${vkMatch[2]}`;
+  }
+  return embedUrl;
+}
+
 function escHtml(s) { const d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
 
 // ============================================
 // URL HASH ROUTING
-// Format:
-//   #              → hero
-//   #search/query  → results dengan search query
-//   #filter/type/value → results dengan filter
-//   #watch/index   → watch page video ke-index
 // ============================================
-
 function navigateTo(hash, replace = false) {
   if (replace) {
     history.replaceState(null, '', '#' + hash);
@@ -384,32 +445,23 @@ function navigateTo(hash, replace = false) {
 }
 
 function parseHash() {
-  const raw = location.hash.slice(1); // hapus '#'
+  const raw = location.hash.slice(1);
   if (!raw) return { view: 'hero' };
-
   const parts = raw.split('/');
-
-  if (parts[0] === 'watch' && parts[1] !== undefined) {
-    return { view: 'watch', index: parseInt(parts[1]) };
-  }
-  if (parts[0] === 'search' && parts[1]) {
-    return { view: 'results', query: decodeURIComponent(parts.slice(1).join('/')) };
-  }
-  if (parts[0] === 'filter' && parts[1] && parts[2]) {
-    return { view: 'results', filterType: parts[1], filterValue: decodeURIComponent(parts.slice(2).join('/')) };
-  }
+  if (parts[0] === 'watch' && parts[1] !== undefined) return { view: 'watch', index: parseInt(parts[1]) };
+  if (parts[0] === 'search' && parts[1]) return { view: 'results', query: decodeURIComponent(parts.slice(1).join('/')) };
+  if (parts[0] === 'filter' && parts[1] && parts[2]) return { view: 'results', filterType: parts[1], filterValue: decodeURIComponent(parts.slice(2).join('/')) };
   return { view: 'hero' };
 }
 
 function handleRoute() {
   const route = parseHash();
-
-  // Reset semua view dulu
   heroOverlay.classList.add('hidden');
   resultsSection.classList.remove('active');
   watchView.classList.remove('active');
   filterBar.classList.remove('active');
-  playerBox.innerHTML = '';
+  playerBox.querySelectorAll('iframe, video').forEach(el => el.remove());
+  playerFallback.classList.remove('active');
 
   if (route.view === 'hero') {
     currentView = 'hero';
@@ -423,12 +475,10 @@ function handleRoute() {
     return;
   }
 
-  // Untuk results dan watch, hero harus hidden
   heroDismissed = true;
 
   if (route.view === 'results') {
     currentView = 'results';
-
     if (route.query) {
       activeFilter = null;
       headerSearch.value = route.query;
@@ -451,33 +501,21 @@ function handleRoute() {
     if (idx >= 0 && idx < allVideos.length) {
       renderWatch(idx);
     } else {
-      // Index tidak valid, fallback ke hero
       navigateTo('', true);
     }
     return;
   }
 }
 
-// Listen hash changes (back/forward button + manual navigation)
-window.addEventListener('hashchange', () => {
-  if (!isRestoringState) handleRoute();
-});
+window.addEventListener('hashchange', () => { if (!isRestoringState) handleRoute(); });
 
 // ============================================
 // MODAL
 // ============================================
-function openAbout() {
-  aboutModal.classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-function closeAbout() {
-  aboutModal.classList.remove('active');
-  document.body.style.overflow = '';
-}
-function closeAboutOutside(e) { if (e.target === aboutModal) closeAbout(); }
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && aboutModal.classList.contains('active')) closeAbout();
-});
+function openAbout() { aboutModal.classList.add('active'); document.body.style.overflow='hidden'; }
+function closeAbout() { aboutModal.classList.remove('active'); document.body.style.overflow=''; }
+function closeAboutOutside(e) { if (e.target===aboutModal) closeAbout(); }
+document.addEventListener('keydown', (e) => { if (e.key==='Escape' && aboutModal.classList.contains('active')) closeAbout(); });
 
 // ============================================
 // POPULAR TAGS (max 6)
@@ -503,9 +541,7 @@ function buildPopularTags() {
 // ============================================
 heroSearch.addEventListener('input', () => {
   heroSearchClear.classList.toggle('visible', heroSearch.value.length > 0);
-  if (heroSearch.value.trim().length > 0) {
-    navigateTo('search/' + encodeURIComponent(heroSearch.value.trim()));
-  }
+  if (heroSearch.value.trim().length > 0) navigateTo('search/' + encodeURIComponent(heroSearch.value.trim()));
 });
 function clearHeroSearch() { heroSearch.value=''; heroSearchClear.classList.remove('visible'); heroSearch.focus(); }
 
@@ -526,22 +562,15 @@ headerSearch.addEventListener('input', () => {
   }, 300);
 });
 function clearHeaderSearch() {
-  headerSearch.value='';
-  headerSearchClear.classList.remove('visible');
-  activeFilter = null;
-  navigateTo('');
-  headerSearch.focus();
+  headerSearch.value=''; headerSearchClear.classList.remove('visible');
+  activeFilter=null; navigateTo(''); headerSearch.focus();
 }
 
 // ============================================
 // FILTER
 // ============================================
-function applyFilter(type, value) {
-  navigateTo(`filter/${type}/${encodeURIComponent(value)}`);
-}
-function clearFilter() {
-  navigateTo('');
-}
+function applyFilter(type, value) { navigateTo(`filter/${type}/${encodeURIComponent(value)}`); }
+function clearFilter() { navigateTo(''); }
 
 // ============================================
 // RENDER RESULTS
@@ -567,19 +596,12 @@ function renderResults() {
   const filtered = getFilteredVideos();
   const q = headerSearch.value.trim();
   const hasQuery = q.length > 0 || activeFilter;
-
   if (!hasQuery) { resultsSection.classList.remove('active'); return; }
   resultsSection.classList.add('active');
-
   if (filtered.length === 0) {
-    const msg = activeFilter
-      ? `Tidak ada video untuk ${activeFilter.type}: "${activeFilter.value}"`
-      : `Tidak ditemukan hasil untuk "${escHtml(q)}"`;
-    resultsCount.textContent='';
-    grid.innerHTML=`<div class="state-msg">${msg}</div>`;
-    return;
+    const msg = activeFilter ? `Tidak ada video untuk ${activeFilter.type}: "${activeFilter.value}"` : `Tidak ditemukan hasil untuk "${escHtml(q)}"`;
+    resultsCount.textContent=''; grid.innerHTML=`<div class="state-msg">${msg}</div>`; return;
   }
-
   resultsCount.textContent = `${filtered.length} video ditemukan`;
   grid.innerHTML = filtered.map(v => {
     const idx = allVideos.indexOf(v);
@@ -593,7 +615,7 @@ function renderResults() {
 }
 
 // ============================================
-// RENDER WATCH
+// RENDER WATCH — dengan referrerpolicy fix + fallback
 // ============================================
 function renderWatch(idx) {
   const v = allVideos[idx];
@@ -602,10 +624,65 @@ function renderWatch(idx) {
   resultsSection.classList.remove('active');
   filterBar.classList.remove('active');
   watchView.classList.add('active');
+  playerFallback.classList.remove('active');
 
-  playerBox.innerHTML = isEmbed(v.url)
-    ? `<iframe src="${escHtml(v.url)}" allowfullscreen allow="autoplay; encrypted-media; fullscreen"></iframe>`
-    : `<video src="${escHtml(v.url)}" controls autoplay playsinline></video>`;
+  const embedUrl = normalizeEmbedUrl(v.url);
+  const originalUrl = getOriginalUrl(embedUrl);
+
+  if (isEmbed(embedUrl)) {
+    // Buat iframe dengan referrerpolicy="no-referrer" untuk bypass VK domain check
+    const iframe = document.createElement('iframe');
+    iframe.src = embedUrl;
+    iframe.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
+    iframe.allowFullscreen = true;
+    iframe.referrerPolicy = 'no-referrer';
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    iframe.style.display = 'block';
+
+    // Deteksi error: jika iframe gagal load dalam 8 detik, tampilkan fallback
+    let loaded = false;
+    iframe.onload = () => { loaded = true; };
+
+    setTimeout(() => {
+      // Cek apakah iframe benar-benar menampilkan konten
+      // Jika tidak loaded sama sekali, kemungkinan diblokir
+      if (!loaded && currentView === 'watch') {
+        try {
+          // Coba akses contentDocument — kalau cross-origin akan throw error (yang artinya iframe load tapi blocked)
+          const doc = iframe.contentDocument;
+          if (!doc || !doc.body || doc.body.innerHTML === '') {
+            showFallback(originalUrl);
+          }
+        } catch(e) {
+          // Cross-origin error = iframe sebenarnya load, tapi VK mungkin block di dalamnya
+          // Kita tetap tampilkan iframe, user bisa lihat sendiri
+        }
+      }
+    }, 8000);
+
+    // Hapus iframe/fallback lama, pasang yang baru
+    playerBox.querySelectorAll('iframe, video').forEach(el => el.remove());
+    playerBox.insertBefore(iframe, playerFallback);
+
+    // Set fallback link
+    fallbackLink.href = originalUrl;
+
+  } else {
+    playerBox.querySelectorAll('iframe, video').forEach(el => el.remove());
+    const video = document.createElement('video');
+    video.src = embedUrl;
+    video.controls = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.style.width = '100%';
+    video.style.height = '100%';
+    video.style.display = 'block';
+    playerBox.insertBefore(video, playerFallback);
+    playerFallback.classList.remove('active');
+  }
+
   document.getElementById('wTitle').textContent = v.title;
 
   let meta='';
@@ -616,23 +693,19 @@ function renderWatch(idx) {
 
   const recs = allVideos.filter((_,i)=>i!==idx);
   recList.innerHTML = recs.length
-    ? recs.map(r=>{
-        const ri=allVideos.indexOf(r);
-        return `<div class="rec-card" onclick="navigateTo('watch/${ri}')">
-          <img class="rec-thumb" src="${escHtml(r.cover)}" alt="${escHtml(r.title)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180/1e1e1e/555?text=No+Cover'">
-          <div class="rec-info">
-            <div class="rec-title">${escHtml(r.title)}</div>
-            <div class="rec-sub">${escHtml(r.studio||'')}${r.kategori?.[0]?' · '+escHtml(r.kategori[0]):''}</div>
-          </div>
-        </div>`;
-      }).join('')
+    ? recs.map(r=>{const ri=allVideos.indexOf(r);return `<div class="rec-card" onclick="navigateTo('watch/${ri}')"><img class="rec-thumb" src="${escHtml(r.cover)}" alt="${escHtml(r.title)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180/1e1e1e/555?text=No+Cover'"><div class="rec-info"><div class="rec-title">${escHtml(r.title)}</div><div class="rec-sub">${escHtml(r.studio||'')}${r.kategori?.[0]?' · '+escHtml(r.kategori[0]):''}</div></div></div>`;}).join('')
     : '<div style="color:var(--text-muted);padding:20px;text-align:center;font-size:0.82rem;">Tidak ada video lain</div>';
 
   window.scrollTo({top:0});
 }
 
+function showFallback(originalUrl) {
+  playerFallback.classList.add('active');
+  fallbackLink.href = originalUrl;
+}
+
 // ============================================
-// INIT — Load data lalu restore state dari hash
+// INIT
 // ============================================
 async function init() {
   try {
@@ -641,12 +714,9 @@ async function init() {
     const data = await res.json();
     allVideos = data.videos || [];
     buildPopularTags();
-
-    // Restore state dari URL hash setelah data siap
     isRestoringState = true;
     handleRoute();
     isRestoringState = false;
-
   } catch(e) {
     heroDismissed = true;
     heroOverlay.classList.add('hidden');
