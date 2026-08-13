@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FakeFlix</title>
+<title>NGECROT.TV</title>
 <style>
 :root {
   --bg-primary: #0a0a0a;
@@ -126,23 +126,27 @@ img { display:block; }
   text-align:center; margin-bottom:4px;
   text-transform:uppercase; letter-spacing:0.5px;
 }
+
+/* ============================================
+   CHIP — Warna teks PINK di semua tempat
+   ============================================ */
 .chip {
   display:inline-block; padding:6px 14px; border-radius:20px;
-  background:var(--chip-bg); color:var(--text-secondary);
+  background:var(--chip-bg); color:var(--accent);
   font-size:0.78rem; font-weight:500; border:1px solid transparent;
   cursor:pointer; transition:all var(--transition); white-space:nowrap;
 }
-.chip:hover { background:var(--chip-hover); color:var(--text-primary); border-color:var(--border); }
+.chip:hover { background:var(--chip-hover); color:var(--accent-hover); border-color:var(--border); }
 
-/* Chip kecil untuk sidebar */
+/* Chip kecil untuk sidebar — juga PINK */
 .chip-sm {
   display:inline-block; padding:2px 8px; border-radius:10px;
-  background:var(--chip-bg); color:var(--text-muted);
+  background:var(--chip-bg); color:var(--accent);
   font-size:0.65rem; font-weight:500; border:1px solid transparent;
   cursor:pointer; transition:all var(--transition); white-space:nowrap;
   line-height:1.4;
 }
-.chip-sm:hover { background:var(--chip-hover); color:var(--text-primary); border-color:var(--border); }
+.chip-sm:hover { background:var(--chip-hover); color:var(--accent-hover); border-color:var(--border); }
 
 /* ============================================
    MODAL TENTANG
@@ -247,17 +251,22 @@ img { display:block; }
 }
 .player-fallback-link:hover { opacity:0.85; }
 
-/* FIX: Judul video warna pink */
+/* Judul video — PINK */
 .watch-title {
   font-size:1.25rem; font-weight:700; line-height:1.3;
   margin-bottom:10px; color:var(--accent);
 }
 
 .watch-detail-row { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-bottom:8px; }
-.detail-label { font-size:0.75rem; color:var(--text-muted); white-space:nowrap; margin-right:2px; }
+
+/* Label "Studio", "Pemeran", "Kategori" — juga PINK */
+.detail-label {
+  font-size:0.75rem; color:var(--accent); white-space:nowrap;
+  margin-right:2px; font-weight:600; opacity:0.7;
+}
 
 /* ============================================
-   SIDEBAR — FIX: teks rata atas + chip bisa diklik
+   SIDEBAR
    ============================================ */
 .sidebar {
   display:flex; flex-direction:column; gap:8px;
@@ -266,26 +275,21 @@ img { display:block; }
 .sidebar::-webkit-scrollbar { width:3px; }
 .sidebar::-webkit-scrollbar-track { background:transparent; }
 .sidebar::-webkit-scrollbar-thumb { background:#333; border-radius:3px; }
-
 .rec-card {
   display:flex; gap:10px; padding:8px;
   border-radius:var(--radius-md); transition:background var(--transition);
-  /* Jangan set cursor:pointer di sini karena ada chip di dalamnya */
 }
 .rec-card:hover { background:var(--bg-tertiary); }
-
-/* Area yang bisa diklik untuk buka video (thumbnail + judul) */
 .rec-clickable {
   display:flex; gap:10px; cursor:pointer; flex:1; min-width:0;
 }
-
 .rec-thumb {
   width:160px; min-width:160px; aspect-ratio:16/9;
   border-radius:var(--radius-sm); object-fit:cover; background:var(--bg-tertiary);
 }
 .rec-info {
   display:flex; flex-direction:column;
-  justify-content:flex-start; /* FIX: rata atas, bukan tengah */
+  justify-content:flex-start;
   min-width:0; padding-top:2px;
 }
 .rec-title {
@@ -296,7 +300,6 @@ img { display:block; }
 .rec-tags {
   display:flex; flex-wrap:wrap; gap:4px; margin-top:2px;
 }
-
 .state-msg { text-align:center; padding:60px 20px; color:var(--text-muted); font-size:0.9rem; }
 
 /* ============================================
@@ -344,7 +347,7 @@ img { display:block; }
 
 <!-- ====== FIXED HEADER ====== -->
 <header class="header">
-  <div class="logo" onclick="navigateTo('')">FAKEFLIX</div>
+  <div class="logo" onclick="navigateTo('')">NGECROT.TV</div>
   <nav class="nav-links">
     <span class="nav-link" onclick="openAbout()">Tentang</span>
   </nav>
@@ -373,14 +376,14 @@ img { display:block; }
 <div class="modal-backdrop" id="aboutModal" onclick="closeAboutOutside(event)">
   <div class="modal-box">
     <button class="modal-close" onclick="closeAbout()">&times;</button>
-    <div class="modal-logo">FAKEFLIX</div>
+    <div class="modal-logo">NGECROT.TV</div>
     <div class="modal-tagline">Streaming gratis, tanpa ribet.</div>
     <div class="modal-body">
-      <p>FakeFlix adalah layanan streaming video gratis yang memungkinkan kamu menonton berbagai konten favorit tanpa perlu berlangganan atau membuat akun. Cukup buka, cari, dan langsung tonton.</p>
+      <p>NGECROT.TV adalah layanan streaming video gratis yang memungkinkan kamu menonton berbagai konten favorit tanpa perlu berlangganan atau membuat akun. Cukup buka, cari, dan langsung tonton.</p>
       <p>Kami menyediakan koleksi video dari berbagai kategori mulai dari animasi, film pendek, dokumenter, hingga konten hiburan lainnya. Semua bisa diakses secara instan langsung dari browser kamu.</p>
-      <p>FakeFlix dirancang dengan antarmuka yang sederhana dan ringan agar pengalaman menonton tetap nyaman di perangkat apapun, baik desktop maupun ponsel.</p>
+      <p>NGECROT.TV dirancang dengan antarmuka yang sederhana dan ringan agar pengalaman menonton tetap nyaman di perangkat apapun, baik desktop maupun ponsel.</p>
       <div class="modal-divider"></div>
-      <p class="modal-footer-text">FakeFlix tidak menyimpan data pribadi pengguna. Semua konten yang ditampilkan bersumber dari pihak ketiga. Layanan ini disediakan sebagaimana adanya tanpa jaminan apapun.</p>
+      <p class="modal-footer-text">NGECROT.TV tidak menyimpan data pribadi pengguna. Semua konten yang ditampilkan bersumber dari pihak ketiga. Layanan ini disediakan sebagaimana adanya tanpa jaminan apapun.</p>
     </div>
   </div>
 </div>
@@ -420,8 +423,8 @@ img { display:block; }
 
 <!-- ====== FOOTER ====== -->
 <footer class="footer">
-  <div class="footer-made"><span class="brand">FakeFlix</span> dibuat oleh ☕ ❤️</div>
-  <div class="footer-copy">&copy; 2025 FakeFlix. All rights reserved.</div>
+  <div class="footer-made"><span class="brand">NGECROT.TV</span> dibuat oleh ☕ ❤️</div>
+  <div class="footer-copy">&copy; 2025 NGECROT.TV. All rights reserved.</div>
 </footer>
 
 <script>
@@ -630,7 +633,7 @@ function renderResults() {
 }
 
 // ============================================
-// RENDER WATCH — FIX: judul pink + sidebar rapi + chip bisa diklik
+// RENDER WATCH
 // ============================================
 function renderWatch(idx) {
   const v = allVideos[idx]; if (!v) return;
@@ -638,10 +641,8 @@ function renderWatch(idx) {
   filterBar.classList.remove('active');
   watchView.classList.add('active');
   playerFallback.classList.remove('active');
-
   const embedUrl = normalizeEmbedUrl(v.url);
   const originalUrl = getOriginalUrl(embedUrl);
-
   if (isEmbed(embedUrl)) {
     const iframe = document.createElement('iframe');
     iframe.src = embedUrl;
@@ -653,10 +654,7 @@ function renderWatch(idx) {
     iframe.onload = () => { loaded = true; };
     setTimeout(() => {
       if (!loaded && currentView === 'watch') {
-        try {
-          const doc = iframe.contentDocument;
-          if (!doc || !doc.body || doc.body.innerHTML === '') showFallback(originalUrl);
-        } catch(e) {}
+        try { const doc = iframe.contentDocument; if (!doc || !doc.body || doc.body.innerHTML === '') showFallback(originalUrl); } catch(e) {}
       }
     }, 8000);
     playerBox.querySelectorAll('iframe, video').forEach(el => el.remove());
@@ -670,39 +668,22 @@ function renderWatch(idx) {
     playerBox.insertBefore(video, playerFallback);
     playerFallback.classList.remove('active');
   }
-
-  // Judul video — warna pink via CSS class .watch-title
   document.getElementById('wTitle').textContent = v.title;
-
-  // Meta chips (studio, pemeran, kategori) — semua bisa diklik
   let meta='';
   if (v.studio) meta+=`<div class="watch-detail-row"><span class="detail-label">Studio</span><span class="chip" onclick="navigateTo('filter/studio/${encodeURIComponent(v.studio)}')">${escHtml(v.studio)}</span></div>`;
   if (v.pemeran?.length) meta+=`<div class="watch-detail-row"><span class="detail-label">Pemeran</span>${v.pemeran.map(p=>`<span class="chip" onclick="navigateTo('filter/pemeran/${encodeURIComponent(p)}')">${escHtml(p)}</span>`).join('')}</div>`;
   if (v.kategori?.length) meta+=`<div class="watch-detail-row"><span class="detail-label">Kategori</span>${v.kategori.map(k=>`<span class="chip" onclick="navigateTo('filter/kategori/${encodeURIComponent(k)}')">${escHtml(k)}</span>`).join('')}</div>`;
   document.getElementById('wMeta').innerHTML = meta;
 
-  // ============================================
-  // SIDEBAR RECOMMENDATIONS — FIX TOTAL
-  // - Teks rata atas (justify-content: flex-start)
-  // - Studio & Kategori jadi chip-sm yang bisa diklik
-  // - Klik thumbnail/judul = buka video
-  // - Klik chip = filter (stopPropagation)
-  // ============================================
   const recs = allVideos.filter((_,i) => i !== idx);
   recList.innerHTML = recs.length
     ? recs.map(r => {
         const ri = allVideos.indexOf(r);
-
-        // Build clickable chips untuk studio
         const studioChip = r.studio
-          ? `<span class="chip-sm" onclick="event.stopPropagation();navigateTo('filter/studio/${encodeURIComponent(r.studio)}')">${escHtml(r.studio)}</span>`
-          : '';
-
-        // Build clickable chips untuk kategori (max 2 biar rapi)
+          ? `<span class="chip-sm" onclick="event.stopPropagation();navigateTo('filter/studio/${encodeURIComponent(r.studio)}')">${escHtml(r.studio)}</span>` : '';
         const catChips = (r.kategori || []).slice(0, 2).map(k =>
           `<span class="chip-sm" onclick="event.stopPropagation();navigateTo('filter/kategori/${encodeURIComponent(k)}')">${escHtml(k)}</span>`
         ).join('');
-
         return `<div class="rec-card">
           <div class="rec-clickable" onclick="navigateTo('watch/${ri}')">
             <img class="rec-thumb" src="${escHtml(r.cover)}" alt="${escHtml(r.title)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180/1e1e1e/555?text=No+Cover'">
@@ -714,10 +695,8 @@ function renderWatch(idx) {
         </div>`;
       }).join('')
     : '<div style="color:var(--text-muted);padding:20px;text-align:center;font-size:0.82rem;">Tidak ada video lain</div>';
-
   window.scrollTo({top:0});
 }
-
 function showFallback(url) { playerFallback.classList.add('active'); fallbackLink.href=url; }
 
 // ============================================
