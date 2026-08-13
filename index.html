@@ -43,6 +43,48 @@
       radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
   }
 
+  header{
+    text-align: center;
+    padding: 56px 20px 28px;
+    position: relative;
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    bottom: 0; left:50%;
+    transform: translateX(-50%);
+    width: 46px; height: 3px;
+    border-radius: 2px;
+    background: var(--amber);
+    box-shadow: 0 0 12px var(--amber);
+  }
+  .title{
+    margin: 0;
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    color: var(--text);
+  }
+  .bio{
+    margin: 10px 0 0;
+    color: var(--text-dim);
+    font-size: 14px;
+    letter-spacing: 0.01em;
+  }
+
+  footer{
+    text-align: center;
+    padding: 24px 20px 48px;
+    border-top: 1px solid var(--line);
+    margin-top: 20px;
+  }
+  footer p{
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 13px;
+    letter-spacing: 0.02em;
+  }
+
   main{
     padding: 24px 20px 60px;
   }
@@ -228,10 +270,19 @@
 </head>
 <body>
 
+<header>
+  <h1 class="title">NGECR💦T.FUN</h1>
+  <p class="bio">Teman streaming terbaikmu.</p>
+</header>
+
 <main>
   <div id="grid" class="grid"></div>
   <div id="pagination" class="pagination"></div>
 </main>
+
+<footer>
+  <p>Dibuat dengan ☕ dan ❤️  - NGECR💦T.FUN</p>
+</footer>
 
 <div id="lightbox">
   <div class="lb-inner" id="lbInner">
