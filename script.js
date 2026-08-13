@@ -1,5 +1,8 @@
 const PAGE_SIZE = 8; // jumlah video per halaman — ubah sesuai kebutuhan
 
+// kategori yang ditampilkan duluan di beranda — ganti sesuai kategori andalan kamu
+const FEATURED_CATEGORIES = ['OnlyFans', 'Big Tits', 'Creampie'];
+
 const homeView = document.getElementById('homeView');
 const watchView = document.getElementById('watchView');
 const backBtn = document.getElementById('backBtn');
@@ -37,9 +40,10 @@ const PLAY_ICON = `
 const DIRECT_VIDEO_EXT = /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i;
 
 let videos = [];
-let activeFilter = null; // { type: 'kategori' | 'pemeran', value: string }
+let activeFilter = null; // { type: 'kategori' | 'pemeran' | 'studio', value: string }
 let searchQuery = '';
 let currentPage = 1;
+let categoryNavExpanded = false;
 
 async function init() {
   try {
@@ -102,18 +106,37 @@ function getAllCategories() {
 }
 
 function renderCategoryNav() {
-  const categories = getAllCategories();
-  if (categories.length === 0) {
+  const allCategories = getAllCategories();
+  if (allCategories.length === 0) {
     categoryNav.hidden = true;
     return;
   }
   categoryNav.hidden = false;
-  categoryNav.innerHTML = categories.map(cat =>
-    `<button type="button" class="chip${activeFilter && activeFilter.type === 'kategori' && activeFilter.value === cat ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`
-  ).join('');
-  categoryNav.querySelectorAll('.chip').forEach(btn => {
+
+  const featured = FEATURED_CATEGORIES.filter(cat => allCategories.includes(cat));
+  const rest = allCategories.filter(cat => !featured.includes(cat));
+  const shown = categoryNavExpanded ? [...featured, ...rest] : featured;
+
+  const chipHtml = cat =>
+    `<button type="button" class="chip${activeFilter && activeFilter.type === 'kategori' && activeFilter.value === cat ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`;
+
+  let html = shown.map(chipHtml).join('');
+  if (rest.length > 0) {
+    html += `<button type="button" class="chip chip-more" id="moreCategoriesBtn">${categoryNavExpanded ? 'Lebih Sedikit' : 'Kategori Lainnya'}</button>`;
+  }
+  categoryNav.innerHTML = html;
+
+  categoryNav.querySelectorAll('.chip:not(.chip-more)').forEach(btn => {
     btn.addEventListener('click', () => setFilter('kategori', btn.dataset.cat));
   });
+
+  const moreBtn = document.getElementById('moreCategoriesBtn');
+  if (moreBtn) {
+    moreBtn.addEventListener('click', () => {
+      categoryNavExpanded = !categoryNavExpanded;
+      renderCategoryNav();
+    });
+  }
 }
 
 function renderFilterBar() {
