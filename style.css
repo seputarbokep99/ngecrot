@@ -55,11 +55,12 @@ button {
   border: none;
   padding: 0;
   cursor: pointer;
+  text-align: left;
   font-family: 'Fraunces', serif;
   font-weight: 600;
   font-size: 22px;
   letter-spacing: 0.01em;
-  color: var(--text);
+  color: var(--accent);
 }
 
 .bio {
