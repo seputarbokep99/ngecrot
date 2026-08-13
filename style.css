@@ -181,6 +181,18 @@ img {
   font-weight: 500;
 }
 
+.chip-more {
+  background: none;
+  border-style: dashed;
+  color: var(--text-faint);
+}
+
+.chip-more:hover,
+.chip-more:focus-visible {
+  border-color: var(--text-dim);
+  color: var(--text-dim);
+}
+
 /* ---------- filter bar ---------- */
 
 .filter-bar {
