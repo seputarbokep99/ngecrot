@@ -175,6 +175,7 @@ function renderGrid(items, totalCount) {
       <button type="button" class="card-title-btn">
         <span class="card-title">${escapeHtml(video.title)}</span>
       </button>
+      ${video.studio ? `<span class="card-studio">${escapeHtml(video.studio)}</span>` : ''}
       <span class="card-tags">
         ${categories.map(cat => `<button type="button" class="tag${activeFilter && activeFilter.type === 'kategori' && activeFilter.value === cat ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`).join('')}
       </span>
