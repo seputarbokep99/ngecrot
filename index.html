@@ -326,7 +326,17 @@
   const lbInner = document.getElementById('lbInner');
   let currentData = [];
   let currentPage = 1;
-  const PER_PAGE = 6;
+  let PER_PAGE = 12;
+  const ROWS_PER_PAGE = 4;
+
+  function calcPerPage(){
+    const containerWidth = grid.clientWidth || window.innerWidth - 40;
+    const isMobile = window.innerWidth <= 640;
+    const minCol = isMobile ? 140 : 220;
+    const gap = isMobile ? 8 : 14;
+    const cols = Math.max(1, Math.floor((containerWidth + gap) / (minCol + gap)));
+    return cols * ROWS_PER_PAGE;
+  }
 
   function shuffle(arr){
     const a = arr.slice();
@@ -466,7 +476,22 @@
       currentData = Array.isArray(data) ? data.filter(item => item && item.cover && item.url) : [];
       currentData = shuffle(currentData);
       videoCountEl.textContent = 'Jumlah video: ' + currentData.length;
+      PER_PAGE = calcPerPage();
       goToPage(1);
+
+      let resizeTimer = null;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          const newPerPage = calcPerPage();
+          if(newPerPage !== PER_PAGE){
+            PER_PAGE = newPerPage;
+            currentPage = 1;
+            render(currentData);
+            renderPagination(currentData);
+          }
+        }, 200);
+      });
     })
     .catch(err => {
       grid.innerHTML = '<div class="empty">Gagal memuat data.json.<br>Jalankan file ini lewat local server (bukan dibuka langsung dari file explorer),<br>contoh: <code>python3 -m http.server</code>, lalu buka http://localhost:8000<br><br>Pastikan tiap item punya field "cover" dan "url".</div>';
