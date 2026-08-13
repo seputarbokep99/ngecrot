@@ -17,6 +17,9 @@ const playerCastWrap = document.getElementById('playerCastWrap');
 const playerTags = document.getElementById('playerTags');
 const downloadBtn = document.getElementById('downloadBtn');
 const downloadCmd = document.getElementById('downloadCmd');
+const playerRecs = document.getElementById('playerRecs');
+const recsRow = document.getElementById('recsRow');
+const homeLink = document.getElementById('homeLink');
 const closeBtn = document.getElementById('closeBtn');
 
 const PLAY_ICON = `
@@ -251,9 +254,42 @@ function openPlayer(video) {
   downloadBtn.dataset.cmd = ytdlpCmd;
   downloadBtn.textContent = '⧉';
 
+  renderRecommendations(video);
+
   overlay.hidden = false;
   document.body.style.overflow = 'hidden';
   closeBtn.focus();
+  overlay.querySelector('.player-panel').scrollTop = 0;
+}
+
+function renderRecommendations(current) {
+  const currentCats = toArray(current.kategori);
+
+  // dahulukan video dengan kategori yang sama, sisanya isi dari video lain
+  const sameCategory = videos.filter(v => v !== current && toArray(v.kategori).some(c => currentCats.includes(c)));
+  const others = videos.filter(v => v !== current && !sameCategory.includes(v));
+  const recs = [...sameCategory, ...others].slice(0, 8);
+
+  if (recs.length === 0) {
+    playerRecs.hidden = true;
+    return;
+  }
+  playerRecs.hidden = false;
+
+  recsRow.innerHTML = '';
+  recs.forEach(video => {
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'rec-card';
+    item.innerHTML = `
+      <span class="rec-poster">
+        <img src="${video.poster}" alt="" loading="lazy">
+      </span>
+      <span class="rec-title">${escapeHtml(video.title)}</span>
+    `;
+    item.addEventListener('click', () => openPlayer(video));
+    recsRow.appendChild(item);
+  });
 }
 
 function closePlayer() {
@@ -272,6 +308,14 @@ downloadBtn.addEventListener('click', async () => {
     downloadBtn.textContent = '!';
   }
   setTimeout(() => { downloadBtn.textContent = '⧉'; }, 1500);
+});
+
+homeLink.addEventListener('click', () => {
+  closePlayer();
+  activeFilter = null;
+  currentPage = 1;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
 closeBtn.addEventListener('click', closePlayer);
