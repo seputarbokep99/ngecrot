@@ -2,10 +2,7 @@ const PAGE_SIZE = 8; // jumlah video per halaman — ubah sesuai kebutuhan
 
 const homeView = document.getElementById('homeView');
 const watchView = document.getElementById('watchView');
-const aboutView = document.getElementById('aboutView');
 const backBtn = document.getElementById('backBtn');
-const aboutBackBtn = document.getElementById('aboutBackBtn');
-const aboutLink = document.getElementById('aboutLink');
 
 const grid = document.getElementById('grid');
 const pagination = document.getElementById('pagination');
@@ -28,8 +25,6 @@ const recsRow = document.getElementById('recsRow');
 
 const homeLink = document.getElementById('homeLink');
 const searchInput = document.getElementById('searchInput');
-const menuToggle = document.getElementById('menuToggle');
-const menuDropdown = document.getElementById('menuDropdown');
 
 const PLAY_ICON = `
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -247,58 +242,29 @@ searchInput.addEventListener('input', e => {
   render();
 });
 
-/* ---------- home <-> watch <-> about view ---------- */
+/* ---------- home <-> watch view ---------- */
 
 function showHome() {
   playerFrame.innerHTML = ''; // stop pemutaran saat keluar dari halaman tonton
   watchView.hidden = true;
-  aboutView.hidden = true;
   homeView.hidden = false;
 }
 
 function showWatch() {
   homeView.hidden = true;
-  aboutView.hidden = true;
   watchView.hidden = false;
   window.scrollTo(0, 0);
 }
 
-function showAbout() {
-  playerFrame.innerHTML = '';
-  homeView.hidden = true;
-  watchView.hidden = true;
-  aboutView.hidden = false;
-  window.scrollTo(0, 0);
-}
-
 backBtn.addEventListener('click', showHome);
-aboutBackBtn.addEventListener('click', showHome);
-aboutLink.addEventListener('click', () => {
-  closeMenu();
-  showAbout();
-});
 
-function openMenu() {
-  menuDropdown.hidden = false;
-  menuToggle.setAttribute('aria-expanded', 'true');
-}
-
-function closeMenu() {
-  menuDropdown.hidden = true;
-  menuToggle.setAttribute('aria-expanded', 'false');
-}
-
-menuToggle.addEventListener('click', e => {
-  e.stopPropagation();
-  menuDropdown.hidden ? openMenu() : closeMenu();
-});
-
-document.addEventListener('click', e => {
-  if (!menuDropdown.hidden && !e.target.closest('.menu-wrap')) closeMenu();
-});
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && !menuDropdown.hidden) closeMenu();
+homeLink.addEventListener('click', () => {
+  activeFilter = null;
+  searchQuery = '';
+  searchInput.value = '';
+  currentPage = 1;
+  showHome();
+  render();
 });
 
 homeLink.addEventListener('click', () => {
