@@ -50,10 +50,16 @@ button {
 }
 
 .site-header .mark {
+  display: inline-block;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
   font-family: 'Fraunces', serif;
   font-weight: 600;
   font-size: 22px;
   letter-spacing: 0.01em;
+  color: var(--text);
 }
 
 .site-header .mark span {
@@ -627,6 +633,88 @@ button {
 .copy-icon-btn:focus-visible {
   background: var(--accent);
   color: var(--accent-text);
+}
+
+/* ---------- recommendations ---------- */
+
+.player-recs {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.player-recs[hidden] {
+  display: none;
+}
+
+.recs-title {
+  display: block;
+  margin-bottom: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.recs-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.recs-row::-webkit-scrollbar {
+  display: none;
+}
+
+.rec-card {
+  flex: none;
+  width: 140px;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.rec-poster {
+  display: block;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.rec-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.rec-card:hover .rec-poster img,
+.rec-card:focus-visible .rec-poster img {
+  transform: scale(1.05);
+  filter: brightness(0.7);
+}
+
+.rec-title {
+  display: block;
+  margin-top: 6px;
+  font-family: 'Fraunces', serif;
+  font-size: 12.5px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rec-card:hover .rec-title,
+.rec-card:focus-visible .rec-title {
+  color: var(--accent);
 }
 
 @media (max-width: 600px) {
