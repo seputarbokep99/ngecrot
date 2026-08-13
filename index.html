@@ -46,7 +46,10 @@
   }
 
   header{
-    text-align: left;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
     padding: 40px 20px 24px;
     position: relative;
     border-bottom: 1px solid var(--line);
@@ -74,6 +77,21 @@
     color: var(--text-dim);
     font-size: 14px;
     letter-spacing: 0.01em;
+  }
+  .video-count{
+    flex-shrink: 0;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    padding: 7px 14px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  @media (max-width: 560px){
+    header{ flex-direction: column; align-items: flex-start; }
   }
 
   footer{
@@ -277,8 +295,11 @@
 <body>
 
 <header>
-  <h1 class="title">NGECR💦T.FUN</h1>
-  <p class="bio">Teman streaming terbaikmu.</p>
+  <div class="header-left">
+    <h1 class="title">NGECR💦T.FUN</h1>
+    <p class="bio">Teman streaming terbaikmu.</p>
+  </div>
+  <div class="video-count" id="videoCount">Jumlah video: 0</div>
 </header>
 
 <main>
@@ -300,6 +321,7 @@
 (function(){
   const grid = document.getElementById('grid');
   const paginationEl = document.getElementById('pagination');
+  const videoCountEl = document.getElementById('videoCount');
   const lightbox = document.getElementById('lightbox');
   const lbInner = document.getElementById('lbInner');
   let currentData = [];
@@ -443,6 +465,7 @@
     .then(data => {
       currentData = Array.isArray(data) ? data.filter(item => item && item.cover && item.url) : [];
       currentData = shuffle(currentData);
+      videoCountEl.textContent = 'Jumlah video: ' + currentData.length;
       goToPage(1);
     })
     .catch(err => {
