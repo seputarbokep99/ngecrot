@@ -1,7 +1,7 @@
 const PAGE_SIZE = 8; // jumlah video per halaman — ubah sesuai kebutuhan
 
 // kategori yang tampil sebagai baris di beranda — ganti sesuai kategori andalan kamu
-const FEATURED_CATEGORIES = ['Bit Tits', 'Creampie', 'Outdoor'];
+const FEATURED_CATEGORIES = ['Kartun', 'Romantis', 'Masak'];
 
 const homeView = document.getElementById('homeView');
 const watchView = document.getElementById('watchView');
@@ -18,15 +18,12 @@ const pagination = document.getElementById('pagination');
 
 const playerFrame = document.getElementById('playerFrame');
 const playerTitle = document.getElementById('playerTitle');
-const playerDesc = document.getElementById('playerDesc');
 const studioBlock = document.getElementById('studioBlock');
 const playerStudioTags = document.getElementById('playerStudioTags');
 const castBlock = document.getElementById('castBlock');
 const playerCast = document.getElementById('playerCast');
 const categoryBlock = document.getElementById('categoryBlock');
 const playerTags = document.getElementById('playerTags');
-const playerRecs = document.getElementById('playerRecs');
-const recsRow = document.getElementById('recsRow');
 
 const homeLink = document.getElementById('homeLink');
 const searchInput = document.getElementById('searchInput');
@@ -316,7 +313,6 @@ function openWatch(video) {
   }
 
   playerTitle.textContent = video.title;
-  playerDesc.textContent = video.deskripsi || '';
 
   studioBlock.hidden = !video.studio;
   if (video.studio) {
@@ -342,38 +338,7 @@ function openWatch(video) {
     btn.addEventListener('click', () => setFilter('kategori', btn.dataset.cat));
   });
 
-  renderRecommendations(video);
   showWatch();
-}
-
-function renderRecommendations(current) {
-  const currentCats = toArray(current.kategori);
-
-  // dahulukan video dengan kategori yang sama, sisanya isi dari video lain
-  const sameCategory = videos.filter(v => v !== current && toArray(v.kategori).some(c => currentCats.includes(c)));
-  const others = videos.filter(v => v !== current && !sameCategory.includes(v));
-  const recs = [...sameCategory, ...others].slice(0, 8);
-
-  if (recs.length === 0) {
-    playerRecs.hidden = true;
-    return;
-  }
-  playerRecs.hidden = false;
-
-  recsRow.innerHTML = '';
-  recs.forEach(video => {
-    const item = document.createElement('button');
-    item.type = 'button';
-    item.className = 'rec-card';
-    item.innerHTML = `
-      <span class="rec-poster">
-        <img src="${video.poster}" alt="" loading="lazy">
-      </span>
-      <span class="rec-title">${escapeHtml(video.title)}</span>
-    `;
-    item.addEventListener('click', () => openWatch(video));
-    recsRow.appendChild(item);
-  });
 }
 
 function escapeHtml(str) {
