@@ -532,7 +532,6 @@ img {
   font-size: 14px;
   line-height: 1.6;
   color: var(--text-dim);
-  max-width: 68ch;
 }
 
 .info-block {
