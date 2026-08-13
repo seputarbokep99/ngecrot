@@ -458,6 +458,526 @@
     paginationEl.appendChild(makeBtn('›', currentPage + 1, { disabled: currentPage === totalPages }));
   }
 
+  function goToPage(page, opts = {}){
+    currentPage = page;
+    render(currentData);
+    renderPagination(currentData);
+    const url = new URL(window.location);
+    url.searchParams.set('page', page);
+    history.replaceState(null, '', url);
+    if(!opts.skipScroll){
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  function getPageFromUrl(){
+    const params = new URLSearchParams(window.location.search);
+    const p = parseInt(params.get('page'), 10);
+    return (p && p > 0) ? p : 1;
+  }
+
+  grid.innerHTML = '<div class="loading">Memuat video…</div>';
+
+  fetch('data.json')
+    .then(res => {
+      if(!res.ok) throw new Error('gagal memuat data.json');
+      return res.json();
+    })
+    .then(data => {
+      currentData = Array.isArray(data) ? data.filter(item => item && item.cover && item.url) : [];
+      currentData = shuffle(currentData);
+      videoCountEl.textContent = 'Jumlah video: ' + currentData.length;
+      PER_PAGE = calcPerPage();
+      const totalPages = Math.max(1, Math.ceil(currentData.length / PER_PAGE));
+      const startPage = Math.min(getPageFromUrl(), totalPages);
+      goToPage(startPage, { skipScroll: true });
+
+      let resizeTimer = null;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          const newPerPage = calcPerPage();
+          if(newPerPage !== PER_PAGE){
+            PER_PAGE = newPerPage;
+            goToPage(1, { skipScroll: true });
+          }
+        }, 200);
+      });
+    })
+    .catch(err => {
+      grid.innerHTML = '<div class="empty">Gagal memuat data.json.<br>Jalankan file ini lewat local server (bukan dibuka langsung dari file explorer),<br>contoh: <code>python3 -m http.server</code>, lalu buka http://localhost:8000<br><br>Pastikan tiap item punya field "cover" dan "url".</div>';
+      console.error(err);
+    });
+})();
+</script>
+
+</body>
+</html>
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NGECR💦T.FUN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0a0d;
+    --bg-soft: #111114;
+    --line: #232326;
+    --text: #eeeae1;
+    --text-dim: #8a8a90;
+    --amber: #f5b942;
+    --amber-dim: #7a5c21;
+    --teal: #123c3c;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html,body{
+    margin:0; padding:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body{
+    min-height:100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* subtle film-grain vignette over whole page */
+  body::before{
+    content:"";
+    position: fixed; inset:0;
+    pointer-events:none;
+    z-index: 5;
+    background:
+      radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
+  }
+
+  header{
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 40px 20px 24px;
+    position: relative;
+    border-bottom: 1px solid var(--line);
+  }
+  .title{
+    margin: 0;
+    font-size: clamp(24px, 4vw, 34px);
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    color: var(--text);
+    position: relative;
+    display: inline-block;
+  }
+  .title::after{
+    content:"";
+    position:absolute;
+    left: 0; bottom: -6px;
+    width: 36px; height: 3px;
+    border-radius: 2px;
+    background: var(--amber);
+    box-shadow: 0 0 12px var(--amber);
+  }
+  .bio{
+    margin: 16px 0 0;
+    color: var(--text-dim);
+    font-size: 14px;
+    letter-spacing: 0.01em;
+  }
+  .video-count{
+    flex-shrink: 0;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    padding: 7px 14px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  @media (max-width: 560px){
+    header{ flex-direction: column; align-items: flex-start; }
+  }
+
+  footer{
+    text-align: center;
+    padding: 24px 20px 32px;
+    border-top: 1px solid var(--line);
+    margin-top: 20px;
+    flex-shrink: 0;
+  }
+  footer p{
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 13px;
+    letter-spacing: 0.02em;
+  }
+
+  main{
+    padding: 24px 20px 60px;
+    flex: 1 0 auto;
+  }
+
+  .grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  @media (max-width: 640px){
+    .grid{ grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+  }
+
+  .card{
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    aspect-ratio: 16 / 9;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(14px) scale(.97);
+    animation: rise .55s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  @keyframes rise{ to{ opacity:1; transform: translateY(0) scale(1); } }
+
+  .card:hover{
+    border-color: var(--amber-dim);
+  }
+  .card:hover .hover-ring{
+    opacity: 1;
+  }
+
+  .cover{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit: cover;
+    display:block;
+    transition: transform .35s cubic-bezier(.2,.7,.2,1);
+  }
+  .card:hover .cover{
+    transform: scale(1.035);
+  }
+
+  .frame{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    border:0;
+    display:block;
+  }
+
+  .hover-ring{
+    position:absolute; inset:0;
+    border-radius:14px;
+    box-shadow: inset 0 0 0 2px var(--amber);
+    opacity:0;
+    transition: opacity .2s ease;
+    pointer-events:none;
+  }
+
+  .card::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:0;
+    height:46%;
+    background: linear-gradient(to top, rgba(0,0,0,0.55), transparent);
+    pointer-events:none;
+  }
+
+  .card .play{
+    position:absolute;
+    left:10px; bottom:10px;
+    width:28px; height:28px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background: rgba(10,10,13,0.55);
+    backdrop-filter: blur(2px);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.12);
+    transition: transform .2s ease, background .2s ease;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .card:hover .play{
+    background: var(--amber);
+    transform: scale(1.08);
+  }
+  .play svg{
+    width:12px; height:12px;
+    margin-left: 1px;
+    filter: none;
+  }
+  .card:hover .play svg{
+    fill: #0a0a0d;
+  }
+
+  /* Lightbox */
+  #lightbox{
+    position: fixed; inset:0;
+    z-index: 50;
+    background: rgba(6,6,8,0.92);
+    backdrop-filter: blur(10px);
+    display:none;
+    align-items:center; justify-content:center;
+    padding: 40px 20px;
+  }
+  #lightbox.open{ display:flex; }
+  .lb-inner{
+    width: min(920px, 100%);
+    aspect-ratio: 16/9;
+    border-radius: 16px;
+    overflow:hidden;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,0.7), 0 0 0 1px var(--line);
+    position: relative;
+    background:#000;
+    transform: scale(.92);
+    opacity:0;
+    animation: pop .35s cubic-bezier(.2,.8,.2,1.1) forwards;
+  }
+  @keyframes pop{ to{ transform:scale(1); opacity:1; } }
+  .lb-inner iframe, .lb-inner video{
+    width:100%; height:100%; border:0; display:block;
+  }
+  #closeBtn{
+    position: absolute; top: -46px; right:0;
+    background: none; border:0;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: .04em;
+    cursor:pointer;
+    display:flex; align-items:center; gap:6px;
+  }
+  #closeBtn:hover{ color: var(--amber); }
+
+  .empty, .loading{
+    color: var(--text-dim);
+    text-align:center;
+    padding: 120px 20px;
+    font-size: 14px;
+    letter-spacing: .02em;
+  }
+
+  .pagination{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 8px;
+    padding: 20px 0 40px;
+  }
+  .pagination button{
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--bg-soft);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease, background .15s ease;
+  }
+  .pagination button:hover:not(:disabled){
+    border-color: var(--amber-dim);
+    color: var(--text);
+  }
+  .pagination button.active{
+    background: var(--amber);
+    border-color: var(--amber);
+    color: #0a0a0d;
+  }
+  .pagination button:disabled{
+    opacity: .35;
+    cursor: default;
+  }
+  .pagination .dots{
+    color: var(--text-dim);
+    padding: 0 4px;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1 class="title">NGECR💦T.FUN</h1>
+    <p class="bio">Teman streaming terbaikmu.</p>
+  </div>
+  <div class="video-count" id="videoCount">Jumlah video: 0</div>
+</header>
+
+<main>
+  <div id="grid" class="grid"></div>
+  <div id="pagination" class="pagination"></div>
+</main>
+
+<footer>
+  <p>NGECR💦T.FUN — Dibuat dengan ☕ dan ❤️ </p>
+</footer>
+
+<div id="lightbox">
+  <div class="lb-inner" id="lbInner">
+    <button id="closeBtn">✕ TUTUP</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const grid = document.getElementById('grid');
+  const paginationEl = document.getElementById('pagination');
+  const videoCountEl = document.getElementById('videoCount');
+  const lightbox = document.getElementById('lightbox');
+  const lbInner = document.getElementById('lbInner');
+  let currentData = [];
+  let currentPage = 1;
+  let PER_PAGE = 12;
+  const ROWS_PER_PAGE = 4;
+
+  function calcPerPage(){
+    const containerWidth = grid.clientWidth || window.innerWidth - 40;
+    const isMobile = window.innerWidth <= 640;
+    const minCol = isMobile ? 140 : 220;
+    const gap = isMobile ? 8 : 14;
+    const cols = Math.max(1, Math.floor((containerWidth + gap) / (minCol + gap)));
+    return cols * ROWS_PER_PAGE;
+  }
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function isDirectVideo(url){
+    return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
+  }
+
+  function makeEmbedEl(url, { autoplay, muted, controls }){
+    if(isDirectVideo(url)){
+      const v = document.createElement('video');
+      v.src = url;
+      v.className = 'frame';
+      v.muted = !!muted;
+      v.loop = true;
+      v.playsInline = true;
+      v.controls = !!controls;
+      if(autoplay){ v.autoplay = true; v.play().catch(()=>{}); }
+      return v;
+    }
+    const f = document.createElement('iframe');
+    const sep = url.includes('?') ? '&' : '?';
+    let src = url;
+    if(autoplay) src += sep + 'autoplay=1&mute=' + (muted ? '1':'0') + '&controls=' + (controls ? '1':'0') + '&loop=1&playsinline=1';
+    f.src = src;
+    f.className = 'frame';
+    f.allow = 'autoplay; encrypted-media; picture-in-picture';
+    f.allowFullscreen = true;
+    return f;
+  }
+
+  function openLightbox(url){
+    lbInner.querySelectorAll('.frame').forEach(el => el.remove());
+    const el = makeEmbedEl(url, { autoplay: true, muted: false, controls: true });
+    lbInner.appendChild(el);
+    lightbox.classList.add('open');
+  }
+
+  function closeLightbox(){
+    lightbox.classList.remove('open');
+    lbInner.querySelectorAll('.frame').forEach(el => el.remove());
+  }
+
+  document.getElementById('closeBtn').addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeLightbox(); });
+
+  function render(items){
+    grid.innerHTML = '';
+    if(!items.length){
+      grid.innerHTML = '<div class="empty">data.json kosong — tambahkan cover & url video.</div>';
+      return;
+    }
+    const start = (currentPage - 1) * PER_PAGE;
+    const pageItems = items.slice(start, start + PER_PAGE);
+
+    pageItems.forEach((item, i) => {
+      const { cover, url } = item;
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.animationDelay = (Math.min(i,24) * 25) + 'ms';
+
+      const img = document.createElement('img');
+      img.className = 'cover';
+      img.src = cover;
+      img.loading = 'lazy';
+      img.alt = '';
+      card.appendChild(img);
+
+      const ring = document.createElement('div');
+      ring.className = 'hover-ring';
+      card.appendChild(ring);
+
+      const play = document.createElement('div');
+      play.className = 'play';
+      play.innerHTML = '<svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>';
+      card.appendChild(play);
+
+      card.addEventListener('click', () => openLightbox(url));
+      grid.appendChild(card);
+    });
+  }
+
+  function renderPagination(items){
+    paginationEl.innerHTML = '';
+    const totalPages = Math.ceil(items.length / PER_PAGE);
+    if(totalPages <= 1) return;
+
+    function makeBtn(label, page, opts = {}){
+      const b = document.createElement('button');
+      b.textContent = label;
+      if(opts.active) b.classList.add('active');
+      if(opts.disabled) b.disabled = true;
+      b.addEventListener('click', () => goToPage(page));
+      return b;
+    }
+
+    paginationEl.appendChild(makeBtn('‹', currentPage - 1, { disabled: currentPage === 1 }));
+
+    const pages = new Set([1, totalPages, currentPage, currentPage - 1, currentPage + 1]);
+    let prev = 0;
+    [...pages].filter(p => p >= 1 && p <= totalPages).sort((a,b)=>a-b).forEach(p => {
+      if(prev && p - prev > 1){
+        const dots = document.createElement('span');
+        dots.className = 'dots';
+        dots.textContent = '···';
+        paginationEl.appendChild(dots);
+      }
+      paginationEl.appendChild(makeBtn(String(p), p, { active: p === currentPage }));
+      prev = p;
+    });
+
+    paginationEl.appendChild(makeBtn('›', currentPage + 1, { disabled: currentPage === totalPages }));
+  }
+
   function goToPage(page){
     currentPage = page;
     render(currentData);
