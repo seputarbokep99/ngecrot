@@ -62,12 +62,6 @@ button {
   color: var(--text);
 }
 
-.site-header .mark span {
-  color: var(--accent);
-  font-style: italic;
-  font-weight: 500;
-}
-
 .bio {
   font-size: 13px;
   color: var(--text-dim);
