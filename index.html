@@ -63,11 +63,20 @@
     position: relative;
     display: inline-block;
   }
+  .title a{
+    color: inherit;
+    text-decoration: none;
+    display: inline-block;
+    transition: color .15s ease;
+  }
+  .title a:hover{
+    color: var(--amber);
+  }
   .title::after{
     content:"";
     position:absolute;
     left: 0; bottom: -6px;
-    width: 36px; height: 3px;
+    width: 100%; height: 3px;
     border-radius: 2px;
     background: var(--amber);
     box-shadow: 0 0 12px var(--amber);
@@ -296,7 +305,7 @@
 
 <header>
   <div class="header-left">
-    <h1 class="title">NGECR💦T.FUN</h1>
+    <h1 class="title"><a href="#" id="titleLink">NGECR💦T.FUN</a></h1>
     <p class="bio">Teman streaming terbaikmu.</p>
   </div>
   <div class="video-count" id="videoCount">Jumlah video: 0</div>
@@ -337,6 +346,13 @@
     const cols = Math.max(1, Math.floor((containerWidth + gap) / (minCol + gap)));
     return cols * ROWS_PER_PAGE;
   }
+
+  document.getElementById('titleLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    if(currentData.length){
+      goToPage(1);
+    }
+  });
 
   function shuffle(arr){
     const a = arr.slice();
