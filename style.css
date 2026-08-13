@@ -232,8 +232,8 @@ img {
 
 .grid {
   display: grid;
-  /* Disesuaikan untuk poster portrait 538x800 */
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  /* Disesuaikan untuk poster landscape 800x538 */
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
   padding: 36px var(--page-pad) 32px;
 }
@@ -266,8 +266,8 @@ img {
 
 .card-poster {
   position: relative;
-  /* Diubah menjadi rasio portrait 538:800 */
-  aspect-ratio: 538 / 800;
+  /* Rasio landscape 800:538 */
+  aspect-ratio: 800 / 538;
   overflow: hidden;
 }
 
@@ -758,7 +758,7 @@ img {
   }
 
   .grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   }
 
   .watch-body {
@@ -802,8 +802,7 @@ img {
   }
 
   .grid {
-    /* Disesuaikan untuk poster portrait di mobile */
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 14px;
     padding: 24px var(--page-pad) 8px;
   }
@@ -866,7 +865,7 @@ img {
    ========================================================== */
 @media (max-width: 380px) {
   .grid {
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 10px;
   }
 
