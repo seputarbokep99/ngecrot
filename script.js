@@ -20,6 +20,7 @@ const downloadCmd = document.getElementById('downloadCmd');
 const playerRecs = document.getElementById('playerRecs');
 const recsRow = document.getElementById('recsRow');
 const homeLink = document.getElementById('homeLink');
+const searchInput = document.getElementById('searchInput');
 const closeBtn = document.getElementById('closeBtn');
 
 const PLAY_ICON = `
@@ -51,6 +52,7 @@ function toDownloadUrl(url) {
 
 let videos = [];
 let activeFilter = null; // { type: 'kategori' | 'pemeran', value: string }
+let searchQuery = '';
 let currentPage = 1;
 
 async function init() {
@@ -73,8 +75,23 @@ function toArray(k) {
 }
 
 function getFiltered() {
-  if (!activeFilter) return videos;
-  return videos.filter(v => toArray(v[activeFilter.type]).includes(activeFilter.value));
+  let list = videos;
+
+  if (activeFilter) {
+    list = list.filter(v => toArray(v[activeFilter.type]).includes(activeFilter.value));
+  }
+
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    list = list.filter(v => {
+      const title = (v.title || '').toLowerCase();
+      const cats = toArray(v.kategori).join(' ').toLowerCase();
+      const cast = toArray(v.pemeran).join(' ').toLowerCase();
+      return title.includes(q) || cats.includes(q) || cast.includes(q);
+    });
+  }
+
+  return list;
 }
 
 function render() {
@@ -128,7 +145,8 @@ function renderGrid(items, totalCount) {
   grid.innerHTML = '';
 
   if (totalCount === 0) {
-    grid.innerHTML = `<p class="grid-empty">Tidak ada video untuk kategori ini.</p>`;
+    const msg = searchQuery ? `Tidak ada hasil untuk "${escapeHtml(searchQuery)}".` : 'Tidak ada video untuk kategori ini.';
+    grid.innerHTML = `<p class="grid-empty">${msg}</p>`;
     return;
   }
 
@@ -310,9 +328,17 @@ downloadBtn.addEventListener('click', async () => {
   setTimeout(() => { downloadBtn.textContent = '⧉'; }, 1500);
 });
 
+searchInput.addEventListener('input', e => {
+  searchQuery = e.target.value.trim();
+  currentPage = 1;
+  render();
+});
+
 homeLink.addEventListener('click', () => {
   closePlayer();
   activeFilter = null;
+  searchQuery = '';
+  searchInput.value = '';
   currentPage = 1;
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
