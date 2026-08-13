@@ -1,19 +1,20 @@
 const PAGE_SIZE = 8; // jumlah video per halaman — ubah sesuai kebutuhan
 
-// kategori yang ditampilkan duluan di beranda — ganti sesuai kategori andalan kamu
-const FEATURED_CATEGORIES = ['OnlyFans', 'Big Tits', 'Creampie'];
+// kategori yang tampil sebagai baris di beranda — ganti sesuai kategori andalan kamu
+const FEATURED_CATEGORIES = ['Bit Tits', 'Creampie', 'Outdoor'];
 
 const homeView = document.getElementById('homeView');
 const watchView = document.getElementById('watchView');
 const backBtn = document.getElementById('backBtn');
 
-const grid = document.getElementById('grid');
-const pagination = document.getElementById('pagination');
-const categoryNav = document.getElementById('categoryNav');
 const filterBar = document.getElementById('filterBar');
 const filterLabel = document.getElementById('filterLabel');
 const filterValue = document.getElementById('filterValue');
 const filterClear = document.getElementById('filterClear');
+
+const categoryRows = document.getElementById('categoryRows');
+const grid = document.getElementById('grid');
+const pagination = document.getElementById('pagination');
 
 const playerFrame = document.getElementById('playerFrame');
 const playerTitle = document.getElementById('playerTitle');
@@ -43,7 +44,6 @@ let videos = [];
 let activeFilter = null; // { type: 'kategori' | 'pemeran' | 'studio', value: string }
 let searchQuery = '';
 let currentPage = 1;
-let categoryNavExpanded = false;
 
 async function init() {
   try {
@@ -62,6 +62,17 @@ function toArray(k) {
   if (Array.isArray(k)) return k.filter(Boolean);
   if (k) return [k];
   return [];
+}
+
+function getAllCategories() {
+  const set = new Set();
+  videos.forEach(v => toArray(v.kategori).forEach(cat => set.add(cat)));
+  return Array.from(set);
+}
+
+function getFeaturedCategoriesPresent() {
+  const all = getAllCategories();
+  return FEATURED_CATEGORIES.filter(cat => all.includes(cat));
 }
 
 function getFiltered() {
@@ -84,7 +95,25 @@ function getFiltered() {
   return list;
 }
 
+/* ---------- render utama: baris kategori (jelajah) vs grid (hasil filter/cari) ---------- */
+
 function render() {
+  renderFilterBar();
+
+  const browseMode = !activeFilter && !searchQuery && getFeaturedCategoriesPresent().length > 0;
+
+  if (browseMode) {
+    categoryRows.hidden = false;
+    grid.hidden = true;
+    pagination.hidden = true;
+    renderCategoryRows();
+    return;
+  }
+
+  categoryRows.hidden = true;
+  grid.hidden = false;
+  pagination.hidden = false;
+
   const filtered = getFiltered();
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   if (currentPage > totalPages) currentPage = totalPages;
@@ -93,51 +122,51 @@ function render() {
   const start = (currentPage - 1) * PAGE_SIZE;
   const pageItems = filtered.slice(start, start + PAGE_SIZE);
 
-  renderCategoryNav();
-  renderFilterBar();
   renderGrid(pageItems, filtered.length);
   renderPagination(totalPages);
 }
 
-function getAllCategories() {
-  const set = new Set();
-  videos.forEach(v => toArray(v.kategori).forEach(cat => set.add(cat)));
-  return Array.from(set);
-}
+/* ---------- baris kategori (beranda) ---------- */
 
-function renderCategoryNav() {
-  const allCategories = getAllCategories();
-  if (allCategories.length === 0) {
-    categoryNav.hidden = true;
-    return;
-  }
-  categoryNav.hidden = false;
+function renderCategoryRows() {
+  categoryRows.innerHTML = '';
 
-  const featured = FEATURED_CATEGORIES.filter(cat => allCategories.includes(cat));
-  const rest = allCategories.filter(cat => !featured.includes(cat));
-  const shown = categoryNavExpanded ? [...featured, ...rest] : featured;
+  getFeaturedCategoriesPresent().forEach(cat => {
+    const items = videos.filter(v => toArray(v.kategori).includes(cat));
+    if (items.length === 0) return;
 
-  const chipHtml = cat =>
-    `<button type="button" class="chip${activeFilter && activeFilter.type === 'kategori' && activeFilter.value === cat ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`;
+    const row = document.createElement('section');
+    row.className = 'category-row';
+    row.innerHTML = `
+      <div class="row-header">
+        <span class="chip row-label">${escapeHtml(cat)}</span>
+        <button type="button" class="chip row-more">Video Lainnya</button>
+      </div>
+      <div class="row-scroll"></div>
+    `;
 
-  let html = shown.map(chipHtml).join('');
-  if (rest.length > 0) {
-    html += `<button type="button" class="chip chip-more" id="moreCategoriesBtn">${categoryNavExpanded ? 'Lebih Sedikit' : 'Kategori Lainnya'}</button>`;
-  }
-  categoryNav.innerHTML = html;
-
-  categoryNav.querySelectorAll('.chip:not(.chip-more)').forEach(btn => {
-    btn.addEventListener('click', () => setFilter('kategori', btn.dataset.cat));
-  });
-
-  const moreBtn = document.getElementById('moreCategoriesBtn');
-  if (moreBtn) {
-    moreBtn.addEventListener('click', () => {
-      categoryNavExpanded = !categoryNavExpanded;
-      renderCategoryNav();
+    const scroll = row.querySelector('.row-scroll');
+    items.slice(0, 14).forEach(video => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'row-card';
+      item.innerHTML = `
+        <span class="row-poster">
+          <img src="${video.poster}" alt="" loading="lazy">
+          <span class="play-mark">${PLAY_ICON}</span>
+        </span>
+        <span class="row-title">${escapeHtml(video.title)}</span>
+      `;
+      item.addEventListener('click', () => openWatch(video));
+      scroll.appendChild(item);
     });
-  }
+
+    row.querySelector('.row-more').addEventListener('click', () => setFilter('kategori', cat));
+    categoryRows.appendChild(row);
+  });
 }
+
+/* ---------- filter bar ---------- */
 
 function renderFilterBar() {
   if (activeFilter) {
@@ -149,6 +178,8 @@ function renderFilterBar() {
     filterBar.hidden = true;
   }
 }
+
+/* ---------- grid hasil filter/cari ---------- */
 
 function renderGrid(items, totalCount) {
   grid.innerHTML = '';
@@ -227,6 +258,8 @@ function goToPage(page) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+/* ---------- filter (dipicu dari tombol "Video Lainnya", tag kategori/pemeran/studio) ---------- */
+
 function setFilter(type, value) {
   activeFilter = (activeFilter && activeFilter.type === type && activeFilter.value === value)
     ? null
@@ -263,15 +296,6 @@ function showWatch() {
 }
 
 backBtn.addEventListener('click', showHome);
-
-homeLink.addEventListener('click', () => {
-  activeFilter = null;
-  searchQuery = '';
-  searchInput.value = '';
-  currentPage = 1;
-  showHome();
-  render();
-});
 
 homeLink.addEventListener('click', () => {
   activeFilter = null;
