@@ -535,87 +535,62 @@ img {
   max-width: 68ch;
 }
 
-.player-studio {
-  margin-top: 12px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px;
-  letter-spacing: 0.03em;
-  color: var(--text-dim);
-}
-
-.player-studio[hidden] {
-  display: none;
-}
-
-.player-studio .label {
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin-right: 4px;
-}
-
-.player-meta-row {
+.info-block {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 16px;
-  margin-top: 18px;
-  padding-top: 16px;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 14px;
   border-top: 1px solid var(--border);
 }
 
-.player-cast-wrap {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.player-cast-wrap[hidden] {
+.info-block[hidden] {
   display: none;
 }
 
-.cast-label {
+.info-label {
+  flex: none;
+  width: 82px;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 11px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--text-dim);
-  flex: none;
 }
 
-.player-cast {
+.info-tags {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 6px;
 }
 
-.cast-tag {
+.info-tag {
   color: var(--accent-cast);
   border-color: rgba(224, 194, 46, 0.35);
 }
 
-.cast-tag:hover,
-.cast-tag:focus-visible {
+span.info-tag {
+  cursor: default;
+}
+
+button.info-tag {
+  cursor: pointer;
+}
+
+button.info-tag:hover,
+button.info-tag:focus-visible {
   border-color: var(--accent-cast);
   color: var(--accent-cast);
 }
 
-.cast-tag.active {
+.info-tag.active {
   background: var(--accent-cast);
   border-color: var(--accent-cast);
   color: var(--accent-text);
   font-weight: 500;
-}
-
-.player-tags {
-  flex: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  justify-content: flex-end;
 }
 
 /* ---------- unduh ---------- */
@@ -869,13 +844,13 @@ img {
     font-size: 20px;
   }
 
-  .player-meta-row {
+  .info-block {
     flex-direction: column;
-    align-items: flex-start;
+    gap: 6px;
   }
 
-  .player-tags {
-    justify-content: flex-start;
+  .info-label {
+    width: auto;
   }
 
   .rec-card {
