@@ -51,9 +51,8 @@ img { display:block; }
   min-height:auto; padding:80px 24px 20px; justify-content:flex-start;
 }
 
-/* --- PERBAIKAN DI SINI --- */
+/* --- JUDUL 1 BARIS --- */
 .hero-title {
-  /* Gunakan clamp agar font mengecil otomatis di layar kecil tapi tetap 1 baris */
   font-size: clamp(1.5rem, 5vw, 2.5rem); 
   font-weight: 800; 
   margin-bottom: 28px;
@@ -98,19 +97,27 @@ img { display:block; }
 .search-clear:hover { background:var(--bg-hover); color:var(--text-primary); }
 .search-clear.visible { display:flex; }
 
-/* === POPULAR TAGS === */
+/* === POPULAR TAGS (MAX 6) === */
 .popular-tags {
-  margin-top:20px; display:flex; flex-wrap:wrap; gap:8px;
+  margin-top:24px; display:flex; flex-wrap:wrap; gap:8px;
   justify-content:center; max-width:580px;
   transition:opacity 0.3s ease, height 0.3s ease;
 }
 .hero.collapsed .popular-tags { opacity:0; height:0; margin:0; overflow:hidden; pointer-events:none; }
 
-.tag-label { font-size:0.7rem; color:var(--text-muted); width:100%; text-align:center; margin-bottom:4px; }
+.tag-label { 
+  font-size:0.75rem; 
+  color:var(--text-muted); 
+  width:100%; 
+  text-align:center; 
+  margin-bottom:6px; 
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
 .chip {
-  display:inline-block; padding:5px 12px; border-radius:20px;
+  display:inline-block; padding:6px 14px; border-radius:20px;
   background:var(--chip-bg); color:var(--text-secondary);
-  font-size:0.75rem; font-weight:500; border:1px solid transparent;
+  font-size:0.8rem; font-weight:500; border:1px solid transparent;
   cursor:pointer; transition:all var(--transition); white-space:nowrap;
 }
 .chip:hover { background:var(--chip-hover); color:var(--text-primary); border-color:var(--border); }
@@ -196,10 +203,7 @@ img { display:block; }
   .header { padding:12px 16px; }
   .hero { padding:0 16px; }
   .hero.collapsed { padding:70px 16px 16px; }
-  
-  /* Di HP font akan mengecil otomatis berkat clamp(), tapi kita pastikan margin pas */
   .hero-title { margin-bottom: 20px; } 
-  
   .search-input { height:46px; font-size:0.9rem; }
   .hero.collapsed .search-input { height:38px; font-size:0.8rem; }
   .results-section { padding:0 16px 30px; }
@@ -217,7 +221,6 @@ img { display:block; }
 
 <!-- HERO + SEARCH -->
 <section class="hero" id="hero">
-  <!-- Hapus <br> agar benar-benar mengandalkan CSS white-space: nowrap -->
   <h1 class="hero-title">Apa yang ingin kamu tonton?</h1>
   
   <div class="search-wrap">
@@ -225,6 +228,8 @@ img { display:block; }
     <input type="text" class="search-input" id="searchInput" placeholder="Cari judul, studio, pemeran...">
     <button class="search-clear" id="searchClear" onclick="clearSearch()">&times;</button>
   </div>
+  
+  <!-- Container Tag Populer -->
   <div class="popular-tags" id="popularTags">
     <div class="tag-label">Populer</div>
   </div>
@@ -300,20 +305,35 @@ function expandHero() {
   searchClear.classList.remove('visible');
 }
 
-// --- POPULAR TAGS GENERATION ---
+// --- POPULAR TAGS GENERATION (LIMIT 6) ---
 function buildPopularTags() {
   const tagMap = {};
+  
+  // Hitung frekuensi tag dari data
   allVideos.forEach(v => {
     if (v.studio) tagMap['studio:'+v.studio] = (tagMap['studio:'+v.studio]||0)+1;
     (v.kategori||[]).forEach(k => { tagMap['kategori:'+k] = (tagMap['kategori:'+k]||0)+1; });
   });
-  const sorted = Object.entries(tagMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  
+  // Urutkan dari yang paling sering muncul
+  const sorted = Object.entries(tagMap).sort((a,b)=>b[1]-a[1]);
+  
+  // AMBIL MAKSIMAL 6 SAJA
+  const top6 = sorted.slice(0, 6); 
   
   let html = '<div class="tag-label">Populer</div>';
-  sorted.forEach(([key]) => {
+  
+  // Jika tidak ada tag sama sekali, sembunyikan label
+  if(top6.length === 0) {
+     popularTags.style.display = 'none';
+     return;
+  }
+
+  top6.forEach(([key]) => {
     const [type, val] = key.split(':');
     html += `<span class="chip" onclick="applyFilter('${escHtml(type)}','${escHtml(val)}')">${escHtml(val)}</span>`;
   });
+  
   popularTags.innerHTML = html;
 }
 
@@ -469,7 +489,7 @@ async function init() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     allVideos = data.videos || [];
-    buildPopularTags();
+    buildPopularTags(); // Ini akan render max 6 tag
   } catch(e) {
     grid.innerHTML = `<div class="state-msg">Gagal memuat data.json<small>${escHtml(e.message)}</small></div>`;
     resultsSection.classList.add('active');
