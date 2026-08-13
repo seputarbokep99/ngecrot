@@ -1,0 +1,876 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #14181c;
+  --bg-elevated: #1b2025;
+  --bg-panel: #1c2126;
+  --bg-hover: #22282e;
+  --text: #ece8e0;
+  --text-dim: #8b9199;
+  --text-faint: #565d64;
+  --accent: #e8a33d;
+  --accent-cast: #e0c22e;
+  --accent-text: #1c1509;
+  --border: #262b31;
+  --radius: 4px;
+  --page-pad: 48px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+button {
+  font-family: inherit;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* ---------- header ---------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: "brand search";
+  align-items: center;
+  gap: 20px;
+  padding: 20px var(--page-pad);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  grid-area: brand;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.site-header .mark {
+  display: inline-block;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: 0.01em;
+  color: var(--accent);
+}
+
+.bio {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.search-mid {
+  grid-area: search;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.search-box {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-faint);
+  font-size: 15px;
+  pointer-events: none;
+}
+
+.search-box input {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 10px 16px 10px 38px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  transition: border-color 0.15s ease;
+}
+
+.search-box input::placeholder {
+  color: var(--text-faint);
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.search-box input::-webkit-search-cancel-button {
+  filter: invert(60%);
+  cursor: pointer;
+}
+
+/* ---------- category nav ---------- */
+
+.category-nav {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 8px;
+  padding: 18px var(--page-pad);
+  border-bottom: 1px solid var(--border);
+  scrollbar-width: none;
+}
+
+.category-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.category-nav[hidden] {
+  display: none;
+}
+
+.chip {
+  flex: none;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 7px 16px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.chip:hover,
+.chip:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+  font-weight: 500;
+}
+
+/* ---------- filter bar ---------- */
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 16px var(--page-pad);
+  border-bottom: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+}
+
+.filter-bar[hidden] {
+  display: none;
+}
+
+.filter-label {
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+
+.filter-value {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.filter-clear {
+  margin-left: 6px;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  border-radius: var(--radius);
+  padding: 4px 9px;
+  font-family: inherit;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.filter-clear:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ---------- grid ---------- */
+
+.grid {
+  display: grid;
+  /* Disesuaikan untuk poster portrait 538x800 */
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+  padding: 36px var(--page-pad) 32px;
+}
+
+.grid-empty {
+  grid-column: 1 / -1;
+  padding: 40px 0;
+  color: var(--text-faint);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.card {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.card-poster {
+  position: relative;
+  /* Diubah menjadi rasio portrait 538:800 */
+  aspect-ratio: 538 / 800;
+  overflow: hidden;
+}
+
+.poster-open {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+}
+
+.poster-open img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease, filter 0.35s ease;
+}
+
+.poster-open::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(20, 24, 28, 0.7) 0%, rgba(20, 24, 28, 0) 55%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.card:hover .poster-open::after,
+.poster-open:focus-visible::after {
+  opacity: 1;
+}
+
+.poster-open .play-mark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.poster-open .play-mark svg {
+  width: 32px;
+  height: 32px;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+}
+
+.card:hover .poster-open img,
+.poster-open:focus-visible img {
+  transform: scale(1.04);
+  filter: brightness(0.5);
+}
+
+.card:hover .poster-open .play-mark,
+.poster-open:focus-visible .play-mark {
+  opacity: 1;
+}
+
+.poster-open:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.card-meta {
+  min-width: 0;
+  padding: 10px 12px 12px;
+}
+
+.card-title-btn {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.card-title {
+  display: block;
+  min-width: 0;
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--text);
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.card-title-btn:hover .card-title,
+.card-title-btn:focus-visible .card-title {
+  color: var(--accent);
+}
+
+.card-title-btn:focus-visible {
+  outline: none;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 5px;
+  margin-top: 8px;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.card-tags::-webkit-scrollbar {
+  display: none;
+}
+
+.card-tags .tag {
+  flex: none;
+}
+
+.tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: rgba(20, 24, 28, 0.65);
+  border: 1px solid rgba(236, 232, 224, 0.18);
+  border-radius: 2px;
+  padding: 3px 7px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.tag:hover,
+.tag:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.tag.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+  font-weight: 500;
+}
+
+/* ---------- pagination ---------- */
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 24px 56px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.05em;
+}
+
+.page-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  border-radius: var(--radius);
+  padding: 8px 16px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.page-btn:hover:not(:disabled),
+.page-btn:focus-visible:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.page-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.page-status {
+  color: var(--text-faint);
+}
+
+.page-status .current {
+  color: var(--accent);
+}
+
+/* ---------- halaman tonton (watch view) ---------- */
+
+#watchView[hidden],
+#homeView[hidden] {
+  display: none;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 24px var(--page-pad) 0;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-dim);
+  padding: 8px 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.back-btn:hover,
+.back-btn:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.watch-body {
+  max-width: 960px;
+  margin: 20px auto 60px;
+  padding: 0 var(--page-pad);
+}
+
+.player-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.player-frame iframe,
+.player-frame video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+}
+
+.player-info {
+  padding-top: 22px;
+}
+
+.player-info h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.3;
+}
+
+.player-desc {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-dim);
+  max-width: 68ch;
+}
+
+.player-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.player-cast-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.player-cast-wrap[hidden] {
+  display: none;
+}
+
+.cast-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  flex: none;
+}
+
+.player-cast {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.cast-tag {
+  color: var(--accent-cast);
+  border-color: rgba(224, 194, 46, 0.35);
+}
+
+.cast-tag:hover,
+.cast-tag:focus-visible {
+  border-color: var(--accent-cast);
+  color: var(--accent-cast);
+}
+
+.cast-tag.active {
+  background: var(--accent-cast);
+  border-color: var(--accent-cast);
+  color: var(--accent-text);
+  font-weight: 500;
+}
+
+.player-tags {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+/* ---------- unduh ---------- */
+
+.download-wrap {
+  margin-top: 20px;
+}
+
+.download-title {
+  display: block;
+  margin-bottom: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.download-cmd-box {
+  display: flex;
+  align-items: stretch;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.download-cmd {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  color: var(--text-dim);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.copy-icon-btn {
+  flex: none;
+  width: 40px;
+  border: none;
+  border-left: 1px solid var(--border);
+  background: var(--bg-panel);
+  color: var(--accent);
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.copy-icon-btn:hover,
+.copy-icon-btn:focus-visible {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+/* ---------- rekomendasi ---------- */
+
+.player-recs {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.player-recs[hidden] {
+  display: none;
+}
+
+.recs-title {
+  display: block;
+  margin-bottom: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.recs-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.recs-row::-webkit-scrollbar {
+  display: none;
+}
+
+.rec-card {
+  flex: none;
+  width: 150px;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.rec-poster {
+  display: block;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.rec-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.rec-card:hover .rec-poster img,
+.rec-card:focus-visible .rec-poster img {
+  transform: scale(1.05);
+  filter: brightness(0.7);
+}
+
+.rec-title {
+  display: block;
+  margin-top: 6px;
+  font-family: 'Fraunces', serif;
+  font-size: 12.5px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rec-card:hover .rec-title,
+.rec-card:focus-visible .rec-title {
+  color: var(--accent);
+}
+
+/* ---------- footer ---------- */
+
+.site-footer {
+  text-align: center;
+  padding: 28px 20px 40px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.03em;
+  color: var(--text-faint);
+}
+
+/* ==========================================================
+   RESPONSIVE — tablet (≤ 900px)
+   ========================================================== */
+@media (max-width: 900px) {
+  :root {
+    --page-pad: 32px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .watch-body {
+    max-width: none;
+  }
+}
+
+/* ==========================================================
+   RESPONSIVE — mobile (≤ 640px)
+   ========================================================== */
+@media (max-width: 640px) {
+  :root {
+    --page-pad: 18px;
+  }
+
+  .site-header {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "brand"
+      "search";
+    row-gap: 14px;
+    padding: 18px var(--page-pad) 16px;
+  }
+
+  .search-box {
+    max-width: none;
+  }
+
+  .category-nav {
+    padding: 14px var(--page-pad);
+    gap: 6px;
+  }
+
+  .chip {
+    padding: 6px 13px;
+    font-size: 11px;
+  }
+
+  .filter-bar {
+    padding: 12px var(--page-pad);
+  }
+
+  .grid {
+    /* Disesuaikan untuk poster portrait di mobile */
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 14px;
+    padding: 24px var(--page-pad) 8px;
+  }
+
+  .card-meta {
+    padding: 8px 10px 10px;
+  }
+
+  .card-title {
+    font-size: 13.5px;
+  }
+
+  .pagination {
+    padding: 8px 16px 40px;
+    gap: 12px;
+  }
+
+  .page-btn {
+    padding: 8px 12px;
+    font-size: 10.5px;
+  }
+
+  .back-btn {
+    margin: 18px var(--page-pad) 0;
+  }
+
+  .watch-body {
+    margin-top: 16px;
+    padding: 0 var(--page-pad);
+  }
+
+  .player-frame {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    margin: 0 calc(-1 * var(--page-pad));
+    width: calc(100% + var(--page-pad) * 2);
+  }
+
+  .player-info h1 {
+    font-size: 20px;
+  }
+
+  .player-meta-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .player-tags {
+    justify-content: flex-start;
+  }
+
+  .rec-card {
+    width: 120px;
+  }
+}
+
+/* ==========================================================
+   RESPONSIVE — very small phones (≤ 380px)
+   ========================================================== */
+@media (max-width: 380px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
+  }
+
+  .site-header .mark {
+    font-size: 19px;
+  }
+}
