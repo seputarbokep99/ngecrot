@@ -49,15 +49,17 @@ img {
   top: 0;
   z-index: 50;
   background: var(--bg);
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: "brand search menu";
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 24px var(--page-pad);
+  gap: 20px;
+  padding: 20px var(--page-pad);
   border-bottom: 1px solid var(--border);
 }
 
 .brand {
+  grid-area: brand;
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -84,8 +86,8 @@ img {
 }
 
 .menu-wrap {
+  grid-area: menu;
   position: relative;
-  flex: none;
 }
 
 .menu-toggle {
@@ -165,18 +167,26 @@ img {
   color: var(--accent);
 }
 
+.search-mid {
+  grid-area: search;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
 .search-box {
   position: relative;
-  flex: none;
+  width: 100%;
+  max-width: 380px;
 }
 
 .search-icon {
   position: absolute;
-  left: 12px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-faint);
-  font-size: 14px;
+  font-size: 15px;
   pointer-events: none;
 }
 
@@ -184,11 +194,11 @@ img {
   width: 100%;
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 9px 12px 9px 32px;
+  border-radius: 999px;
+  padding: 10px 16px 10px 38px;
   color: var(--text);
   font-family: 'Inter', sans-serif;
-  font-size: 13px;
+  font-size: 13.5px;
   transition: border-color 0.15s ease;
 }
 
@@ -204,29 +214,6 @@ img {
 .search-box input::-webkit-search-cancel-button {
   filter: invert(60%);
   cursor: pointer;
-}
-
-/* ---------- search row ---------- */
-
-.search-row {
-  padding: 4px var(--page-pad) 26px;
-  border-bottom: 1px solid var(--border);
-}
-
-.search-row .search-box {
-  max-width: 480px;
-  margin: 0 auto;
-}
-
-.search-row .search-icon {
-  left: 16px;
-  font-size: 16px;
-}
-
-.search-row input {
-  padding: 13px 16px 13px 40px;
-  font-size: 14px;
-  border-radius: 999px;
 }
 
 /* ---------- category nav ---------- */
@@ -902,15 +889,15 @@ img {
   }
 
   .site-header {
-    flex-wrap: wrap;
-    padding: 20px var(--page-pad) 16px;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "brand menu"
+      "search search";
+    row-gap: 14px;
+    padding: 18px var(--page-pad) 16px;
   }
 
-  .search-row {
-    padding: 4px var(--page-pad) 18px;
-  }
-
-  .search-row .search-box {
+  .search-box {
     max-width: none;
   }
 
