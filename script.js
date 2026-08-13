@@ -15,9 +15,11 @@ const filterClear = document.getElementById('filterClear');
 const playerFrame = document.getElementById('playerFrame');
 const playerTitle = document.getElementById('playerTitle');
 const playerDesc = document.getElementById('playerDesc');
-const playerStudio = document.getElementById('playerStudio');
-const playerCastWrap = document.getElementById('playerCastWrap');
+const studioBlock = document.getElementById('studioBlock');
+const playerStudioTags = document.getElementById('playerStudioTags');
+const castBlock = document.getElementById('castBlock');
 const playerCast = document.getElementById('playerCast');
+const categoryBlock = document.getElementById('categoryBlock');
 const playerTags = document.getElementById('playerTags');
 const downloadBtn = document.getElementById('downloadBtn');
 const downloadCmd = document.getElementById('downloadCmd');
@@ -289,25 +291,24 @@ function openWatch(video) {
   playerTitle.textContent = video.title;
   playerDesc.textContent = video.deskripsi || '';
 
+  studioBlock.hidden = !video.studio;
   if (video.studio) {
-    playerStudio.hidden = false;
-    playerStudio.innerHTML = `<span class="label">Studio:</span> ${escapeHtml(video.studio)}`;
-  } else {
-    playerStudio.hidden = true;
+    playerStudioTags.innerHTML = `<span class="tag info-tag">${escapeHtml(video.studio)}</span>`;
   }
 
   const cast = toArray(video.pemeran);
-  playerCastWrap.hidden = cast.length === 0;
+  castBlock.hidden = cast.length === 0;
   playerCast.innerHTML = cast.map(name =>
-    `<button type="button" class="tag cast-tag${activeFilter && activeFilter.type === 'pemeran' && activeFilter.value === name ? ' active' : ''}" data-name="${escapeHtml(name)}">${escapeHtml(name)}</button>`
+    `<button type="button" class="tag info-tag${activeFilter && activeFilter.type === 'pemeran' && activeFilter.value === name ? ' active' : ''}" data-name="${escapeHtml(name)}">${escapeHtml(name)}</button>`
   ).join('');
-  playerCast.querySelectorAll('.cast-tag').forEach(btn => {
+  playerCast.querySelectorAll('.tag').forEach(btn => {
     btn.addEventListener('click', () => setFilter('pemeran', btn.dataset.name));
   });
 
   const categories = toArray(video.kategori);
+  categoryBlock.hidden = categories.length === 0;
   playerTags.innerHTML = categories.map(cat =>
-    `<button type="button" class="tag${activeFilter && activeFilter.type === 'kategori' && activeFilter.value === cat ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`
+    `<button type="button" class="tag info-tag${activeFilter && activeFilter.type === 'kategori' && activeFilter.value === cat ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`
   ).join('');
   playerTags.querySelectorAll('.tag').forEach(btn => {
     btn.addEventListener('click', () => setFilter('kategori', btn.dataset.cat));
