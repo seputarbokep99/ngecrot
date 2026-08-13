@@ -19,35 +19,41 @@
     </div>
   </header>
 
-  <nav class="category-nav" id="categoryNav" aria-label="Jelajah kategori">
-    <!-- diisi otomatis dari data.json -->
-  </nav>
+  <!-- ======= HALAMAN BERANDA ======= -->
+  <div id="homeView">
 
-  <div class="filter-bar" id="filterBar" hidden>
-    <span class="filter-label" id="filterLabel">Kategori:</span>
-    <span class="filter-value" id="filterValue"></span>
-    <button class="filter-clear" id="filterClear">Hapus filter &times;</button>
+    <nav class="category-nav" id="categoryNav" aria-label="Jelajah kategori">
+      <!-- diisi otomatis dari data.json -->
+    </nav>
+
+    <div class="filter-bar" id="filterBar" hidden>
+      <span class="filter-label" id="filterLabel">Kategori:</span>
+      <span class="filter-value" id="filterValue"></span>
+      <button class="filter-clear" id="filterClear">Hapus filter &times;</button>
+    </div>
+
+    <main class="grid" id="grid">
+      <!-- diisi otomatis dari data.json -->
+    </main>
+
+    <nav class="pagination" id="pagination" aria-label="Navigasi halaman">
+      <!-- diisi otomatis -->
+    </nav>
+
   </div>
 
-  <main class="grid" id="grid">
-    <!-- diisi otomatis dari data.json -->
-  </main>
+  <!-- ======= HALAMAN TONTON ======= -->
+  <div id="watchView" hidden>
 
-  <nav class="pagination" id="pagination" aria-label="Navigasi halaman">
-    <!-- diisi otomatis -->
-  </nav>
+    <button type="button" class="back-btn" id="backBtn">← Kembali</button>
 
-  <footer class="site-footer">
-    Dibuat dengan ☕ dan ❤️
-  </footer>
-
-  <div class="player-overlay" id="overlay" hidden>
-    <div class="player-panel">
-      <button class="close-btn" id="closeBtn" aria-label="Tutup player">&times;</button>
+    <div class="watch-body">
       <div class="player-frame" id="playerFrame"></div>
+
       <div class="player-info">
         <h1 id="playerTitle">—</h1>
         <p class="player-desc" id="playerDesc"></p>
+
         <div class="player-meta-row">
           <div class="player-cast-wrap" id="playerCastWrap">
             <span class="cast-label">Pemeran:</span>
@@ -55,6 +61,7 @@
           </div>
           <div class="player-tags" id="playerTags"></div>
         </div>
+
         <div class="download-wrap">
           <span class="download-title">Unduh Video</span>
           <div class="download-cmd-box">
@@ -69,7 +76,12 @@
         </div>
       </div>
     </div>
+
   </div>
+
+  <footer class="site-footer">
+    Dibuat dengan ☕ dan ❤️
+  </footer>
 
   <script src="script.js"></script>
 </body>
