@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FakeFlix</title>
+<title>NGECROT.TV</title>
 <style>
 :root {
   --bg-primary: #0a0a0a;
@@ -26,12 +26,12 @@
 }
 
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif; }
-body { background:var(--bg-primary); color:var(--text-primary); min-height:100vh; -webkit-font-smoothing:antialiased; }
+body { background:var(--bg-primary); color:var(--text-primary); min-height:100vh; -webkit-font-smoothing:antialiased; display:flex; flex-direction:column; }
 button { font-family:inherit; border:none; background:none; cursor:pointer; }
 img { display:block; }
 
 /* ============================================
-   HEADER — Logo kiri + Nav + Search tengah/kanan
+   HEADER
    ============================================ */
 .header {
   position:fixed; top:0; left:0; right:0; z-index:200;
@@ -44,23 +44,14 @@ img { display:block; }
   font-size:1.1rem; font-weight:800; color:var(--accent);
   letter-spacing:-0.5px; cursor:pointer; white-space:nowrap; flex-shrink:0;
 }
-
-/* Navbar links */
-.nav-links {
-  display:flex; align-items:center; gap:4px; flex-shrink:0;
-}
+.nav-links { display:flex; align-items:center; gap:4px; flex-shrink:0; }
 .nav-link {
   padding:6px 12px; border-radius:var(--radius-sm);
   color:var(--text-secondary); font-size:0.82rem; font-weight:500;
   cursor:pointer; transition:all var(--transition); white-space:nowrap;
 }
 .nav-link:hover { color:var(--text-primary); background:var(--bg-hover); }
-
-/* Search di header */
-.search-wrap {
-  flex:1; max-width:480px; position:relative;
-  margin-left:auto;
-}
+.search-wrap { flex:1; max-width:480px; position:relative; margin-left:auto; }
 .search-input {
   width:100%; height:38px; padding:0 38px 0 38px;
   background:var(--bg-tertiary); border:1px solid var(--border);
@@ -81,33 +72,26 @@ img { display:block; }
 }
 .search-clear:hover { background:var(--bg-hover); color:var(--text-primary); }
 .search-clear.visible { display:flex; }
-
-/* Spacer untuk fixed header */
 .header-spacer { height:60px; }
 
 /* ============================================
-   HERO OVERLAY — Hanya muncul di awal
+   HERO OVERLAY
    ============================================ */
 .hero-overlay {
   position:fixed; inset:0; z-index:150;
   display:flex; flex-direction:column;
   align-items:center; justify-content:center;
-  background:var(--bg-primary);
-  padding:0 24px;
+  background:var(--bg-primary); padding:0 24px;
   transition:opacity 0.35s ease, visibility 0.35s ease;
 }
-.hero-overlay.hidden {
-  opacity:0; visibility:hidden; pointer-events:none;
-}
+.hero-overlay.hidden { opacity:0; visibility:hidden; pointer-events:none; }
 .hero-title {
   font-size:clamp(1.4rem, 5vw, 2.4rem);
   font-weight:800; margin-bottom:28px;
   text-align:center; letter-spacing:-1px;
   line-height:1.2; white-space:nowrap;
 }
-.hero-search-wrap {
-  width:100%; max-width:580px; position:relative;
-}
+.hero-search-wrap { width:100%; max-width:580px; position:relative; }
 .hero-search-input {
   width:100%; height:52px; padding:0 44px 0 48px;
   background:var(--bg-tertiary); border:1px solid var(--border);
@@ -128,8 +112,6 @@ img { display:block; }
 }
 .hero-search-clear:hover { background:var(--bg-hover); color:var(--text-primary); }
 .hero-search-clear.visible { display:flex; }
-
-/* Popular tags di hero */
 .popular-tags {
   margin-top:24px; display:flex; flex-wrap:wrap; gap:8px;
   justify-content:center; max-width:580px;
@@ -154,15 +136,13 @@ img { display:block; }
   position:fixed; inset:0; z-index:500;
   background:rgba(0,0,0,0.75); backdrop-filter:blur(4px);
   display:none; align-items:center; justify-content:center;
-  padding:24px;
-  opacity:0; transition:opacity 0.25s ease;
+  padding:24px; opacity:0; transition:opacity 0.25s ease;
 }
 .modal-backdrop.active { display:flex; opacity:1; }
 .modal-box {
   background:var(--bg-secondary); border:1px solid var(--border);
   border-radius:var(--radius-lg); max-width:560px; width:100%;
-  max-height:80vh; overflow-y:auto; padding:32px;
-  position:relative;
+  max-height:80vh; overflow-y:auto; padding:32px; position:relative;
   transform:translateY(20px); transition:transform 0.25s ease;
 }
 .modal-backdrop.active .modal-box { transform:translateY(0); }
@@ -170,30 +150,22 @@ img { display:block; }
   position:absolute; top:14px; right:14px;
   width:32px; height:32px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
-  color:var(--text-muted); font-size:1.2rem;
-  transition:all var(--transition);
+  color:var(--text-muted); font-size:1.2rem; transition:all var(--transition);
 }
 .modal-close:hover { background:var(--bg-hover); color:var(--text-primary); }
 .modal-logo { font-size:1.5rem; font-weight:800; color:var(--accent); margin-bottom:6px; }
 .modal-tagline { font-size:0.85rem; color:var(--text-muted); margin-bottom:20px; }
-.modal-body p {
-  font-size:0.88rem; line-height:1.75; color:var(--text-secondary);
-  margin-bottom:14px;
-}
+.modal-body p { font-size:0.88rem; line-height:1.75; color:var(--text-secondary); margin-bottom:14px; }
 .modal-body p:last-child { margin-bottom:0; }
-.modal-divider {
-  height:1px; background:var(--border); margin:18px 0;
-}
-.modal-footer-text {
-  font-size:0.72rem; color:var(--text-muted); line-height:1.6;
-}
+.modal-divider { height:1px; background:var(--border); margin:18px 0; }
+.modal-footer-text { font-size:0.72rem; color:var(--text-muted); line-height:1.6; }
 
 /* ============================================
    FILTER BAR
    ============================================ */
 .filter-bar {
   padding:12px 24px 0; max-width:1400px; margin:0 auto;
-  display:none; align-items:center; gap:8px; flex-wrap:wrap;
+  display:none; align-items:center; gap:8px; flex-wrap:wrap; width:100%;
 }
 .filter-bar.active { display:flex; }
 .filter-label { font-size:0.75rem; color:var(--text-muted); white-space:nowrap; }
@@ -201,11 +173,15 @@ img { display:block; }
   display:inline-flex; align-items:center; gap:6px;
   padding:4px 10px 4px 12px; border-radius:20px;
   background:var(--chip-active-bg); color:var(--chip-active-text);
-  font-size:0.75rem; font-weight:600; cursor:pointer;
-  transition:opacity var(--transition);
+  font-size:0.75rem; font-weight:600; cursor:pointer; transition:opacity var(--transition);
 }
 .filter-chip-active:hover { opacity:0.85; }
 .filter-chip-active svg { width:12px; height:12px; }
+
+/* ============================================
+   MAIN CONTENT WRAPPER (flex grow agar footer di bawah)
+   ============================================ */
+.main-content { flex:1; }
 
 /* ============================================
    RESULTS GRID
@@ -215,9 +191,7 @@ img { display:block; }
 }
 .results-section.active { display:block; }
 .results-count { font-size:0.75rem; color:var(--text-muted); margin-bottom:14px; }
-.grid {
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:16px;
-}
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:16px; }
 .card { cursor:pointer; border-radius:var(--radius-md); overflow:hidden; transition:transform var(--transition), box-shadow var(--transition); }
 .card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,0.4); }
 .card-thumb { width:100%; aspect-ratio:16/9; object-fit:cover; background:var(--bg-tertiary); }
@@ -236,20 +210,9 @@ img { display:block; }
 .primary { min-width:0; }
 .player-box { width:100%; aspect-ratio:16/9; background:#000; border-radius:var(--radius-lg); overflow:hidden; margin-bottom:16px; }
 .player-box iframe,.player-box video { width:100%; height:100%; border:none; }
-.back-btn {
-  display:inline-flex; align-items:center; gap:6px;
-  padding:7px 14px; margin-bottom:14px;
-  border:1px solid var(--border); border-radius:var(--radius-sm);
-  color:var(--text-secondary); font-size:0.8rem; font-weight:500;
-  cursor:pointer; transition:all var(--transition);
-}
-.back-btn:hover { background:var(--bg-tertiary); color:var(--text-primary); border-color:#555; }
-.back-btn svg { width:14px; height:14px; }
 .watch-title { font-size:1.25rem; font-weight:700; line-height:1.3; margin-bottom:10px; }
 .watch-detail-row { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-bottom:8px; }
 .detail-label { font-size:0.75rem; color:var(--text-muted); white-space:nowrap; margin-right:2px; }
-
-/* Sidebar */
 .sidebar { display:flex; flex-direction:column; gap:8px; max-height:calc(100vh - 100px); overflow-y:auto; padding-right:4px; }
 .sidebar::-webkit-scrollbar { width:3px; }
 .sidebar::-webkit-scrollbar-track { background:transparent; }
@@ -260,9 +223,25 @@ img { display:block; }
 .rec-info { display:flex; flex-direction:column; justify-content:center; min-width:0; }
 .rec-title { font-size:0.82rem; font-weight:600; line-height:1.3; margin-bottom:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .rec-sub { font-size:0.7rem; color:var(--text-muted); }
-
-/* State */
 .state-msg { text-align:center; padding:60px 20px; color:var(--text-muted); font-size:0.9rem; }
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer {
+  border-top:1px solid var(--border);
+  padding:20px 24px;
+  text-align:center;
+  background:var(--bg-primary);
+  flex-shrink:0;
+}
+.footer-made {
+  font-size:0.82rem; color:var(--text-secondary); margin-bottom:6px;
+}
+.footer-made .brand { color:var(--accent); font-weight:700; }
+.footer-copy {
+  font-size:0.7rem; color:var(--text-muted);
+}
 
 /* ============================================
    RESPONSIVE
@@ -287,21 +266,18 @@ img { display:block; }
   .grid { grid-template-columns:repeat(2,1fr); gap:10px; }
   .card-title { font-size:0.78rem; }
   .modal-box { padding:24px 20px; }
+  .footer { padding:16px 14px; }
 }
 </style>
 </head>
 <body>
 
 <!-- ====== FIXED HEADER ====== -->
-<header class="header" id="mainHeader">
-  <div class="logo" onclick="resetToHero()">FAKEFLIX</div>
-
-  <!-- NAVBAR -->
+<header class="header">
+  <div class="logo" onclick="resetToHero()">NGECROT.TV</div>
   <nav class="nav-links">
     <span class="nav-link" onclick="openAbout()">Tentang</span>
   </nav>
-
-  <!-- SEARCH -->
   <div class="search-wrap">
     <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <input type="text" class="search-input" id="headerSearch" placeholder="Cari judul, studio, pemeran...">
@@ -327,53 +303,59 @@ img { display:block; }
 <div class="modal-backdrop" id="aboutModal" onclick="closeAboutOutside(event)">
   <div class="modal-box">
     <button class="modal-close" onclick="closeAbout()">&times;</button>
-    <div class="modal-logo">FAKEFLIX</div>
+    <div class="modal-logo">NGECROT.TV</div>
     <div class="modal-tagline">Streaming gratis, tanpa ribet.</div>
     <div class="modal-body">
-      <p>FakeFlix adalah layanan streaming video gratis yang memungkinkan kamu menonton berbagai konten favorit tanpa perlu berlangganan atau membuat akun. Cukup buka, cari, dan langsung tonton.</p>
+      <p>NGECROT.TV adalah layanan streaming video gratis yang memungkinkan kamu menonton berbagai konten favorit tanpa perlu berlangganan atau membuat akun. Cukup buka, cari, dan langsung tonton.</p>
       <p>Kami menyediakan koleksi video dari berbagai kategori mulai dari animasi, film pendek, dokumenter, hingga konten hiburan lainnya. Semua bisa diakses secara instan langsung dari browser kamu.</p>
-      <p>FakeFlix dirancang dengan antarmuka yang sederhana dan ringan agar pengalaman menonton tetap nyaman di perangkat apapun, baik desktop maupun ponsel.</p>
+      <p>NGECROT.TV dirancang dengan antarmuka yang sederhana dan ringan agar pengalaman menonton tetap nyaman di perangkat apapun, baik desktop maupun ponsel.</p>
       <div class="modal-divider"></div>
-      <p class="modal-footer-text">FakeFlix tidak menyimpan data pribadi pengguna. Semua konten yang ditampilkan bersumber dari pihak ketiga. Layanan ini disediakan sebagaimana adanya tanpa jaminan apapun.</p>
+      <p class="modal-footer-text">NGECROT.TV tidak menyimpan data pribadi pengguna. Semua konten yang ditampilkan bersumber dari pihak ketiga. Layanan ini disediakan sebagaimana adanya tanpa jaminan apapun.</p>
     </div>
   </div>
 </div>
 
-<!-- ====== FILTER BAR ====== -->
-<div class="filter-bar" id="filterBar">
-  <span class="filter-label">Filter aktif:</span>
-  <button class="filter-chip-active" onclick="clearFilter()">
-    <span id="filterChipText"></span>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-  </button>
-</div>
+<!-- ====== MAIN CONTENT ====== -->
+<div class="main-content">
 
-<!-- ====== RESULTS ====== -->
-<section class="results-section" id="resultsSection">
-  <div class="results-count" id="resultsCount"></div>
-  <div id="grid" class="grid"></div>
-</section>
-
-<!-- ====== WATCH PAGE ====== -->
-<div id="watchView" class="watch-view">
-  <div class="primary">
-    <button class="back-btn" onclick="goBackFromWatch()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      Kembali
+  <!-- FILTER BAR -->
+  <div class="filter-bar" id="filterBar">
+    <span class="filter-label">Filter aktif:</span>
+    <button class="filter-chip-active" onclick="clearFilter()">
+      <span id="filterChipText"></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
-    <div class="player-box" id="playerBox"></div>
-    <h1 class="watch-title" id="wTitle"></h1>
-    <div id="wMeta"></div>
   </div>
-  <div class="sidebar" id="recList"></div>
+
+  <!-- RESULTS -->
+  <section class="results-section" id="resultsSection">
+    <div class="results-count" id="resultsCount"></div>
+    <div id="grid" class="grid"></div>
+  </section>
+
+  <!-- WATCH PAGE (tanpa tombol kembali) -->
+  <div id="watchView" class="watch-view">
+    <div class="primary">
+      <div class="player-box" id="playerBox"></div>
+      <h1 class="watch-title" id="wTitle"></h1>
+      <div id="wMeta"></div>
+    </div>
+    <div class="sidebar" id="recList"></div>
+  </div>
+
 </div>
+
+<!-- ====== FOOTER ====== -->
+<footer class="footer">
+  <div class="footer-made"><span class="brand">NGECROT.TV</span> dibuat oleh ☕ ❤️</div>
+  <div class="footer-copy">&copy; 2025 NGECROT.TV. All rights reserved.</div>
+</footer>
 
 <script>
 let allVideos = [];
 let activeFilter = null;
 let heroDismissed = false;
 
-// Elements
 const heroOverlay       = document.getElementById('heroOverlay');
 const heroSearch        = document.getElementById('heroSearch');
 const heroSearchClear   = document.getElementById('heroSearchClear');
@@ -390,13 +372,12 @@ const recList           = document.getElementById('recList');
 const watchView         = document.getElementById('watchView');
 const aboutModal        = document.getElementById('aboutModal');
 
-// --- UTILS ---
 function isEmbed(url) {
   return /iframe|embed|vk\.ru\/video_ext|youtube\.com\/embed|dailymotion\.com\/embed/i.test(url);
 }
 function escHtml(s) { const d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
 
-// --- MODAL TENTANG ---
+// --- MODAL ---
 function openAbout() {
   aboutModal.classList.add('active');
   document.body.style.overflow = 'hidden';
@@ -405,26 +386,19 @@ function closeAbout() {
   aboutModal.classList.remove('active');
   document.body.style.overflow = '';
 }
-function closeAboutOutside(e) {
-  if (e.target === aboutModal) closeAbout();
-}
-// Tutup modal dengan tombol Escape
+function closeAboutOutside(e) { if (e.target === aboutModal) closeAbout(); }
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && aboutModal.classList.contains('active')) closeAbout();
 });
 
-// --- DISMISS HERO ---
+// --- HERO ---
 function dismissHero(query) {
-  if (!heroDismissed) {
-    heroDismissed = true;
-    heroOverlay.classList.add('hidden');
-  }
+  if (!heroDismissed) { heroDismissed = true; heroOverlay.classList.add('hidden'); }
   if (query !== undefined) {
     headerSearch.value = query;
     headerSearchClear.classList.toggle('visible', query.length > 0);
   }
 }
-
 function resetToHero() {
   playerBox.innerHTML = '';
   watchView.classList.remove('active');
@@ -437,6 +411,7 @@ function resetToHero() {
   heroSearchClear.classList.remove('visible');
   heroDismissed = false;
   heroOverlay.classList.remove('hidden');
+  window.scrollTo({top:0});
 }
 
 // --- POPULAR TAGS (max 6) ---
@@ -459,52 +434,29 @@ function buildPopularTags() {
 // --- HERO SEARCH ---
 heroSearch.addEventListener('input', () => {
   heroSearchClear.classList.toggle('visible', heroSearch.value.length > 0);
-  if (heroSearch.value.trim().length > 0) {
-    dismissHero(heroSearch.value.trim());
-    renderResults();
-  }
+  if (heroSearch.value.trim().length > 0) { dismissHero(heroSearch.value.trim()); renderResults(); }
 });
-function clearHeroSearch() {
-  heroSearch.value = '';
-  heroSearchClear.classList.remove('visible');
-  heroSearch.focus();
-}
+function clearHeroSearch() { heroSearch.value=''; heroSearchClear.classList.remove('visible'); heroSearch.focus(); }
 
 // --- HEADER SEARCH ---
 headerSearch.addEventListener('input', () => {
   headerSearchClear.classList.toggle('visible', headerSearch.value.length > 0);
   if (!heroDismissed) dismissHero(headerSearch.value);
-  activeFilter = null;
-  renderFilterBar();
-  renderResults();
+  activeFilter = null; renderFilterBar(); renderResults();
 });
 function clearHeaderSearch() {
-  headerSearch.value = '';
-  headerSearchClear.classList.remove('visible');
-  activeFilter = null;
-  renderFilterBar();
-  renderResults();
-  headerSearch.focus();
+  headerSearch.value=''; headerSearchClear.classList.remove('visible');
+  activeFilter=null; renderFilterBar(); renderResults(); headerSearch.focus();
 }
 
 // --- FILTER ---
 function applyFilter(type, value) {
   activeFilter = { type, value };
-  headerSearch.value = '';
-  headerSearchClear.classList.remove('visible');
-  dismissHero();
-  renderFilterBar();
-  renderResults();
-  if (watchView.classList.contains('active')) {
-    playerBox.innerHTML = '';
-    watchView.classList.remove('active');
-  }
+  headerSearch.value=''; headerSearchClear.classList.remove('visible');
+  dismissHero(); renderFilterBar(); renderResults();
+  if (watchView.classList.contains('active')) { playerBox.innerHTML=''; watchView.classList.remove('active'); }
 }
-function clearFilter() {
-  activeFilter = null;
-  renderFilterBar();
-  renderResults();
-}
+function clearFilter() { activeFilter=null; renderFilterBar(); renderResults(); }
 function renderFilterBar() {
   if (!activeFilter) { filterBar.classList.remove('active'); return; }
   const labels = { studio:'Studio', kategori:'Kategori', pemeran:'Pemeran' };
@@ -529,83 +481,49 @@ function getFilteredVideos() {
     return h.includes(q);
   });
 }
-
 function renderResults() {
   const filtered = getFilteredVideos();
   const q = headerSearch.value.trim();
   const hasQuery = q.length > 0 || activeFilter;
-
-  if (!hasQuery) {
-    resultsSection.classList.remove('active');
-    return;
-  }
+  if (!hasQuery) { resultsSection.classList.remove('active'); return; }
   resultsSection.classList.add('active');
-
   if (filtered.length === 0) {
     const msg = activeFilter
       ? `Tidak ada video untuk ${activeFilter.type}: "${activeFilter.value}"`
       : `Tidak ditemukan hasil untuk "${escHtml(q)}"`;
-    resultsCount.textContent = '';
-    grid.innerHTML = `<div class="state-msg">${msg}</div>`;
-    return;
+    resultsCount.textContent=''; grid.innerHTML=`<div class="state-msg">${msg}</div>`; return;
   }
-
   resultsCount.textContent = `${filtered.length} video ditemukan`;
   grid.innerHTML = filtered.map(v => {
     const idx = allVideos.indexOf(v);
-    const cats = (v.kategori||[]).map(k =>
-      `<span class="chip" onclick="event.stopPropagation();applyFilter('kategori','${escHtml(k)}')">${escHtml(k)}</span>`
-    ).join('');
-    const studio = v.studio
-      ? `<span class="chip" onclick="event.stopPropagation();applyFilter('studio','${escHtml(v.studio)}')">${escHtml(v.studio)}</span>` : '';
+    const cats = (v.kategori||[]).map(k=>`<span class="chip" onclick="event.stopPropagation();applyFilter('kategori','${escHtml(k)}')">${escHtml(k)}</span>`).join('');
+    const studio = v.studio ? `<span class="chip" onclick="event.stopPropagation();applyFilter('studio','${escHtml(v.studio)}')">${escHtml(v.studio)}</span>` : '';
     return `<div class="card" onclick="openWatch(${idx})">
       <img class="card-thumb" src="${escHtml(v.cover)}" alt="${escHtml(v.title)}" loading="lazy" onerror="this.src='https://via.placeholder.com/640x360/1e1e1e/555?text=No+Cover'">
-      <div class="card-body">
-        <div class="card-title">${escHtml(v.title)}</div>
-        <div class="card-meta">${studio}${cats}</div>
-      </div>
+      <div class="card-body"><div class="card-title">${escHtml(v.title)}</div><div class="card-meta">${studio}${cats}</div></div>
     </div>`;
   }).join('');
 }
 
-// --- WATCH ---
+// --- WATCH (tanpa tombol kembali, klik logo untuk balik) ---
 function openWatch(idx) {
-  const v = allVideos[idx];
-  if (!v) return;
-  dismissHero();
-  resultsSection.classList.remove('active');
-  filterBar.classList.remove('active');
-
+  const v = allVideos[idx]; if (!v) return;
+  dismissHero(); resultsSection.classList.remove('active'); filterBar.classList.remove('active');
   playerBox.innerHTML = isEmbed(v.url)
     ? `<iframe src="${escHtml(v.url)}" allowfullscreen allow="autoplay; encrypted-media; fullscreen"></iframe>`
     : `<video src="${escHtml(v.url)}" controls autoplay playsinline></video>`;
   document.getElementById('wTitle').textContent = v.title;
-
-  let meta = '';
-  if (v.studio) meta += `<div class="watch-detail-row"><span class="detail-label">Studio</span><span class="chip" onclick="applyFilter('studio','${escHtml(v.studio)}')">${escHtml(v.studio)}</span></div>`;
-  if (v.pemeran?.length) meta += `<div class="watch-detail-row"><span class="detail-label">Pemeran</span>${v.pemeran.map(p=>`<span class="chip" onclick="applyFilter('pemeran','${escHtml(p)}')">${escHtml(p)}</span>`).join('')}</div>`;
-  if (v.kategori?.length) meta += `<div class="watch-detail-row"><span class="detail-label">Kategori</span>${v.kategori.map(k=>`<span class="chip" onclick="applyFilter('kategori','${escHtml(k)}')">${escHtml(k)}</span>`).join('')}</div>`;
+  let meta='';
+  if (v.studio) meta+=`<div class="watch-detail-row"><span class="detail-label">Studio</span><span class="chip" onclick="applyFilter('studio','${escHtml(v.studio)}')">${escHtml(v.studio)}</span></div>`;
+  if (v.pemeran?.length) meta+=`<div class="watch-detail-row"><span class="detail-label">Pemeran</span>${v.pemeran.map(p=>`<span class="chip" onclick="applyFilter('pemeran','${escHtml(p)}')">${escHtml(p)}</span>`).join('')}</div>`;
+  if (v.kategori?.length) meta+=`<div class="watch-detail-row"><span class="detail-label">Kategori</span>${v.kategori.map(k=>`<span class="chip" onclick="applyFilter('kategori','${escHtml(k)}')">${escHtml(k)}</span>`).join('')}</div>`;
   document.getElementById('wMeta').innerHTML = meta;
-
   const recs = allVideos.filter((_,i)=>i!==idx);
   recList.innerHTML = recs.length
     ? recs.map(r=>{const ri=allVideos.indexOf(r);return `<div class="rec-card" onclick="openWatch(${ri})"><img class="rec-thumb" src="${escHtml(r.cover)}" alt="${escHtml(r.title)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180/1e1e1e/555?text=No+Cover'"><div class="rec-info"><div class="rec-title">${escHtml(r.title)}</div><div class="rec-sub">${escHtml(r.studio||'')}${r.kategori?.[0]?' · '+escHtml(r.kategori[0]):''}</div></div></div>`;}).join('')
     : '<div style="color:var(--text-muted);padding:20px;text-align:center;font-size:0.82rem;">Tidak ada video lain</div>';
-
   watchView.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function goBackFromWatch() {
-  playerBox.innerHTML = '';
-  watchView.classList.remove('active');
-  const q = headerSearch.value.trim();
-  if (q.length > 0 || activeFilter) {
-    resultsSection.classList.add('active');
-    if (activeFilter) filterBar.classList.add('active');
-  } else {
-    resetToHero();
-  }
 }
 
 // --- INIT ---
@@ -617,9 +535,8 @@ async function init() {
     allVideos = data.videos || [];
     buildPopularTags();
   } catch(e) {
-    dismissHero();
-    resultsSection.classList.add('active');
-    grid.innerHTML = `<div class="state-msg">Gagal memuat data.json<small>${escHtml(e.message)}<br>Jalankan via server, bukan buka file langsung.</small></div>`;
+    dismissHero(); resultsSection.classList.add('active');
+    grid.innerHTML=`<div class="state-msg">Gagal memuat data.json<small>${escHtml(e.message)}<br>Jalankan via server, bukan buka file langsung.</small></div>`;
   }
 }
 init();
