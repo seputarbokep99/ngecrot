@@ -21,8 +21,6 @@ const castBlock = document.getElementById('castBlock');
 const playerCast = document.getElementById('playerCast');
 const categoryBlock = document.getElementById('categoryBlock');
 const playerTags = document.getElementById('playerTags');
-const downloadBtn = document.getElementById('downloadBtn');
-const downloadCmd = document.getElementById('downloadCmd');
 const playerRecs = document.getElementById('playerRecs');
 const recsRow = document.getElementById('recsRow');
 
@@ -37,24 +35,6 @@ const PLAY_ICON = `
 `;
 
 const DIRECT_VIDEO_EXT = /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i;
-
-// vkvideo.ru pakai link embed (video_ext.php?oid=..&id=..) buat iframe,
-// tapi yt-dlp butuh link watch-page biasa (video{oid}_{id}, oid tetap pakai tanda minus) -> konversi otomatis
-function toDownloadUrl(url) {
-  try {
-    const u = new URL(url);
-    if (u.hostname.includes('vkvideo.ru') && u.pathname.includes('video_ext.php')) {
-      const oid = u.searchParams.get('oid');
-      const id = u.searchParams.get('id');
-      if (oid && id) {
-        return `https://vkvideo.ru/video${oid}_${id}`;
-      }
-    }
-  } catch (err) {
-    // bukan URL valid / bukan format vkvideo -> pakai url asli apa adanya
-  }
-  return url;
-}
 
 let videos = [];
 let activeFilter = null; // { type: 'kategori' | 'pemeran', value: string }
@@ -139,9 +119,9 @@ function renderCategoryNav() {
 function renderFilterBar() {
   if (activeFilter) {
     filterBar.hidden = false;
-    filterLabel.textContent = activeFilter.type === 'pemeran' ? 'Pemeran:' : 'Kategori:';
+    filterLabel.textContent = activeFilter.type === 'pemeran' ? 'Pemeran:' : activeFilter.type === 'studio' ? 'Studio:' : 'Kategori:';
     filterValue.textContent = activeFilter.value;
-    filterValue.style.color = activeFilter.type === 'pemeran' ? 'var(--accent-cast)' : 'var(--accent)';
+    filterValue.style.color = activeFilter.type === 'kategori' ? 'var(--accent)' : 'var(--accent-cast)';
   } else {
     filterBar.hidden = true;
   }
@@ -293,7 +273,8 @@ function openWatch(video) {
 
   studioBlock.hidden = !video.studio;
   if (video.studio) {
-    playerStudioTags.innerHTML = `<span class="tag info-tag">${escapeHtml(video.studio)}</span>`;
+    playerStudioTags.innerHTML = `<button type="button" class="tag info-tag${activeFilter && activeFilter.type === 'studio' && activeFilter.value === video.studio ? ' active' : ''}">${escapeHtml(video.studio)}</button>`;
+    playerStudioTags.querySelector('.tag').addEventListener('click', () => setFilter('studio', video.studio));
   }
 
   const cast = toArray(video.pemeran);
@@ -313,11 +294,6 @@ function openWatch(video) {
   playerTags.querySelectorAll('.tag').forEach(btn => {
     btn.addEventListener('click', () => setFilter('kategori', btn.dataset.cat));
   });
-
-  const ytdlpCmd = `yt-dlp "${toDownloadUrl(video.url)}"`;
-  downloadCmd.textContent = ytdlpCmd;
-  downloadBtn.dataset.cmd = ytdlpCmd;
-  downloadBtn.textContent = '⧉';
 
   renderRecommendations(video);
   showWatch();
@@ -352,18 +328,6 @@ function renderRecommendations(current) {
     recsRow.appendChild(item);
   });
 }
-
-downloadBtn.addEventListener('click', async () => {
-  const cmd = downloadBtn.dataset.cmd || '';
-  try {
-    await navigator.clipboard.writeText(cmd);
-    downloadBtn.textContent = '✓';
-  } catch (err) {
-    // clipboard API gagal (mis. tidak ada izin) -> user tetap bisa select teks di kotak kode secara manual
-    downloadBtn.textContent = '!';
-  }
-  setTimeout(() => { downloadBtn.textContent = '⧉'; }, 1500);
-});
 
 function escapeHtml(str) {
   const div = document.createElement('div');
