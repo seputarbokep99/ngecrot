@@ -45,6 +45,10 @@ img {
 /* ---------- header ---------- */
 
 .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -79,11 +83,92 @@ img {
   color: var(--text-dim);
 }
 
-.search-box {
+.menu-wrap {
   position: relative;
   flex: none;
-  width: 260px;
-  max-width: 100%;
+}
+
+.menu-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.menu-toggle:hover,
+.menu-toggle:focus-visible,
+.menu-toggle[aria-expanded="true"] {
+  border-color: var(--accent);
+}
+
+.menu-icon {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.menu-icon span {
+  display: block;
+  width: 16px;
+  height: 1.5px;
+  background: var(--text-dim);
+  transition: background 0.15s ease;
+}
+
+.menu-toggle:hover .menu-icon span,
+.menu-toggle[aria-expanded="true"] .menu-icon span {
+  background: var(--accent);
+}
+
+.menu-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 150px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 60;
+}
+
+.menu-dropdown[hidden] {
+  display: none;
+}
+
+.menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 12px 16px;
+  color: var(--text-dim);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.menu-item:hover,
+.menu-item:focus-visible {
+  background: var(--bg-hover);
+  color: var(--accent);
+}
+
+.search-box {
+  position: relative;
+  flex: 1;
+  max-width: 260px;
 }
 
 .search-icon {
@@ -451,7 +536,8 @@ img {
 /* ---------- halaman tonton (watch view) ---------- */
 
 #watchView[hidden],
-#homeView[hidden] {
+#homeView[hidden],
+#aboutView[hidden] {
   display: none;
 }
 
@@ -724,9 +810,42 @@ img {
   color: var(--accent);
 }
 
+/* ---------- tentang ---------- */
+
+.about-body {
+  max-width: 720px;
+  margin: 8px auto 60px;
+  padding: 0 var(--page-pad);
+}
+
+.about-body h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 400;
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.about-body p {
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+
+.about-body p:last-child {
+  margin-bottom: 0;
+}
+
 /* ---------- footer ---------- */
 
 .site-footer {
+  text-align: center;
+  padding: 28px 20px 40px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.03em;
+  color: var(--text-faint);
+}
   text-align: center;
   padding: 28px 20px 40px;
   font-family: 'IBM Plex Mono', monospace;
@@ -766,7 +885,13 @@ img {
   }
 
   .search-box {
-    width: 100%;
+    max-width: none;
+    order: 3;
+    flex: 1 1 100%;
+  }
+
+  .menu-wrap {
+    order: 2;
   }
 
   .category-nav {
