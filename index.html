@@ -10,13 +10,13 @@
 <style>
   :root{
     --bg: #0a0a0d;
-    --bg-soft: #111114;
-    --line: #232326;
-    --text: #eeeae1;
-    --text-dim: #8a8a90;
-    --amber: #f5b942;
-    --amber-dim: #7a5c21;
-    --teal: #123c3c;
+    --bg-soft: #121014;
+    --line: #262129;
+    --text: #f3eef1;
+    --text-dim: #9a8f96;
+    --amber: #ff3d81;
+    --amber-dim: #7a1f45;
+    --teal: #3a1030;
     --topbar-h: 56px;
     --sidebar-w: 240px;
     --sidebar-w-mini: 72px;
@@ -608,10 +608,6 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
       <span>Beranda</span>
     </button>
-    <button class="side-item" data-action="trending">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg>
-      <span>Sedang tren</span>
-    </button>
   </div>
   <div class="side-section">
     <div class="side-label">Jelajahi</div>
@@ -626,7 +622,7 @@
     <div id="pagination" class="pagination"></div>
   </main>
   <footer>
-    <p>Dibuat dengan ☕ dan ❤️ — STREAMINGIN</p>
+    <p>NGECR💦T.FUN — Dibuat dengan ☕ dan ❤️ </p>
   </footer>
 </div>
 
@@ -781,15 +777,6 @@
 
   document.querySelector('.side-item[data-action="home"]').addEventListener('click', () => {
     resetToHome();
-    closeMobileSidebar();
-  });
-  document.querySelector('.side-item[data-action="trending"]').addEventListener('click', () => {
-    activeTag = null;
-    searchQuery = '';
-    searchInput.value = '';
-    filteredData = shuffle(allData);
-    updateActiveChipsAndSideItems();
-    goToPage(1);
     closeMobileSidebar();
   });
 
