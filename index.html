@@ -450,84 +450,76 @@
     fill: #0a0a0d;
   }
 
-  /* Lightbox */
-  #lightbox{
-    position: fixed; inset:0;
-    z-index: 50;
-    background: rgba(6,6,8,0.92);
-    backdrop-filter: blur(10px);
-    display:none;
-    align-items:center; justify-content:center;
-    padding: 40px 20px;
+  /* Watch view */
+  .watch-view{
+    padding: 24px 20px 60px;
   }
-  #lightbox.open{ display:flex; }
-  .lb-inner{
-    width: min(760px, 100%);
-    max-height: 88vh;
-    overflow-y: auto;
-    border-radius: 16px;
-    box-shadow: 0 30px 80px -20px rgba(0,0,0,0.7), 0 0 0 1px var(--line);
-    position: relative;
+  .watch-wrap{
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  #backBtn{
+    display:inline-flex; align-items:center; gap:6px;
     background: var(--bg-soft);
-    transform: scale(.92);
-    opacity:0;
-    animation: pop .35s cubic-bezier(.2,.8,.2,1.1) forwards;
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor:pointer;
+    margin-bottom: 18px;
+    transition: border-color .15s ease;
   }
-  @keyframes pop{ to{ transform:scale(1); opacity:1; } }
-  .lb-player{
+  #backBtn:hover{ border-color: var(--amber-dim); color: var(--amber); }
+
+  .watch-player{
     position: relative;
     width: 100%;
     aspect-ratio: 16/9;
     background: #000;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--line);
   }
-  .lb-player iframe, .lb-player video{
+  .watch-player iframe, .watch-player video{
     width:100%; height:100%; border:0; display:block;
   }
-  #closeBtn{
-    position: absolute; top: 12px; right:12px;
-    z-index: 2;
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    background: rgba(10,10,13,0.6);
-    backdrop-filter: blur(4px);
-    border:0;
-    color: var(--text);
-    font-family: inherit;
-    font-size: 14px;
-    cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-  }
-  #closeBtn:hover{ background: var(--amber); color:#0a0a0d; }
 
-  .lb-info{
-    padding: 20px 24px 28px;
+  .watch-info{
+    padding-top: 20px;
   }
-  .lb-title{
-    margin: 0 0 10px;
-    font-size: 18px;
+  .watch-title{
+    margin: 0 0 12px;
+    font-size: clamp(19px, 3vw, 24px);
     font-weight: 800;
     color: var(--text);
     line-height: 1.3;
   }
-  .lb-desc{
-    margin: 0;
-    color: var(--text-dim);
-    font-size: 14px;
-    line-height: 1.65;
-  }
-  .lb-tags{
-    margin-top: 16px;
+  .watch-tags{
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    margin-bottom: 16px;
   }
-  .lb-tags span{
+  .watch-tags span{
     font-size: 12px;
     color: var(--amber);
-    background: rgba(245,185,66,0.08);
+    background: rgba(255,61,129,0.08);
     border: 1px solid var(--amber-dim);
     padding: 4px 11px;
     border-radius: 999px;
+  }
+  .watch-desc{
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.7;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 18px;
   }
 
   .empty, .loading{
@@ -617,17 +609,26 @@
 
 <div id="contentCol">
   <div id="chipsRow"></div>
-  <main>
+  <main id="homeMain">
     <div id="grid" class="grid"></div>
     <div id="pagination" class="pagination"></div>
   </main>
-  <footer>
-    <p>NGECR💦T.FUN — Dibuat dengan ☕ dan ❤️ </p>
-  </footer>
-</div>
 
-<div id="lightbox">
-  <div class="lb-inner" id="lbInner"></div>
+  <div id="watchView" class="watch-view" style="display:none">
+    <div class="watch-wrap">
+      <button id="backBtn">‹ Kembali ke beranda</button>
+      <div class="watch-player" id="watchPlayer"></div>
+      <div class="watch-info">
+        <h1 class="watch-title" id="watchTitle"></h1>
+        <div class="watch-tags" id="watchTags"></div>
+        <p class="watch-desc" id="watchDesc"></p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Dibuat dengan ☕ dan ❤️ — STREAMINGIN</p>
+  </footer>
 </div>
 
 <script>
@@ -635,8 +636,13 @@
   const grid = document.getElementById('grid');
   const paginationEl = document.getElementById('pagination');
   const videoCountEl = document.getElementById('videoCount');
-  const lightbox = document.getElementById('lightbox');
-  const lbInner = document.getElementById('lbInner');
+  const homeMain = document.getElementById('homeMain');
+  const watchView = document.getElementById('watchView');
+  const watchPlayer = document.getElementById('watchPlayer');
+  const watchTitle = document.getElementById('watchTitle');
+  const watchTags = document.getElementById('watchTags');
+  const watchDesc = document.getElementById('watchDesc');
+  const backBtn = document.getElementById('backBtn');
   const chipsRow = document.getElementById('chipsRow');
   const tagListEl = document.getElementById('tagList');
   const searchForm = document.getElementById('searchForm');
@@ -698,6 +704,7 @@
   }
 
   function resetToHome(){
+    if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
     activeTag = null;
     searchQuery = '';
     searchInput.value = '';
@@ -707,6 +714,7 @@
   }
 
   function setActiveTag(tag){
+    if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
     activeTag = (activeTag === tag) ? null : tag;
     applyFilters();
     updateActiveChipsAndSideItems();
@@ -816,59 +824,73 @@
     return f;
   }
 
-  function openLightbox(item){
-    lbInner.innerHTML = '';
+  function getVideoIdFromUrl(){
+    const params = new URLSearchParams(window.location.search);
+    return params.get('v');
+  }
 
-    const player = document.createElement('div');
-    player.className = 'lb-player';
+  function findItemByVideoId(vid){
+    return allData.find(item => encodeURIComponent(item.url) === vid);
+  }
 
-    const closeBtn = document.createElement('button');
-    closeBtn.id = 'closeBtn';
-    closeBtn.innerHTML = '✕';
-    closeBtn.addEventListener('click', closeLightbox);
-    player.appendChild(closeBtn);
-
+  function openWatch(item, opts = {}){
+    watchPlayer.innerHTML = '';
     const el = makeEmbedEl(item.url, { autoplay: true, muted: false, controls: true });
-    player.appendChild(el);
-    lbInner.appendChild(player);
+    watchPlayer.appendChild(el);
 
-    const info = document.createElement('div');
-    info.className = 'lb-info';
+    watchTitle.textContent = item.title || 'Tanpa judul';
+    watchDesc.textContent = item.description || '';
 
-    const h2 = document.createElement('h2');
-    h2.className = 'lb-title';
-    h2.textContent = item.title || 'Tanpa judul';
-    info.appendChild(h2);
+    watchTags.innerHTML = '';
+    (item.tags || []).forEach(t => {
+      const span = document.createElement('span');
+      span.textContent = '#' + t;
+      watchTags.appendChild(span);
+    });
 
-    if(item.description){
-      const p = document.createElement('p');
-      p.className = 'lb-desc';
-      p.textContent = item.description;
-      info.appendChild(p);
+    chipsRow.style.display = 'none';
+    homeMain.style.display = 'none';
+    watchView.style.display = 'block';
+
+    const url = new URL(window.location);
+    url.searchParams.set('v', encodeURIComponent(item.url));
+    url.searchParams.delete('page');
+    if(opts.replace){
+      history.replaceState({ view: 'watch' }, '', url);
+    } else {
+      history.pushState({ view: 'watch' }, '', url);
     }
-
-    if(item.tags && item.tags.length){
-      const tagsEl = document.createElement('div');
-      tagsEl.className = 'lb-tags';
-      item.tags.forEach(t => {
-        const span = document.createElement('span');
-        span.textContent = '#' + t;
-        tagsEl.appendChild(span);
-      });
-      info.appendChild(tagsEl);
-    }
-
-    lbInner.appendChild(info);
-    lightbox.classList.add('open');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function closeLightbox(){
-    lightbox.classList.remove('open');
-    lbInner.innerHTML = '';
+  function closeWatch(opts = {}){
+    watchView.style.display = 'none';
+    chipsRow.style.display = '';
+    homeMain.style.display = '';
+    watchPlayer.innerHTML = '';
+
+    if(!opts.skipHistory){
+      const url = new URL(window.location);
+      url.searchParams.delete('v');
+      if(currentPage > 1) url.searchParams.set('page', currentPage); else url.searchParams.delete('page');
+      history.pushState({ view: 'home' }, '', url);
+    }
   }
 
-  lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
-  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeLightbox(); });
+  backBtn.addEventListener('click', () => closeWatch());
+
+  window.addEventListener('popstate', () => {
+    const vid = getVideoIdFromUrl();
+    if(vid){
+      const item = findItemByVideoId(vid);
+      if(item) openWatch(item, { replace: true });
+      else closeWatch({ skipHistory: true });
+    } else {
+      closeWatch({ skipHistory: true });
+      const p = getPageFromUrl();
+      if(p !== currentPage){ currentPage = p; render(filteredData); renderPagination(filteredData); }
+    }
+  });
 
   function render(items){
     grid.innerHTML = '';
@@ -937,7 +959,7 @@
       meta.appendChild(text);
       card.appendChild(meta);
 
-      card.addEventListener('click', () => openLightbox(item));
+      card.addEventListener('click', () => openWatch(item));
       grid.appendChild(card);
     });
   }
@@ -1007,9 +1029,18 @@
       videoCountEl.textContent = 'Jumlah video: ' + allData.length;
       buildChipsAndSidebar();
       PER_PAGE = calcPerPage();
-      const totalPages = Math.max(1, Math.ceil(filteredData.length / PER_PAGE));
-      const startPage = Math.min(getPageFromUrl(), totalPages);
-      goToPage(startPage, { skipScroll: true });
+
+      const vid = getVideoIdFromUrl();
+      const watchItem = vid ? findItemByVideoId(vid) : null;
+
+      if(watchItem){
+        goToPage(1, { skipScroll: true });
+        openWatch(watchItem, { replace: true });
+      } else {
+        const totalPages = Math.max(1, Math.ceil(filteredData.length / PER_PAGE));
+        const startPage = Math.min(getPageFromUrl(), totalPages);
+        goToPage(startPage, { skipScroll: true });
+      }
 
       let resizeTimer = null;
       window.addEventListener('resize', () => {
