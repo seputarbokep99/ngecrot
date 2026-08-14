@@ -17,6 +17,9 @@
     --amber: #f5b942;
     --amber-dim: #7a5c21;
     --teal: #123c3c;
+    --topbar-h: 56px;
+    --sidebar-w: 240px;
+    --sidebar-w-mini: 72px;
   }
 
   *{ box-sizing: border-box; }
@@ -45,68 +48,245 @@
       radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
   }
 
-  header{
-    position: sticky;
-    top: 0;
-    z-index: 30;
+  /* Topbar */
+  #topbar{
+    position: fixed;
+    top:0; left:0; right:0;
+    height: var(--topbar-h);
+    z-index: 40;
     display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 40px 20px 24px;
-    background: rgba(10,10,13,0.85);
+    align-items: center;
+    gap: 16px;
+    padding: 0 16px;
+    background: rgba(10,10,13,0.92);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
   }
-  .title{
-    margin: 0;
-    font-size: clamp(24px, 4vw, 34px);
-    font-weight: 800;
-    letter-spacing: 0.01em;
+  .topbar-left{
+    display:flex; align-items:center; gap:12px;
+    flex-shrink: 0;
+  }
+  #hamburger{
+    width: 40px; height:40px;
+    display:flex; align-items:center; justify-content:center;
+    background:none; border:0;
     color: var(--text);
-    position: relative;
-    display: inline-block;
+    cursor:pointer;
+    border-radius: 50%;
+    transition: background .15s ease;
   }
-  .title a{
-    color: inherit;
-    text-decoration: none;
-    display: inline-block;
-    transition: color .15s ease;
-  }
-  .title a:hover{
-    color: var(--amber);
-  }
-  .title::after{
-    content:"";
-    position:absolute;
-    left: 0; bottom: -6px;
-    width: 100%; height: 3px;
-    border-radius: 2px;
-    background: var(--amber);
-    box-shadow: 0 0 12px var(--amber);
-  }
-  .bio{
-    margin: 16px 0 0;
-    color: var(--text-dim);
-    font-size: 14px;
+  #hamburger:hover{ background: var(--bg-soft); }
+  #hamburger svg{ width:20px; height:20px; }
+
+  .brand{
+    display:flex; align-items:center; gap:8px;
+    text-decoration:none;
+    color: var(--text);
+    font-weight: 800;
+    font-size: 17px;
     letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+  .brand .dot{
+    width:9px; height:9px; border-radius:2px;
+    background: var(--amber);
+    box-shadow: 0 0 10px var(--amber);
+    flex-shrink:0;
+  }
+
+  .topbar-center{
+    flex: 1 1 auto;
+    display:flex; justify-content:center;
+    min-width: 0;
+  }
+  #searchForm{
+    width: 100%;
+    max-width: 600px;
+    display:flex;
+  }
+  #searchInput{
+    flex:1;
+    height: 38px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-right: 0;
+    border-radius: 999px 0 0 999px;
+    padding: 0 16px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    min-width: 0;
+  }
+  #searchInput::placeholder{ color: var(--text-dim); }
+  #searchInput:focus{ border-color: var(--amber-dim); }
+  #searchBtn{
+    width: 56px; flex-shrink:0;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 0 999px 999px 0;
+    color: var(--text-dim);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+  }
+  #searchBtn:hover{ color: var(--amber); }
+  #searchBtn svg{ width:17px; height:17px; }
+
+  .topbar-right{
+    flex-shrink: 0;
+    display:flex; align-items:center;
   }
   .video-count{
-    flex-shrink: 0;
     color: var(--text-dim);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.01em;
     background: var(--bg-soft);
     border: 1px solid var(--line);
-    padding: 7px 14px;
+    padding: 6px 12px;
     border-radius: 999px;
     white-space: nowrap;
   }
-  @media (max-width: 560px){
-    header{ flex-direction: column; align-items: flex-start; }
+  @media (max-width: 720px){
+    .video-count{ display:none; }
   }
+  @media (max-width: 560px){
+    .brand span.txt{ display:none; }
+  }
+
+  /* Sidebar */
+  #sidebar{
+    position: fixed;
+    top: var(--topbar-h);
+    left: 0;
+    bottom: 0;
+    width: var(--sidebar-w);
+    background: var(--bg);
+    border-right: 1px solid var(--line);
+    overflow-y: auto;
+    z-index: 35;
+    transition: width .2s ease, transform .25s ease;
+    padding: 10px 8px 24px;
+  }
+  body.sidebar-mini #sidebar{ width: var(--sidebar-w-mini); }
+
+  .side-section{
+    padding: 10px 4px 6px;
+  }
+  .side-section + .side-section{
+    border-top: 1px solid var(--line);
+    margin-top: 6px;
+  }
+  .side-label{
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    padding: 4px 12px 8px;
+    text-transform: uppercase;
+  }
+  body.sidebar-mini .side-label{ display:none; }
+
+  .side-item{
+    width:100%;
+    display:flex; align-items:center; gap:20px;
+    background:none; border:0;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    text-align:left;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor:pointer;
+    white-space: nowrap;
+  }
+  .side-item:hover{ background: var(--bg-soft); }
+  .side-item.active{
+    background: var(--bg-soft);
+    color: var(--amber);
+    font-weight: 700;
+  }
+  .side-item svg{ width:19px; height:19px; flex-shrink:0; }
+  .side-item .tag-dot{
+    width:8px; height:8px; border-radius:50%;
+    background: var(--amber-dim);
+    flex-shrink:0;
+  }
+  .side-item.active .tag-dot{ background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+  body.sidebar-mini .side-item span{ display:none; }
+  body.sidebar-mini .side-item{ justify-content:center; padding:12px 0; }
+
+  /* Content column shifts right of sidebar */
+  #contentCol{
+    margin-left: var(--sidebar-w);
+    padding-top: var(--topbar-h);
+    transition: margin-left .2s ease;
+    min-height: 100vh;
+    flex: 1;
+    display:flex;
+    flex-direction: column;
+  }
+  body.sidebar-mini #contentCol{ margin-left: var(--sidebar-w-mini); }
+
+  /* Sidebar overlay on mobile */
+  #sidebarOverlay{
+    display:none;
+    position: fixed; inset:0;
+    top: var(--topbar-h);
+    background: rgba(0,0,0,0.5);
+    z-index: 34;
+  }
+  @media (max-width: 900px){
+    #sidebar{
+      transform: translateX(-100%);
+      width: 260px;
+    }
+    body.sidebar-mobile-open #sidebar{ transform: translateX(0); }
+    body.sidebar-mobile-open #sidebarOverlay{ display:block; }
+    #contentCol{ margin-left: 0 !important; }
+    body.sidebar-mini #sidebar{ width: 260px; }
+  }
+
+  /* Chips row */
+  #chipsRow{
+    position: sticky;
+    top: var(--topbar-h);
+    z-index: 20;
+    display:flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 14px 20px;
+    background: rgba(10,10,13,0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    scrollbar-width: none;
+  }
+  #chipsRow::-webkit-scrollbar{ display:none; }
+  .chip{
+    flex-shrink: 0;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .chip:hover{ border-color: var(--amber-dim); }
+  .chip.active{
+    background: var(--amber);
+    border-color: var(--amber);
+    color: #0a0a0d;
+  }
+
+  .title{ display:none; }
+  header{ display:none; }
 
   footer{
     text-align: center;
@@ -123,7 +303,7 @@
   }
 
   main{
-    padding: 24px 20px 60px;
+    padding: 20px 20px 60px;
     flex: 1 0 auto;
   }
 
@@ -401,22 +581,54 @@
 </head>
 <body>
 
-<header>
-  <div class="header-left">
-    <h1 class="title"><a href="#" id="titleLink">NGECR💦T.FUN</a></h1>
-    <p class="bio">Teman streaming terbaikmu.</p>
+<div id="topbar">
+  <div class="topbar-left">
+    <button id="hamburger" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <a href="#" class="brand" id="titleLink"><span class="dot"></span><span class="txt">NGECR💦T.FUN</span></a>
   </div>
-  <div class="video-count" id="videoCount">Jumlah video: 0</div>
-</header>
+  <div class="topbar-center">
+    <form id="searchForm">
+      <input type="text" id="searchInput" placeholder="Cari video..." autocomplete="off">
+      <button type="submit" id="searchBtn" aria-label="Cari">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </form>
+  </div>
+  <div class="topbar-right">
+    <div class="video-count" id="videoCount">Jumlah video: 0</div>
+  </div>
+</div>
 
-<main>
-  <div id="grid" class="grid"></div>
-  <div id="pagination" class="pagination"></div>
-</main>
+<div id="sidebarOverlay"></div>
+<aside id="sidebar">
+  <div class="side-section">
+    <button class="side-item active" data-action="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+      <span>Beranda</span>
+    </button>
+    <button class="side-item" data-action="trending">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg>
+      <span>Sedang tren</span>
+    </button>
+  </div>
+  <div class="side-section">
+    <div class="side-label">Jelajahi</div>
+    <div id="tagList"></div>
+  </div>
+</aside>
 
-<footer>
-  <p>NGECR💦T.FUN — Dibuat dengan ☕ dan ❤️ </p>
-</footer>
+<div id="contentCol">
+  <div id="chipsRow"></div>
+  <main>
+    <div id="grid" class="grid"></div>
+    <div id="pagination" class="pagination"></div>
+  </main>
+  <footer>
+    <p>Dibuat dengan ☕ dan ❤️ — STREAMINGIN</p>
+  </footer>
+</div>
 
 <div id="lightbox">
   <div class="lb-inner" id="lbInner"></div>
@@ -429,9 +641,19 @@
   const videoCountEl = document.getElementById('videoCount');
   const lightbox = document.getElementById('lightbox');
   const lbInner = document.getElementById('lbInner');
-  let currentData = [];
+  const chipsRow = document.getElementById('chipsRow');
+  const tagListEl = document.getElementById('tagList');
+  const searchForm = document.getElementById('searchForm');
+  const searchInput = document.getElementById('searchInput');
+  const hamburger = document.getElementById('hamburger');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+  let allData = [];
+  let filteredData = [];
   let currentPage = 1;
   let PER_PAGE = 12;
+  let activeTag = null;
+  let searchQuery = '';
   const ROWS_PER_PAGE = 4;
 
   function calcPerPage(){
@@ -445,9 +667,130 @@
 
   document.getElementById('titleLink').addEventListener('click', (e) => {
     e.preventDefault();
-    if(currentData.length){
-      goToPage(1);
+    resetToHome();
+    closeMobileSidebar();
+  });
+
+  function isMobileViewport(){ return window.innerWidth <= 900; }
+
+  hamburger.addEventListener('click', () => {
+    if(isMobileViewport()){
+      document.body.classList.toggle('sidebar-mobile-open');
+    } else {
+      document.body.classList.toggle('sidebar-mini');
     }
+  });
+
+  function closeMobileSidebar(){
+    document.body.classList.remove('sidebar-mobile-open');
+  }
+  sidebarOverlay.addEventListener('click', closeMobileSidebar);
+
+  searchForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    applySearch();
+  });
+  let searchDebounce = null;
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(applySearch, 300);
+  });
+  function applySearch(){
+    searchQuery = searchInput.value.trim().toLowerCase();
+    applyFilters();
+    goToPage(1, { skipScroll: true });
+  }
+
+  function resetToHome(){
+    activeTag = null;
+    searchQuery = '';
+    searchInput.value = '';
+    applyFilters();
+    updateActiveChipsAndSideItems();
+    goToPage(1);
+  }
+
+  function setActiveTag(tag){
+    activeTag = (activeTag === tag) ? null : tag;
+    applyFilters();
+    updateActiveChipsAndSideItems();
+    goToPage(1);
+    closeMobileSidebar();
+  }
+
+  function applyFilters(){
+    filteredData = allData.filter(item => {
+      const matchesTag = !activeTag || (item.tags && item.tags.includes(activeTag));
+      const q = searchQuery;
+      const matchesSearch = !q ||
+        (item.title || '').toLowerCase().includes(q) ||
+        (item.description || '').toLowerCase().includes(q) ||
+        (item.tags || []).some(t => t.toLowerCase().includes(q));
+      return matchesTag && matchesSearch;
+    });
+  }
+
+  function getUniqueTags(){
+    const set = new Set();
+    allData.forEach(item => (item.tags || []).forEach(t => set.add(t)));
+    return [...set];
+  }
+
+  function buildChipsAndSidebar(){
+    const tags = getUniqueTags();
+
+    chipsRow.innerHTML = '';
+    const allChip = document.createElement('button');
+    allChip.className = 'chip';
+    allChip.textContent = 'Semua';
+    allChip.dataset.tag = '';
+    allChip.addEventListener('click', () => setActiveTag(null));
+    chipsRow.appendChild(allChip);
+
+    tagListEl.innerHTML = '';
+    tags.forEach(tag => {
+      const chip = document.createElement('button');
+      chip.className = 'chip';
+      chip.textContent = '#' + tag;
+      chip.dataset.tag = tag;
+      chip.addEventListener('click', () => setActiveTag(tag));
+      chipsRow.appendChild(chip);
+
+      const sideBtn = document.createElement('button');
+      sideBtn.className = 'side-item';
+      sideBtn.dataset.tag = tag;
+      sideBtn.innerHTML = '<span class="tag-dot"></span><span>#' + tag + '</span>';
+      sideBtn.addEventListener('click', () => setActiveTag(tag));
+      tagListEl.appendChild(sideBtn);
+    });
+
+    updateActiveChipsAndSideItems();
+  }
+
+  function updateActiveChipsAndSideItems(){
+    chipsRow.querySelectorAll('.chip').forEach(el => {
+      el.classList.toggle('active', el.dataset.tag === (activeTag || ''));
+    });
+    tagListEl.querySelectorAll('.side-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.tag === activeTag);
+    });
+    document.querySelectorAll('.side-item[data-action]').forEach(el => {
+      el.classList.toggle('active', el.dataset.action === 'home' && !activeTag && !searchQuery);
+    });
+  }
+
+  document.querySelector('.side-item[data-action="home"]').addEventListener('click', () => {
+    resetToHome();
+    closeMobileSidebar();
+  });
+  document.querySelector('.side-item[data-action="trending"]').addEventListener('click', () => {
+    activeTag = null;
+    searchQuery = '';
+    searchInput.value = '';
+    filteredData = shuffle(allData);
+    updateActiveChipsAndSideItems();
+    goToPage(1);
+    closeMobileSidebar();
   });
 
   function shuffle(arr){
@@ -543,7 +886,8 @@
   function render(items){
     grid.innerHTML = '';
     if(!items.length){
-      grid.innerHTML = '<div class="empty">data.json kosong — tambahkan cover & url video.</div>';
+      const msg = allData.length ? 'Gak ada video yang cocok. Coba kata kunci atau tag lain.' : 'data.json kosong — tambahkan cover & url video.';
+      grid.innerHTML = '<div class="empty">' + msg + '</div>';
       return;
     }
     const start = (currentPage - 1) * PER_PAGE;
@@ -644,11 +988,12 @@
   }
 
   function goToPage(page, opts = {}){
-    currentPage = page;
-    render(currentData);
-    renderPagination(currentData);
+    const totalPages = Math.max(1, Math.ceil(filteredData.length / PER_PAGE));
+    currentPage = Math.min(Math.max(1, page), totalPages);
+    render(filteredData);
+    renderPagination(filteredData);
     const url = new URL(window.location);
-    url.searchParams.set('page', page);
+    if(currentPage > 1) url.searchParams.set('page', currentPage); else url.searchParams.delete('page');
     history.replaceState(null, '', url);
     if(!opts.skipScroll){
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -669,11 +1014,13 @@
       return res.json();
     })
     .then(data => {
-      currentData = Array.isArray(data) ? data.filter(item => item && item.cover && item.url) : [];
-      currentData = shuffle(currentData);
-      videoCountEl.textContent = 'Jumlah video: ' + currentData.length;
+      allData = Array.isArray(data) ? data.filter(item => item && item.cover && item.url) : [];
+      allData = shuffle(allData);
+      filteredData = allData.slice();
+      videoCountEl.textContent = 'Jumlah video: ' + allData.length;
+      buildChipsAndSidebar();
       PER_PAGE = calcPerPage();
-      const totalPages = Math.max(1, Math.ceil(currentData.length / PER_PAGE));
+      const totalPages = Math.max(1, Math.ceil(filteredData.length / PER_PAGE));
       const startPage = Math.min(getPageFromUrl(), totalPages);
       goToPage(startPage, { skipScroll: true });
 
@@ -685,6 +1032,9 @@
           if(newPerPage !== PER_PAGE){
             PER_PAGE = newPerPage;
             goToPage(1, { skipScroll: true });
+          }
+          if(!isMobileViewport()){
+            document.body.classList.remove('sidebar-mobile-open');
           }
         }, 200);
       });
