@@ -374,13 +374,20 @@
     flex-wrap: wrap;
     gap: 6px;
   }
-  .card-tags span{
+  .card-tags button{
+    font-family: inherit;
     font-size: 11px;
     color: var(--text-dim);
     background: var(--bg-soft);
     border: 1px solid var(--line);
     padding: 2px 8px;
     border-radius: 999px;
+    cursor: pointer;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .card-tags button:hover{
+    color: var(--amber);
+    border-color: var(--amber-dim);
   }
   .card:hover .hover-ring{
     opacity: 1;
@@ -454,10 +461,6 @@
   .watch-view{
     padding: 24px 20px 60px;
   }
-  .watch-wrap{
-    max-width: 900px;
-    margin: 0 auto;
-  }
   #backBtn{
     display:inline-flex; align-items:center; gap:6px;
     background: var(--bg-soft);
@@ -473,6 +476,18 @@
     transition: border-color .15s ease;
   }
   #backBtn:hover{ border-color: var(--amber-dim); color: var(--amber); }
+
+  .watch-layout{
+    max-width: 1240px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 28px;
+    align-items: start;
+  }
+  @media (max-width: 980px){
+    .watch-layout{ grid-template-columns: 1fr; }
+  }
 
   .watch-player{
     position: relative;
@@ -503,13 +518,20 @@
     gap: 8px;
     margin-bottom: 16px;
   }
-  .watch-tags span{
+  .watch-tags button{
+    font-family: inherit;
     font-size: 12px;
     color: var(--amber);
     background: rgba(255,61,129,0.08);
     border: 1px solid var(--amber-dim);
-    padding: 4px 11px;
+    padding: 5px 12px;
     border-radius: 999px;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+  }
+  .watch-tags button:hover{
+    background: var(--amber);
+    color: #0a0a0d;
   }
   .watch-desc{
     margin: 0;
@@ -520,6 +542,67 @@
     border: 1px solid var(--line);
     border-radius: 12px;
     padding: 16px 18px;
+  }
+
+  /* Related videos sidebar */
+  .related-label{
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .related-list{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .related-item{
+    display: flex;
+    gap: 10px;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 6px;
+    transition: background .15s ease;
+  }
+  .related-item:hover{
+    background: var(--bg-soft);
+  }
+  .related-thumb{
+    position: relative;
+    width: 148px;
+    flex-shrink: 0;
+    aspect-ratio: 16/9;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+  }
+  .related-thumb img{
+    width:100%; height:100%; object-fit:cover; display:block;
+  }
+  .related-info{
+    min-width: 0;
+  }
+  .related-title{
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--text);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .related-item:hover .related-title{
+    color: var(--amber);
+  }
+  .related-tags{
+    margin-top: 5px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  @media (max-width: 640px){
+    .related-thumb{ width: 120px; }
   }
 
   .empty, .loading{
@@ -615,19 +698,25 @@
   </main>
 
   <div id="watchView" class="watch-view" style="display:none">
-    <div class="watch-wrap">
-      <button id="backBtn">‹ Kembali ke beranda</button>
-      <div class="watch-player" id="watchPlayer"></div>
-      <div class="watch-info">
-        <h1 class="watch-title" id="watchTitle"></h1>
-        <div class="watch-tags" id="watchTags"></div>
-        <p class="watch-desc" id="watchDesc"></p>
+    <button id="backBtn">‹ Kembali ke beranda</button>
+    <div class="watch-layout">
+      <div class="watch-main">
+        <div class="watch-player" id="watchPlayer"></div>
+        <div class="watch-info">
+          <h1 class="watch-title" id="watchTitle"></h1>
+          <div class="watch-tags" id="watchTags"></div>
+          <p class="watch-desc" id="watchDesc"></p>
+        </div>
       </div>
+      <aside class="watch-related">
+        <div class="related-label">Video lainnya</div>
+        <div id="relatedList" class="related-list"></div>
+      </aside>
     </div>
   </div>
 
   <footer>
-    <p>Dibuat dengan ☕ dan ❤️ — STREAMINGIN</p>
+    <p>NGECR💦T.FUN — Dibuat dengan ☕ dan ❤️ </p>
   </footer>
 </div>
 
@@ -642,6 +731,7 @@
   const watchTitle = document.getElementById('watchTitle');
   const watchTags = document.getElementById('watchTags');
   const watchDesc = document.getElementById('watchDesc');
+  const relatedList = document.getElementById('relatedList');
   const backBtn = document.getElementById('backBtn');
   const chipsRow = document.getElementById('chipsRow');
   const tagListEl = document.getElementById('tagList');
@@ -843,10 +933,16 @@
 
     watchTags.innerHTML = '';
     (item.tags || []).forEach(t => {
-      const span = document.createElement('span');
-      span.textContent = '#' + t;
-      watchTags.appendChild(span);
+      const btn = document.createElement('button');
+      btn.textContent = '#' + t;
+      btn.addEventListener('click', () => {
+        closeWatch({ skipHistory: true });
+        setActiveTag(t);
+      });
+      watchTags.appendChild(btn);
     });
+
+    buildRelated(item);
 
     chipsRow.style.display = 'none';
     homeMain.style.display = 'none';
@@ -861,6 +957,49 @@
       history.pushState({ view: 'watch' }, '', url);
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function buildRelated(currentItem){
+    relatedList.innerHTML = '';
+    const currentTags = currentItem.tags || [];
+
+    const others = allData.filter(it => it.url !== currentItem.url);
+    const scored = others.map(it => {
+      const shared = (it.tags || []).filter(t => currentTags.includes(t)).length;
+      return { item: it, score: shared };
+    });
+    scored.sort((a, b) => b.score - a.score);
+
+    scored.forEach(({ item }) => {
+      const row = document.createElement('div');
+      row.className = 'related-item';
+
+      const thumb = document.createElement('div');
+      thumb.className = 'related-thumb';
+      const img = document.createElement('img');
+      img.src = item.cover;
+      img.loading = 'lazy';
+      img.alt = '';
+      thumb.appendChild(img);
+      row.appendChild(thumb);
+
+      const info = document.createElement('div');
+      info.className = 'related-info';
+      const title = document.createElement('div');
+      title.className = 'related-title';
+      title.textContent = item.title || 'Tanpa judul';
+      info.appendChild(title);
+      if(item.tags && item.tags.length){
+        const tagsLine = document.createElement('div');
+        tagsLine.className = 'related-tags';
+        tagsLine.textContent = item.tags.slice(0, 2).map(t => '#' + t).join(' ');
+        info.appendChild(tagsLine);
+      }
+      row.appendChild(info);
+
+      row.addEventListener('click', () => openWatch(item));
+      relatedList.appendChild(row);
+    });
   }
 
   function closeWatch(opts = {}){
@@ -949,9 +1088,13 @@
         const tagsEl = document.createElement('div');
         tagsEl.className = 'card-tags';
         tags.slice(0, 3).forEach(t => {
-          const span = document.createElement('span');
-          span.textContent = '#' + t;
-          tagsEl.appendChild(span);
+          const btn = document.createElement('button');
+          btn.textContent = '#' + t;
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setActiveTag(t);
+          });
+          tagsEl.appendChild(btn);
         });
         text.appendChild(tagsEl);
       }
