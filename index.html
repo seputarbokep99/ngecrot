@@ -671,7 +671,7 @@
     </button>
   </div>
   <div class="side-section">
-    <div class="side-label">Jelajahi</div>
+    <div class="side-label">Daftar Pemeran</div>
     <div id="tagList"></div>
   </div>
 </aside>
@@ -822,8 +822,15 @@
     return [...set];
   }
 
+  function getUniqueCast(){
+    const set = new Set();
+    allData.forEach(item => (item.cast || []).forEach(c => set.add(c)));
+    return [...set];
+  }
+
   function buildChipsAndSidebar(){
     const tags = getUniqueTags();
+    const castList = getUniqueCast();
 
     chipsRow.innerHTML = '';
     const allChip = document.createElement('button');
@@ -834,7 +841,6 @@
     allChip.addEventListener('click', () => setFilter('tag', null));
     chipsRow.appendChild(allChip);
 
-    tagListEl.innerHTML = '';
     tags.forEach(tag => {
       const chip = document.createElement('button');
       chip.className = 'chip';
@@ -843,13 +849,16 @@
       chip.dataset.tag = tag;
       chip.addEventListener('click', () => setFilter('tag', tag));
       chipsRow.appendChild(chip);
+    });
 
+    tagListEl.innerHTML = '';
+    castList.forEach(person => {
       const sideBtn = document.createElement('button');
       sideBtn.className = 'side-item';
-      sideBtn.dataset.filterType = 'tag';
-      sideBtn.dataset.tag = tag;
-      sideBtn.innerHTML = '<span class="tag-dot"></span><span>#' + tag + '</span>';
-      sideBtn.addEventListener('click', () => setFilter('tag', tag));
+      sideBtn.dataset.filterType = 'cast';
+      sideBtn.dataset.cast = person;
+      sideBtn.innerHTML = '<span class="tag-dot"></span><span>' + person + '</span>';
+      sideBtn.addEventListener('click', () => setFilter('cast', person));
       tagListEl.appendChild(sideBtn);
     });
 
@@ -858,11 +867,12 @@
 
   function updateActiveChipsAndSideItems(){
     const activeTagValue = (activeFilter && activeFilter.type === 'tag') ? activeFilter.value : '';
+    const activeCastValue = (activeFilter && activeFilter.type === 'cast') ? activeFilter.value : '';
     chipsRow.querySelectorAll('.chip').forEach(el => {
       el.classList.toggle('active', el.dataset.tag === (activeTagValue || ''));
     });
     tagListEl.querySelectorAll('.side-item').forEach(el => {
-      el.classList.toggle('active', el.dataset.tag === activeTagValue);
+      el.classList.toggle('active', el.dataset.cast === activeCastValue && !!activeCastValue);
     });
     document.querySelectorAll('.side-item[data-action]').forEach(el => {
       el.classList.toggle('active', el.dataset.action === 'home' && !activeFilter && !searchQuery);
