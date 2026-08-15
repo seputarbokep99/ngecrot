@@ -265,8 +265,30 @@
     font-family: inherit;
     font-size: 13px;
     outline: none;
+    width: 100%;
   }
   #loginEmail:focus, #loginPassword:focus{ border-color: var(--amber-dim); }
+  .password-field{
+    position: relative;
+  }
+  .password-field #loginPassword{
+    padding-right: 40px;
+  }
+  .toggle-password-btn{
+    position: absolute;
+    right: 6px; top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: 0;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .toggle-password-btn:hover{ color: var(--amber); }
+  .toggle-password-btn svg{ width: 17px; height: 17px; }
   #loginForm button{
     background: var(--amber);
     color: #0a0a0d;
@@ -1290,7 +1312,12 @@
     <p id="loginDesc">Masukin email dan password kamu.</p>
     <form id="loginForm">
       <input type="email" id="loginEmail" placeholder="Email kamu" required autocomplete="email">
-      <input type="password" id="loginPassword" placeholder="Password (minimal 6 karakter)" minlength="6" required autocomplete="current-password">
+      <div class="password-field">
+        <input type="password" id="loginPassword" placeholder="Password (minimal 6 karakter)" minlength="6" required autocomplete="current-password">
+        <button type="button" id="togglePasswordBtn" class="toggle-password-btn" aria-label="Tampilkan password">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
       <button type="submit" id="loginSubmitBtn">Masuk</button>
     </form>
     <div id="loginMsg"></div>
@@ -1699,6 +1726,17 @@
   const loginForm = document.getElementById('loginForm');
   const loginEmail = document.getElementById('loginEmail');
   const loginPassword = document.getElementById('loginPassword');
+  const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+
+  togglePasswordBtn.addEventListener('click', () => {
+    const isHidden = loginPassword.type === 'password';
+    loginPassword.type = isHidden ? 'text' : 'password';
+    togglePasswordBtn.classList.toggle('active', isHidden);
+    togglePasswordBtn.setAttribute('aria-label', isHidden ? 'Sembunyikan password' : 'Tampilkan password');
+    togglePasswordBtn.innerHTML = isHidden
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.6 21.6 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.6 21.6 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>';
+  });
   const loginMsg = document.getElementById('loginMsg');
   const loginTitle = document.getElementById('loginTitle');
   const loginDesc = document.getElementById('loginDesc');
@@ -1734,6 +1772,8 @@
     loginMsg.textContent = '';
     loginMsg.className = '';
     loginForm.reset();
+    loginPassword.type = 'password';
+    togglePasswordBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>';
     updateAuthModalUI();
     loginModal.classList.add('open');
   }
