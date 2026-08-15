@@ -21,7 +21,9 @@
     --sidebar-w: 240px;
     --sidebar-w-mini: 72px;
   }
+
   *{ box-sizing: border-box; }
+
   html,body{
     margin:0; padding:0;
     background: var(--bg);
@@ -29,18 +31,23 @@
     font-family: 'Bricolage Grotesque', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
+
   body{
     min-height:100vh;
     display: flex;
     flex-direction: column;
   }
+
+  /* subtle film-grain vignette over whole page */
   body::before{
     content:"";
     position: fixed; inset:0;
     pointer-events:none;
     z-index: 5;
-    background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
+    background:
+      radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
   }
+
   /* Topbar */
   #topbar{
     position: fixed;
@@ -71,6 +78,7 @@
   }
   #hamburger:hover{ background: var(--bg-soft); }
   #hamburger svg{ width:20px; height:20px; }
+
   .brand{
     display:flex; align-items:center; gap:8px;
     text-decoration:none;
@@ -86,6 +94,7 @@
     box-shadow: 0 0 10px var(--amber);
     flex-shrink:0;
   }
+
   .topbar-center{
     flex: 1 1 auto;
     display:flex; justify-content:center;
@@ -123,6 +132,7 @@
   }
   #searchBtn:hover{ color: var(--amber); }
   #searchBtn svg{ width:17px; height:17px; }
+
   .topbar-right{
     flex-shrink: 0;
     display:flex; align-items:center;
@@ -144,6 +154,7 @@
   @media (max-width: 560px){
     .brand span.txt{ display:none; }
   }
+
   /* Sidebar */
   #sidebar{
     position: fixed;
@@ -159,6 +170,7 @@
     padding: 10px 8px 24px;
   }
   body.sidebar-mini #sidebar{ width: var(--sidebar-w-mini); }
+
   .side-section{
     padding: 10px 4px 6px;
   }
@@ -175,6 +187,7 @@
     text-transform: uppercase;
   }
   body.sidebar-mini .side-label{ display:none; }
+
   .side-item{
     width:100%;
     display:flex; align-items:center; gap:20px;
@@ -204,6 +217,8 @@
   .side-item.active .tag-dot{ background: var(--amber); box-shadow: 0 0 8px var(--amber); }
   body.sidebar-mini .side-item span{ display:none; }
   body.sidebar-mini .side-item{ justify-content:center; padding:12px 0; }
+
+  /* Content column shifts right of sidebar */
   #contentCol{
     margin-left: var(--sidebar-w);
     padding-top: var(--topbar-h);
@@ -214,6 +229,8 @@
     flex-direction: column;
   }
   body.sidebar-mini #contentCol{ margin-left: var(--sidebar-w-mini); }
+
+  /* Sidebar overlay on mobile */
   #sidebarOverlay{
     display:none;
     position: fixed; inset:0;
@@ -231,6 +248,7 @@
     #contentCol{ margin-left: 0 !important; }
     body.sidebar-mini #sidebar{ width: 260px; }
   }
+
   /* Chips row */
   #chipsRow{
     position: sticky;
@@ -266,8 +284,10 @@
     border-color: var(--amber);
     color: #0a0a0d;
   }
+
   .title{ display:none; }
   header{ display:none; }
+
   footer{
     text-align: center;
     padding: 24px 20px 32px;
@@ -281,18 +301,25 @@
     font-size: 13px;
     letter-spacing: 0.02em;
   }
+
   main{
     padding: 20px 20px 60px;
     flex: 1 0 auto;
   }
+
   .grid{
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 14px;
   }
   @media (max-width: 640px){
-    .grid{ grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+    .grid{ grid-template-columns: 1fr; gap: 22px; }
+    .card-avatar{ display:none; }
+    .card-tags{ display:none; }
+    .card-meta{ padding-top: 10px; }
+    .card-title{ font-size: 15px; -webkit-line-clamp: 2; }
   }
+
   .card{
     cursor: pointer;
     opacity: 0;
@@ -300,6 +327,7 @@
     animation: rise .55s cubic-bezier(.2,.7,.2,1) forwards;
   }
   @keyframes rise{ to{ opacity:1; transform: translateY(0) scale(1); } }
+
   .thumb{
     position: relative;
     border-radius: 12px;
@@ -311,9 +339,21 @@
   .card:hover .thumb{
     border-color: var(--amber-dim);
   }
-  /* MODIFIED: Removed gap since avatar is gone, adjusted padding */
+
   .card-meta{
+    display: flex;
+    gap: 10px;
     padding-top: 10px;
+  }
+  .card-avatar{
+    flex-shrink: 0;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--teal);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 13px; font-weight: 800;
+    color: var(--amber);
+    border: 1px solid var(--line);
   }
   .card-text{
     min-width: 0;
@@ -356,6 +396,7 @@
   .card:hover .hover-ring{
     opacity: 1;
   }
+
   .cover{
     position:absolute; inset:0;
     width:100%; height:100%;
@@ -366,12 +407,14 @@
   .card:hover .cover{
     transform: scale(1.035);
   }
+
   .frame{
     position:absolute; inset:0;
     width:100%; height:100%;
     border:0;
     display:block;
   }
+
   .hover-ring{
     position:absolute; inset:0;
     border-radius:12px;
@@ -383,6 +426,7 @@
   .card:hover .hover-ring{
     opacity: 1;
   }
+
   .thumb::after{
     content:"";
     position:absolute; left:0; right:0; bottom:0;
@@ -390,6 +434,7 @@
     background: linear-gradient(to top, rgba(0,0,0,0.55), transparent);
     pointer-events:none;
   }
+
   .card .play{
     position:absolute;
     left:10px; bottom:10px;
@@ -415,6 +460,7 @@
   .card:hover .play svg{
     fill: #0a0a0d;
   }
+
   /* Watch view */
   .watch-view{
     padding: 24px 20px 60px;
@@ -434,6 +480,7 @@
     transition: border-color .15s ease;
   }
   #backBtn:hover{ border-color: var(--amber-dim); color: var(--amber); }
+
   .watch-layout{
     max-width: 1240px;
     margin: 0 auto;
@@ -445,6 +492,7 @@
   @media (max-width: 980px){
     .watch-layout{ grid-template-columns: 1fr; }
   }
+
   .watch-player{
     position: relative;
     width: 100%;
@@ -457,6 +505,7 @@
   .watch-player iframe, .watch-player video{
     width:100%; height:100%; border:0; display:block;
   }
+
   .watch-info{
     padding-top: 20px;
   }
@@ -498,6 +547,8 @@
     border-radius: 12px;
     padding: 16px 18px;
   }
+
+  /* Related videos sidebar */
   .related-label{
     font-size: 13px;
     font-weight: 700;
@@ -557,6 +608,7 @@
   @media (max-width: 640px){
     .related-thumb{ width: 120px; }
   }
+
   .empty, .loading{
     color: var(--text-dim);
     text-align:center;
@@ -564,6 +616,7 @@
     font-size: 14px;
     letter-spacing: .02em;
   }
+
   .pagination{
     display:flex;
     align-items:center;
@@ -606,6 +659,7 @@
 </style>
 </head>
 <body>
+
 <div id="topbar">
   <div class="topbar-left">
     <button id="hamburger" aria-label="Menu">
@@ -625,6 +679,7 @@
     <div class="video-count" id="videoCount">Jumlah video: 0</div>
   </div>
 </div>
+
 <div id="sidebarOverlay"></div>
 <aside id="sidebar">
   <div class="side-section">
@@ -638,12 +693,14 @@
     <div id="tagList"></div>
   </div>
 </aside>
+
 <div id="contentCol">
   <div id="chipsRow"></div>
   <main id="homeMain">
     <div id="grid" class="grid"></div>
     <div id="pagination" class="pagination"></div>
   </main>
+
   <div id="watchView" class="watch-view" style="display:none">
     <button id="backBtn">‹ Kembali ke beranda</button>
     <div class="watch-layout">
@@ -661,10 +718,12 @@
       </aside>
     </div>
   </div>
+
   <footer>
-    <p>GO-CR💦T.FUN — Dibuat dengan ☕ dan ❤️ </p>
+    <p>GO-CR💦T.FUN Dibuat — dengan ☕ dan ❤️ </p>
   </footer>
 </div>
+
 <script>
 (function(){
   const grid = document.getElementById('grid');
@@ -684,6 +743,7 @@
   const searchInput = document.getElementById('searchInput');
   const hamburger = document.getElementById('hamburger');
   const sidebarOverlay = document.getElementById('sidebarOverlay');
+
   let allData = [];
   let filteredData = [];
   let currentPage = 1;
@@ -693,11 +753,12 @@
   const ROWS_PER_PAGE = 4;
 
   function calcPerPage(){
-    const containerWidth = grid.clientWidth || window.innerWidth - 40;
     const isMobile = window.innerWidth <= 640;
-    const minCol = isMobile ? 140 : 220;
-    const gap = isMobile ? 8 : 14;
-    const cols = Math.max(1, Math.floor((containerWidth + gap) / (minCol + gap)));
+    if(isMobile){
+      return 8;
+    }
+    const containerWidth = grid.clientWidth || window.innerWidth - 40;
+    const cols = Math.max(1, Math.floor((containerWidth + 14) / (220 + 14)));
     return cols * ROWS_PER_PAGE;
   }
 
@@ -720,20 +781,17 @@
   function closeMobileSidebar(){
     document.body.classList.remove('sidebar-mobile-open');
   }
-
   sidebarOverlay.addEventListener('click', closeMobileSidebar);
 
   searchForm.addEventListener('submit', (e) => {
     e.preventDefault();
     applySearch();
   });
-
   let searchDebounce = null;
   searchInput.addEventListener('input', () => {
     clearTimeout(searchDebounce);
     searchDebounce = setTimeout(applySearch, 300);
   });
-
   function applySearch(){
     searchQuery = searchInput.value.trim().toLowerCase();
     applyFilters();
@@ -779,6 +837,7 @@
 
   function buildChipsAndSidebar(){
     const tags = getUniqueTags();
+
     chipsRow.innerHTML = '';
     const allChip = document.createElement('button');
     allChip.className = 'chip';
@@ -803,6 +862,7 @@
       sideBtn.addEventListener('click', () => setActiveTag(tag));
       tagListEl.appendChild(sideBtn);
     });
+
     updateActiveChipsAndSideItems();
   }
 
@@ -872,8 +932,10 @@
     watchPlayer.innerHTML = '';
     const el = makeEmbedEl(item.url, { autoplay: true, muted: false, controls: true });
     watchPlayer.appendChild(el);
+
     watchTitle.textContent = item.title || 'Tanpa judul';
     watchDesc.textContent = item.description || '';
+
     watchTags.innerHTML = '';
     (item.tags || []).forEach(t => {
       const btn = document.createElement('button');
@@ -884,10 +946,13 @@
       });
       watchTags.appendChild(btn);
     });
+
     buildRelated(item);
+
     chipsRow.style.display = 'none';
     homeMain.style.display = 'none';
     watchView.style.display = 'block';
+
     const url = new URL(window.location);
     url.searchParams.set('v', encodeURIComponent(item.url));
     url.searchParams.delete('page');
@@ -902,15 +967,18 @@
   function buildRelated(currentItem){
     relatedList.innerHTML = '';
     const currentTags = currentItem.tags || [];
+
     const others = allData.filter(it => it.url !== currentItem.url);
     const scored = others.map(it => {
       const shared = (it.tags || []).filter(t => currentTags.includes(t)).length;
       return { item: it, score: shared };
     });
     scored.sort((a, b) => b.score - a.score);
+
     scored.forEach(({ item }) => {
       const row = document.createElement('div');
       row.className = 'related-item';
+
       const thumb = document.createElement('div');
       thumb.className = 'related-thumb';
       const img = document.createElement('img');
@@ -919,6 +987,7 @@
       img.alt = '';
       thumb.appendChild(img);
       row.appendChild(thumb);
+
       const info = document.createElement('div');
       info.className = 'related-info';
       const title = document.createElement('div');
@@ -932,6 +1001,7 @@
         info.appendChild(tagsLine);
       }
       row.appendChild(info);
+
       row.addEventListener('click', () => openWatch(item));
       relatedList.appendChild(row);
     });
@@ -942,6 +1012,7 @@
     chipsRow.style.display = '';
     homeMain.style.display = '';
     watchPlayer.innerHTML = '';
+
     if(!opts.skipHistory){
       const url = new URL(window.location);
       url.searchParams.delete('v');
@@ -965,7 +1036,6 @@
     }
   });
 
-  // ✂️ MODIFIED: Avatar creation removed entirely
   function render(items){
     grid.innerHTML = '';
     if(!items.length){
@@ -975,6 +1045,7 @@
     }
     const start = (currentPage - 1) * PER_PAGE;
     const pageItems = items.slice(start, start + PER_PAGE);
+
     pageItems.forEach((item, i) => {
       const { cover, url, title, tags } = item;
       const card = document.createElement('div');
@@ -983,30 +1054,41 @@
 
       const thumb = document.createElement('div');
       thumb.className = 'thumb';
+
       const img = document.createElement('img');
       img.className = 'cover';
       img.src = cover;
       img.loading = 'lazy';
       img.alt = '';
       thumb.appendChild(img);
+
       const ring = document.createElement('div');
       ring.className = 'hover-ring';
       thumb.appendChild(ring);
+
       const play = document.createElement('div');
       play.className = 'play';
       play.innerHTML = '<svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>';
       thumb.appendChild(play);
+
       card.appendChild(thumb);
 
-      // Meta section now only contains text (no avatar)
       const meta = document.createElement('div');
       meta.className = 'card-meta';
+
+      const avatar = document.createElement('div');
+      avatar.className = 'card-avatar';
+      avatar.textContent = (title || '?').trim().charAt(0).toUpperCase();
+      meta.appendChild(avatar);
+
       const text = document.createElement('div');
       text.className = 'card-text';
+
       const h3 = document.createElement('h3');
       h3.className = 'card-title';
       h3.textContent = title || 'Tanpa judul';
       text.appendChild(h3);
+
       if(tags && tags.length){
         const tagsEl = document.createElement('div');
         tagsEl.className = 'card-tags';
@@ -1021,8 +1103,10 @@
         });
         text.appendChild(tagsEl);
       }
+
       meta.appendChild(text);
       card.appendChild(meta);
+
       card.addEventListener('click', () => openWatch(item));
       grid.appendChild(card);
     });
@@ -1032,6 +1116,7 @@
     paginationEl.innerHTML = '';
     const totalPages = Math.ceil(items.length / PER_PAGE);
     if(totalPages <= 1) return;
+
     function makeBtn(label, page, opts = {}){
       const b = document.createElement('button');
       b.textContent = label;
@@ -1040,7 +1125,9 @@
       b.addEventListener('click', () => goToPage(page));
       return b;
     }
+
     paginationEl.appendChild(makeBtn('‹', currentPage - 1, { disabled: currentPage === 1 }));
+
     const pages = new Set([1, totalPages, currentPage, currentPage - 1, currentPage + 1]);
     let prev = 0;
     [...pages].filter(p => p >= 1 && p <= totalPages).sort((a,b)=>a-b).forEach(p => {
@@ -1053,6 +1140,7 @@
       paginationEl.appendChild(makeBtn(String(p), p, { active: p === currentPage }));
       prev = p;
     });
+
     paginationEl.appendChild(makeBtn('›', currentPage + 1, { disabled: currentPage === totalPages }));
   }
 
@@ -1076,6 +1164,7 @@
   }
 
   grid.innerHTML = '<div class="loading">Memuat video…</div>';
+
   fetch('data.json')
     .then(res => {
       if(!res.ok) throw new Error('gagal memuat data.json');
@@ -1088,8 +1177,10 @@
       videoCountEl.textContent = 'Jumlah video: ' + allData.length;
       buildChipsAndSidebar();
       PER_PAGE = calcPerPage();
+
       const vid = getVideoIdFromUrl();
       const watchItem = vid ? findItemByVideoId(vid) : null;
+
       if(watchItem){
         goToPage(1, { skipScroll: true });
         openWatch(watchItem, { replace: true });
@@ -1098,6 +1189,7 @@
         const startPage = Math.min(getPageFromUrl(), totalPages);
         goToPage(startPage, { skipScroll: true });
       }
+
       let resizeTimer = null;
       window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
@@ -1119,5 +1211,6 @@
     });
 })();
 </script>
+
 </body>
 </html>
