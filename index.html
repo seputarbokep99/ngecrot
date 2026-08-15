@@ -1301,6 +1301,11 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+  .related-stats{
+    margin-top: 4px;
+    font-size: 11.5px;
+    color: var(--text-dim);
+  }
   .related-item:hover .related-title{
     color: var(--amber);
   }
@@ -2892,6 +2897,14 @@
       title.className = 'related-title';
       title.textContent = item.title || 'Tanpa judul';
       info.appendChild(title);
+
+      const statsEl = document.createElement('div');
+      statsEl.className = 'related-stats';
+      const viewsPart = formatViewsShort(item.views || 0);
+      const datePart = formatRelativeDate(item.createdAt);
+      statsEl.textContent = datePart ? (viewsPart + ' • ' + datePart) : viewsPart;
+      info.appendChild(statsEl);
+
       row.appendChild(info);
 
       row.addEventListener('click', () => openWatch(item));
