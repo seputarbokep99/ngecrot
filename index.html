@@ -532,6 +532,8 @@
     scrollbar-width: none;
     min-width: 0;
     max-width: 100%;
+    cursor: grab;
+    user-select: none;
   }
   #chipsRow::-webkit-scrollbar{ display:none; }
   .chip{
@@ -1511,6 +1513,47 @@
   let currentWatchItem = null;
   const backBtn = document.getElementById('backBtn');
   const chipsRow = document.getElementById('chipsRow');
+
+  // Drag-to-scroll pakai mouse (klik-tahan-geser)
+  (function enableDragScroll(el){
+    let isDown = false;
+    let startX = 0;
+    let startScroll = 0;
+    let moved = false;
+
+    el.addEventListener('mousedown', (e) => {
+      isDown = true;
+      moved = false;
+      startX = e.pageX;
+      startScroll = el.scrollLeft;
+      el.style.cursor = 'grabbing';
+    });
+    window.addEventListener('mouseup', () => {
+      isDown = false;
+      el.style.cursor = '';
+    });
+    window.addEventListener('mousemove', (e) => {
+      if(!isDown) return;
+      const dx = e.pageX - startX;
+      if(Math.abs(dx) > 4) moved = true;
+      el.scrollLeft = startScroll - dx;
+    });
+    // Cegah klik chip ke-trigger kalau tadi user lagi drag (bukan klik biasa)
+    el.addEventListener('click', (e) => {
+      if(moved){
+        e.stopPropagation();
+        e.preventDefault();
+      }
+    }, true);
+
+    // Roda mouse vertikal -> scroll horizontal (biar bisa scroll pakai wheel biasa juga)
+    el.addEventListener('wheel', (e) => {
+      if(Math.abs(e.deltaY) > Math.abs(e.deltaX)){
+        el.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }
+    }, { passive: false });
+  })(chipsRow);
   const tagListEl = document.getElementById('tagList');
   const searchForm = document.getElementById('searchForm');
   const searchInput = document.getElementById('searchInput');
