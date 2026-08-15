@@ -256,7 +256,7 @@
     flex-direction: column;
     gap: 10px;
   }
-  #loginEmail{
+  #loginEmail, #loginPassword{
     background: var(--bg);
     border: 1px solid var(--line);
     border-radius: 8px;
@@ -266,7 +266,7 @@
     font-size: 13px;
     outline: none;
   }
-  #loginEmail:focus{ border-color: var(--amber-dim); }
+  #loginEmail:focus, #loginPassword:focus{ border-color: var(--amber-dim); }
   #loginForm button{
     background: var(--amber);
     color: #0a0a0d;
@@ -279,6 +279,7 @@
     cursor: pointer;
   }
   #loginForm button:hover{ opacity: .88; }
+  #loginForm button:disabled{ opacity: .6; cursor: default; }
   #loginMsg{
     margin-top: 12px;
     font-size: 12.5px;
@@ -286,6 +287,24 @@
     min-height: 16px;
   }
   #loginMsg.success{ color: var(--amber); }
+  #loginMsg.error{ color: #ff6b6b; }
+  .auth-toggle-text{
+    margin-top: 14px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    text-align: center;
+  }
+  .auth-toggle-text button{
+    background: none;
+    border: 0;
+    color: var(--amber);
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+  }
 
   /* Sidebar */
   #sidebar{
@@ -908,13 +927,15 @@
 <div id="loginModal" class="login-modal">
   <div class="login-box">
     <button id="loginCloseBtn" class="login-close">✕</button>
-    <h3>Masuk ke STREAMINGIN</h3>
-    <p>Masukin email kamu, nanti kita kirim link ajaib buat login (gak perlu password).</p>
+    <h3 id="loginTitle">Masuk ke STREAMINGIN</h3>
+    <p id="loginDesc">Masukin email dan password kamu.</p>
     <form id="loginForm">
-      <input type="email" id="loginEmail" placeholder="Email kamu" required>
-      <button type="submit">Kirim Link Login</button>
+      <input type="email" id="loginEmail" placeholder="Email kamu" required autocomplete="email">
+      <input type="password" id="loginPassword" placeholder="Password (minimal 6 karakter)" minlength="6" required autocomplete="current-password">
+      <button type="submit" id="loginSubmitBtn">Masuk</button>
     </form>
     <div id="loginMsg"></div>
+    <div class="auth-toggle-text" id="authToggleText"></div>
   </div>
 </div>
 
@@ -1248,13 +1269,43 @@
   const loginCloseBtn = document.getElementById('loginCloseBtn');
   const loginForm = document.getElementById('loginForm');
   const loginEmail = document.getElementById('loginEmail');
+  const loginPassword = document.getElementById('loginPassword');
   const loginMsg = document.getElementById('loginMsg');
+  const loginTitle = document.getElementById('loginTitle');
+  const loginDesc = document.getElementById('loginDesc');
+  const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+  const authToggleText = document.getElementById('authToggleText');
   const commentLoginPrompt = document.getElementById('commentLoginPrompt');
   const commentLoginBtn = document.getElementById('commentLoginBtn');
 
-  function openLoginModal(){
+  let authMode = 'login'; // 'login' | 'signup'
+
+  function updateAuthModalUI(){
+    if(authMode === 'login'){
+      loginTitle.textContent = 'Masuk ke STREAMINGIN';
+      loginDesc.textContent = 'Masukin email dan password akun kamu.';
+      loginSubmitBtn.textContent = 'Masuk';
+      authToggleText.innerHTML = 'Belum punya akun? <button type="button" id="toggleAuthBtn">Daftar di sini</button>';
+    } else {
+      loginTitle.textContent = 'Daftar Akun Baru';
+      loginDesc.textContent = 'Bikin akun dulu buat bisa komentar di STREAMINGIN.';
+      loginSubmitBtn.textContent = 'Daftar';
+      authToggleText.innerHTML = 'Sudah punya akun? <button type="button" id="toggleAuthBtn">Masuk di sini</button>';
+    }
+    document.getElementById('toggleAuthBtn').addEventListener('click', () => {
+      authMode = (authMode === 'login') ? 'signup' : 'login';
+      loginMsg.textContent = '';
+      loginMsg.className = '';
+      updateAuthModalUI();
+    });
+  }
+
+  function openLoginModal(mode){
+    authMode = mode || 'login';
     loginMsg.textContent = '';
     loginMsg.className = '';
+    loginForm.reset();
+    updateAuthModalUI();
     loginModal.classList.add('open');
   }
   function closeLoginModal(){
@@ -1262,24 +1313,44 @@
   }
   loginCloseBtn.addEventListener('click', closeLoginModal);
   loginModal.addEventListener('click', (e) => { if(e.target === loginModal) closeLoginModal(); });
-  commentLoginBtn.addEventListener('click', openLoginModal);
+  commentLoginBtn.addEventListener('click', () => openLoginModal('login'));
 
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = loginEmail.value.trim();
-    if(!email) return;
-    loginMsg.textContent = 'Mengirim link login...';
+    const password = loginPassword.value;
+    if(!email || !password) return;
+
+    loginSubmitBtn.disabled = true;
     loginMsg.className = '';
-    const { error } = await sb.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: window.location.href }
-    });
-    if(error){
-      loginMsg.textContent = 'Gagal: ' + error.message;
-      loginMsg.className = '';
+
+    if(authMode === 'login'){
+      loginMsg.textContent = 'Sedang masuk...';
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      loginSubmitBtn.disabled = false;
+      if(error){
+        loginMsg.textContent = 'Email atau password salah. Belum punya akun? Daftar dulu di bawah.';
+        loginMsg.className = 'error';
+      } else {
+        loginMsg.textContent = 'Berhasil masuk!';
+        loginMsg.className = 'success';
+      }
     } else {
-      loginMsg.textContent = 'Link login udah dikirim! Cek inbox email kamu (termasuk folder spam).';
-      loginMsg.className = 'success';
+      loginMsg.textContent = 'Membuat akun...';
+      const { data, error } = await sb.auth.signUp({ email, password });
+      loginSubmitBtn.disabled = false;
+      if(error){
+        loginMsg.textContent = 'Gagal daftar: ' + error.message;
+        loginMsg.className = 'error';
+      } else if(data.session){
+        loginMsg.textContent = 'Akun berhasil dibuat, kamu langsung masuk!';
+        loginMsg.className = 'success';
+      } else {
+        loginMsg.textContent = 'Akun berhasil dibuat! Cek email kamu buat verifikasi dulu sebelum bisa masuk.';
+        loginMsg.className = 'success';
+        authMode = 'login';
+        updateAuthModalUI();
+      }
     }
   });
 
@@ -1312,7 +1383,7 @@
       const btn = document.createElement('button');
       btn.className = 'auth-login-btn';
       btn.textContent = 'Masuk';
-      btn.addEventListener('click', openLoginModal);
+      btn.addEventListener('click', () => openLoginModal('login'));
       authArea.appendChild(btn);
     }
 
