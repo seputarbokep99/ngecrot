@@ -314,7 +314,6 @@
   }
   @media (max-width: 640px){
     .grid{ grid-template-columns: 1fr; gap: 22px; }
-    .card-tags{ display:none; }
     .card-meta{ padding-top: 10px; }
     .card-title{ font-size: 15px; -webkit-line-clamp: 2; }
   }
@@ -360,27 +359,6 @@
   }
   .card:hover .card-title{
     color: var(--amber);
-  }
-  .card-tags{
-    margin-top: 6px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .card-tags button{
-    font-family: inherit;
-    font-size: 11px;
-    color: var(--text-dim);
-    background: var(--bg-soft);
-    border: 1px solid var(--line);
-    padding: 2px 8px;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: color .15s ease, border-color .15s ease;
-  }
-  .card-tags button:hover{
-    color: var(--amber);
-    border-color: var(--amber-dim);
   }
   .card:hover .hover-ring{
     opacity: 1;
@@ -533,7 +511,7 @@
     background: rgba(255,61,129,0.08);
     border: 1px solid var(--amber-dim);
     padding: 5px 12px;
-    border-radius: 999px;
+    border-radius: 5px;
     cursor: pointer;
     transition: background .15s ease, color .15s ease;
   }
@@ -970,7 +948,7 @@
   }
 
   function findItemByVideoId(vid){
-    return allData.find(item => encodeURIComponent(item.url) === vid);
+    return allData.find(item => item.url === vid);
   }
 
   function openWatch(item, opts = {}){
@@ -987,7 +965,7 @@
     watchView.style.display = 'block';
 
     const url = new URL(window.location);
-    url.searchParams.set('v', encodeURIComponent(item.url));
+    url.searchParams.set('v', item.url);
     url.searchParams.delete('page');
     if(opts.replace){
       history.replaceState({ view: 'watch' }, '', url);
@@ -1080,7 +1058,7 @@
     const pageItems = items.slice(start, start + PER_PAGE);
 
     pageItems.forEach((item, i) => {
-      const { cover, url, title, tags } = item;
+      const { cover, url, title } = item;
       const card = document.createElement('div');
       card.className = 'card';
       card.style.animationDelay = (Math.min(i,24) * 25) + 'ms';
@@ -1116,21 +1094,6 @@
       h3.className = 'card-title';
       h3.textContent = title || 'Tanpa judul';
       text.appendChild(h3);
-
-      if(tags && tags.length){
-        const tagsEl = document.createElement('div');
-        tagsEl.className = 'card-tags';
-        tags.slice(0, 3).forEach(t => {
-          const btn = document.createElement('button');
-          btn.textContent = '#' + t;
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            setFilter('tag', t);
-          });
-          tagsEl.appendChild(btn);
-        });
-        text.appendChild(tagsEl);
-      }
 
       meta.appendChild(text);
       card.appendChild(meta);
