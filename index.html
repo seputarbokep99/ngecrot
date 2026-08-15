@@ -595,7 +595,17 @@
     color: var(--text-dim);
   }
   @media (max-width: 640px){
-    .related-thumb{ width: 120px; }
+    .related-list{ gap: 18px; }
+    .related-item{
+      flex-direction: column;
+      padding: 0 0 6px;
+      gap: 8px;
+    }
+    .related-thumb{
+      width: 100%;
+    }
+    .related-title{ font-size: 14.5px; }
+    .related-tags{ display:none; }
   }
 
   .empty, .loading{
