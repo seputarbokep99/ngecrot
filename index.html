@@ -577,9 +577,13 @@
   main{
     padding: 20px 20px 60px;
     flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
   }
 
   .grid{
+    flex: 1 0 auto;
+    align-content: start;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 14px;
@@ -1408,7 +1412,7 @@
     <h3 id="adminFormTitle">Tambah Video Baru</h3>
     <form id="adminForm">
       <input type="hidden" id="adminVideoId">
-      <input type="url" id="adminCover" placeholder="URL Cover (gambar)" required>
+      <input type="url" id="adminCover" placeholder="URL Cover (link GitHub biasa juga bisa)" required>
       <input type="url" id="adminUrl" placeholder="URL Video (embed)" required>
       <input type="text" id="adminTitle" placeholder="Judul" required>
       <input type="text" id="adminStudio" placeholder="Studio">
@@ -2273,6 +2277,19 @@
     return str.split(',').map(s => s.trim()).filter(Boolean);
   }
 
+  function toRawGithubUrl(url){
+    if(!url) return url;
+    // Ubah link "blob" GitHub biasa jadi link raw.githubusercontent.com
+    // Contoh: https://github.com/user/repo/blob/main/cover.jpg
+    // Jadi:   https://raw.githubusercontent.com/user/repo/main/cover.jpg
+    const match = url.match(/^https:\/\/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/?#]+)\/([^?#]+)/);
+    if(match){
+      const [, owner, repo, branch, path] = match;
+      return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`;
+    }
+    return url;
+  }
+
   adminForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     adminSubmitBtn.disabled = true;
@@ -2280,8 +2297,8 @@
     adminMsg.className = '';
 
     const payload = {
-      cover: adminCover.value.trim(),
-      url: adminUrl.value.trim(),
+      cover: toRawGithubUrl(adminCover.value.trim()),
+      url: toRawGithubUrl(adminUrl.value.trim()),
       title: adminTitle.value.trim(),
       studio: adminStudio.value.trim() || null,
       cast_names: parseCommaList(adminCast.value),
