@@ -306,6 +306,114 @@
     text-decoration: underline;
   }
 
+  /* Admin panel */
+  .admin-box{
+    max-width: 480px;
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+  #adminForm{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  #adminForm input{
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    width: 100%;
+  }
+  #adminForm input:focus{ border-color: var(--amber-dim); }
+  .admin-form-actions{
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+  .admin-form-actions button{
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 9px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 0;
+  }
+  #adminSubmitBtn{ background: var(--amber); color: #0a0a0d; }
+  #adminSubmitBtn:disabled{ opacity: .6; cursor: default; }
+  #adminCancelEditBtn{ background: none; color: var(--text-dim); border: 1px solid var(--line); }
+  #adminMsg{
+    margin-top: 10px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+  #adminMsg.success{ color: var(--amber); }
+  #adminMsg.error{ color: #ff6b6b; }
+  .admin-divider{
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 20px 0 14px;
+  }
+  .admin-list-title{
+    margin: 0 0 12px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .admin-video-list{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .admin-video-row{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px;
+    border-radius: 8px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+  }
+  .admin-video-thumb{
+    width: 64px; flex-shrink: 0;
+    aspect-ratio: 16/9;
+    border-radius: 6px;
+    object-fit: cover;
+    background: var(--bg-soft);
+  }
+  .admin-video-title{
+    flex: 1;
+    min-width: 0;
+    font-size: 12.5px;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .admin-video-actions{
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .admin-video-actions button{
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 11px;
+    padding: 5px 9px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .admin-video-actions button:hover{ color: var(--amber); border-color: var(--amber-dim); }
+  .admin-video-actions button.danger:hover{ color: #ff6b6b; border-color: #ff6b6b; }
+
   /* Sidebar */
   #sidebar{
     position: fixed;
@@ -1209,12 +1317,44 @@
   </div>
 </div>
 
+<div id="adminModal" class="login-modal">
+  <div class="login-box admin-box">
+    <button id="adminCloseBtn" class="login-close">✕</button>
+    <h3 id="adminFormTitle">Tambah Video Baru</h3>
+    <form id="adminForm">
+      <input type="hidden" id="adminVideoId">
+      <input type="url" id="adminCover" placeholder="URL Cover (gambar)" required>
+      <input type="url" id="adminUrl" placeholder="URL Video (embed)" required>
+      <input type="text" id="adminTitle" placeholder="Judul" required>
+      <input type="text" id="adminStudio" placeholder="Studio">
+      <input type="text" id="adminCast" placeholder="Pemeran (pisahkan koma, contoh: Udin, Idin)">
+      <input type="text" id="adminTags" placeholder="Tag (pisahkan koma, contoh: kartun, malaysia)">
+      <div class="admin-form-actions">
+        <button type="button" id="adminCancelEditBtn" style="display:none">Batal Edit</button>
+        <button type="submit" id="adminSubmitBtn">Tambah Video</button>
+      </div>
+    </form>
+    <div id="adminMsg"></div>
+
+    <hr class="admin-divider">
+
+    <h4 class="admin-list-title">Semua Video (<span id="adminVideoCount">0</span>)</h4>
+    <div id="adminVideoList" class="admin-video-list"></div>
+  </div>
+</div>
+
 <div id="sidebarOverlay"></div>
 <aside id="sidebar">
   <div class="side-section">
     <button class="side-item active" data-action="home">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
       <span>Beranda</span>
+    </button>
+  </div>
+  <div class="side-section" id="adminSideSection" style="display:none">
+    <button class="side-item" id="adminPanelBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+      <span>Kelola Video</span>
     </button>
   </div>
   <div class="side-section">
@@ -1656,8 +1796,8 @@
 
   async function loadCurrentProfile(){
     if(!currentUser){ currentProfile = null; return; }
-    const { data } = await sb.from('profiles').select('display_name, avatar_url').eq('id', currentUser.id).single();
-    currentProfile = data || { display_name: currentUser.email.split('@')[0], avatar_url: null };
+    const { data } = await sb.from('profiles').select('display_name, avatar_url, is_admin').eq('id', currentUser.id).single();
+    currentProfile = data || { display_name: currentUser.email.split('@')[0], avatar_url: null, is_admin: false };
   }
 
   function renderAuthArea(){
@@ -1707,6 +1847,9 @@
 
     commentForm.style.display = currentUser ? 'flex' : 'none';
     commentLoginPrompt.style.display = currentUser ? 'none' : 'block';
+
+    const isAdmin = !!(currentProfile && currentProfile.is_admin);
+    document.getElementById('adminSideSection').style.display = isAdmin ? 'block' : 'none';
   }
 
   function openProfileModal(){
@@ -1784,7 +1927,7 @@
       return;
     }
 
-    currentProfile = { display_name: name, avatar_url: avatarUrl };
+    currentProfile = { display_name: name, avatar_url: avatarUrl, is_admin: currentProfile ? currentProfile.is_admin : false };
     profileMsg.textContent = 'Profil berhasil disimpan!';
     profileMsg.className = 'success';
     pendingAvatarFile = null;
@@ -1802,6 +1945,163 @@
     if(currentUser) closeLoginModal();
     if(currentWatchItem) renderComments(currentWatchItem);
   });
+
+  // ============================================
+  // ADMIN PANEL — tambah, edit, hapus video
+  // ============================================
+  const adminSideSection = document.getElementById('adminSideSection');
+  const adminPanelBtn = document.getElementById('adminPanelBtn');
+  const adminModal = document.getElementById('adminModal');
+  const adminCloseBtn = document.getElementById('adminCloseBtn');
+  const adminForm = document.getElementById('adminForm');
+  const adminVideoIdInput = document.getElementById('adminVideoId');
+  const adminCover = document.getElementById('adminCover');
+  const adminUrl = document.getElementById('adminUrl');
+  const adminTitle = document.getElementById('adminTitle');
+  const adminStudio = document.getElementById('adminStudio');
+  const adminCast = document.getElementById('adminCast');
+  const adminTags = document.getElementById('adminTags');
+  const adminFormTitle = document.getElementById('adminFormTitle');
+  const adminSubmitBtn = document.getElementById('adminSubmitBtn');
+  const adminCancelEditBtn = document.getElementById('adminCancelEditBtn');
+  const adminMsg = document.getElementById('adminMsg');
+  const adminVideoList = document.getElementById('adminVideoList');
+  const adminVideoCount = document.getElementById('adminVideoCount');
+
+  function resetAdminForm(){
+    adminVideoIdInput.value = '';
+    adminForm.reset();
+    adminFormTitle.textContent = 'Tambah Video Baru';
+    adminSubmitBtn.textContent = 'Tambah Video';
+    adminCancelEditBtn.style.display = 'none';
+    adminMsg.textContent = '';
+    adminMsg.className = '';
+  }
+
+  function openAdminModal(){
+    if(!currentProfile || !currentProfile.is_admin) return;
+    resetAdminForm();
+    renderAdminVideoList();
+    adminModal.classList.add('open');
+  }
+  function closeAdminModal(){
+    adminModal.classList.remove('open');
+  }
+  adminPanelBtn.addEventListener('click', () => { openAdminModal(); closeMobileSidebar(); });
+  adminCloseBtn.addEventListener('click', closeAdminModal);
+  adminModal.addEventListener('click', (e) => { if(e.target === adminModal) closeAdminModal(); });
+  adminCancelEditBtn.addEventListener('click', resetAdminForm);
+
+  function parseCommaList(str){
+    return str.split(',').map(s => s.trim()).filter(Boolean);
+  }
+
+  adminForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    adminSubmitBtn.disabled = true;
+    adminMsg.textContent = 'Menyimpan...';
+    adminMsg.className = '';
+
+    const payload = {
+      cover: adminCover.value.trim(),
+      url: adminUrl.value.trim(),
+      title: adminTitle.value.trim(),
+      studio: adminStudio.value.trim() || null,
+      cast_names: parseCommaList(adminCast.value),
+      tags: parseCommaList(adminTags.value)
+    };
+
+    let error;
+    if(adminVideoIdInput.value){
+      ({ error } = await sb.from('videos').update(payload).eq('id', adminVideoIdInput.value));
+    } else {
+      ({ error } = await sb.from('videos').insert(payload));
+    }
+
+    adminSubmitBtn.disabled = false;
+
+    if(error){
+      adminMsg.textContent = 'Gagal menyimpan: ' + error.message;
+      adminMsg.className = 'error';
+      return;
+    }
+
+    const wasEdit = !!adminVideoIdInput.value;
+    adminMsg.textContent = wasEdit ? 'Perubahan berhasil disimpan!' : 'Video berhasil ditambahkan!';
+    adminMsg.className = 'success';
+    resetAdminForm();
+    await reloadVideosFromDB();
+    renderAdminVideoList();
+  });
+
+  async function renderAdminVideoList(){
+    adminVideoList.innerHTML = '<div class="comment-empty">Memuat...</div>';
+    const { data, error } = await sb.from('videos').select('*').order('created_at', { ascending: false });
+    if(error){
+      adminVideoList.innerHTML = '<div class="comment-empty">Gagal memuat video.</div>';
+      return;
+    }
+    adminVideoCount.textContent = data.length;
+    adminVideoList.innerHTML = '';
+
+    if(!data.length){
+      adminVideoList.innerHTML = '<div class="comment-empty">Belum ada video.</div>';
+      return;
+    }
+
+    data.forEach(v => {
+      const row = document.createElement('div');
+      row.className = 'admin-video-row';
+
+      const img = document.createElement('img');
+      img.className = 'admin-video-thumb';
+      img.src = v.cover;
+      img.alt = '';
+      row.appendChild(img);
+
+      const title = document.createElement('div');
+      title.className = 'admin-video-title';
+      title.textContent = v.title;
+      row.appendChild(title);
+
+      const actions = document.createElement('div');
+      actions.className = 'admin-video-actions';
+
+      const editBtn = document.createElement('button');
+      editBtn.textContent = 'Edit';
+      editBtn.addEventListener('click', () => {
+        adminVideoIdInput.value = v.id;
+        adminCover.value = v.cover;
+        adminUrl.value = v.url;
+        adminTitle.value = v.title;
+        adminStudio.value = v.studio || '';
+        adminCast.value = (v.cast_names || []).join(', ');
+        adminTags.value = (v.tags || []).join(', ');
+        adminFormTitle.textContent = 'Edit Video';
+        adminSubmitBtn.textContent = 'Simpan Perubahan';
+        adminCancelEditBtn.style.display = 'inline-block';
+        adminMsg.textContent = '';
+        adminMsg.className = '';
+        adminForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'danger';
+      delBtn.textContent = 'Hapus';
+      delBtn.addEventListener('click', async () => {
+        if(!confirm('Hapus video "' + v.title + '"? Aksi ini gak bisa dibatalkan.')) return;
+        const { error: delError } = await sb.from('videos').delete().eq('id', v.id);
+        if(delError){ alert('Gagal menghapus: ' + delError.message); return; }
+        await reloadVideosFromDB();
+        renderAdminVideoList();
+      });
+
+      actions.appendChild(editBtn);
+      actions.appendChild(delBtn);
+      row.appendChild(actions);
+      adminVideoList.appendChild(row);
+    });
+  }
 
   // ============================================
   // KOMENTAR (Supabase) — reply, edit, hapus, reaksi
@@ -2360,50 +2660,76 @@
 
   grid.innerHTML = '<div class="loading">Memuat video…</div>';
 
-  fetch('data.json')
-    .then(res => {
-      if(!res.ok) throw new Error('gagal memuat data.json');
-      return res.json();
-    })
-    .then(data => {
-      allData = Array.isArray(data) ? data.filter(item => item && item.cover && item.url) : [];
-      allData = shuffle(allData);
-      filteredData = allData.slice();
-      videoCountEl.textContent = 'Jumlah video: ' + allData.length;
-      buildChipsAndSidebar();
-      PER_PAGE = calcPerPage();
+  async function fetchVideosFromDB(){
+    const { data, error } = await sb.from('videos').select('*').order('created_at', { ascending: true });
+    if(error){
+      console.error(error);
+      return null;
+    }
+    return (data || [])
+      .map(v => ({
+        cover: v.cover,
+        url: v.url,
+        title: v.title,
+        studio: v.studio,
+        cast: v.cast_names || [],
+        tags: v.tags || []
+      }))
+      .filter(item => item.cover && item.url);
+  }
 
-      const vid = getVideoIdFromUrl();
-      const watchItem = vid ? findItemByVideoId(vid) : null;
+  async function reloadVideosFromDB(){
+    const videos = await fetchVideosFromDB();
+    if(videos === null) return;
+    allData = shuffle(videos);
+    videoCountEl.textContent = 'Jumlah video: ' + allData.length;
+    buildChipsAndSidebar();
+    applyFilters();
+    PER_PAGE = calcPerPage();
+    goToPage(1, { skipScroll: true });
+  }
 
-      if(watchItem){
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const newPerPage = calcPerPage();
+      if(newPerPage !== PER_PAGE){
+        PER_PAGE = newPerPage;
         goToPage(1, { skipScroll: true });
-        openWatch(watchItem, { replace: true });
-      } else {
-        const totalPages = Math.max(1, Math.ceil(filteredData.length / PER_PAGE));
-        const startPage = Math.min(getPageFromUrl(), totalPages);
-        goToPage(startPage, { skipScroll: true });
       }
+      if(!isMobileViewport()){
+        document.body.classList.remove('sidebar-mobile-open');
+      }
+    }, 200);
+  });
 
-      let resizeTimer = null;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-          const newPerPage = calcPerPage();
-          if(newPerPage !== PER_PAGE){
-            PER_PAGE = newPerPage;
-            goToPage(1, { skipScroll: true });
-          }
-          if(!isMobileViewport()){
-            document.body.classList.remove('sidebar-mobile-open');
-          }
-        }, 200);
-      });
-    })
-    .catch(err => {
-      grid.innerHTML = '<div class="empty">Gagal memuat data.json.<br>Jalankan file ini lewat local server (bukan dibuka langsung dari file explorer),<br>contoh: <code>python3 -m http.server</code>, lalu buka http://localhost:8000<br><br>Pastikan tiap item punya field "cover" dan "url".</div>';
-      console.error(err);
-    });
+  (async () => {
+    const videos = await fetchVideosFromDB();
+
+    if(videos === null){
+      grid.innerHTML = '<div class="empty">Gagal memuat daftar video dari database.<br>Cek koneksi internet atau pengaturan Supabase kamu.</div>';
+      return;
+    }
+
+    allData = shuffle(videos);
+    filteredData = allData.slice();
+    videoCountEl.textContent = 'Jumlah video: ' + allData.length;
+    buildChipsAndSidebar();
+    PER_PAGE = calcPerPage();
+
+    const vid = getVideoIdFromUrl();
+    const watchItem = vid ? findItemByVideoId(vid) : null;
+
+    if(watchItem){
+      goToPage(1, { skipScroll: true });
+      openWatch(watchItem, { replace: true });
+    } else {
+      const totalPages = Math.max(1, Math.ceil(filteredData.length / PER_PAGE));
+      const startPage = Math.min(getPageFromUrl(), totalPages);
+      goToPage(startPage, { skipScroll: true });
+    }
+  })();
 })();
 </script>
 
