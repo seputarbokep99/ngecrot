@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NGECR💦T.FUN</title>
+<title>GO-CR💦T.FUN</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
@@ -313,7 +313,9 @@
     gap: 14px;
   }
   @media (max-width: 640px){
-    .grid{ grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+    .grid{ grid-template-columns: 1fr; gap: 22px; }
+    .card-meta{ padding-top: 10px; }
+    .card-title{ font-size: 15px; -webkit-line-clamp: 2; }
   }
 
   .card{
@@ -341,16 +343,6 @@
     gap: 10px;
     padding-top: 10px;
   }
-  .card-avatar{
-    flex-shrink: 0;
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    background: var(--teal);
-    display:flex; align-items:center; justify-content:center;
-    font-size: 13px; font-weight: 800;
-    color: var(--amber);
-    border: 1px solid var(--line);
-  }
   .card-text{
     min-width: 0;
   }
@@ -367,27 +359,6 @@
   }
   .card:hover .card-title{
     color: var(--amber);
-  }
-  .card-tags{
-    margin-top: 6px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .card-tags button{
-    font-family: inherit;
-    font-size: 11px;
-    color: var(--text-dim);
-    background: var(--bg-soft);
-    border: 1px solid var(--line);
-    padding: 2px 8px;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: color .15s ease, border-color .15s ease;
-  }
-  .card-tags button:hover{
-    color: var(--amber);
-    border-color: var(--amber-dim);
   }
   .card:hover .hover-ring{
     opacity: 1;
@@ -512,36 +483,41 @@
     color: var(--text);
     line-height: 1.3;
   }
-  .watch-tags{
+  .watch-meta{
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .watch-meta-row{
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 8px;
-    margin-bottom: 16px;
   }
-  .watch-tags button{
+  .meta-label{
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-dim);
+    margin-right: 2px;
+  }
+  .pill-btn{
     font-family: inherit;
     font-size: 12px;
     color: var(--amber);
     background: rgba(255,61,129,0.08);
     border: 1px solid var(--amber-dim);
     padding: 5px 12px;
-    border-radius: 999px;
+    border-radius: 5px;
     cursor: pointer;
     transition: background .15s ease, color .15s ease;
   }
-  .watch-tags button:hover{
+  .pill-btn:hover{
     background: var(--amber);
     color: #0a0a0d;
-  }
-  .watch-desc{
-    margin: 0;
-    color: var(--text-dim);
-    font-size: 14px;
-    line-height: 1.7;
-    background: var(--bg-soft);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 16px 18px;
   }
 
   /* Related videos sidebar */
@@ -596,13 +572,17 @@
   .related-item:hover .related-title{
     color: var(--amber);
   }
-  .related-tags{
-    margin-top: 5px;
-    font-size: 11px;
-    color: var(--text-dim);
-  }
   @media (max-width: 640px){
-    .related-thumb{ width: 120px; }
+    .related-list{ gap: 18px; }
+    .related-item{
+      flex-direction: column;
+      padding: 0 0 6px;
+      gap: 8px;
+    }
+    .related-thumb{
+      width: 100%;
+    }
+    .related-title{ font-size: 14.5px; }
   }
 
   .empty, .loading{
@@ -661,7 +641,7 @@
     <button id="hamburger" aria-label="Menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
-    <a href="#" class="brand" id="titleLink"><span class="dot"></span><span class="txt">NGECR💦T.FUN</span></a>
+    <a href="#" class="brand" id="titleLink"><span class="dot"></span><span class="txt">GO-CR💦T.FUN</span></a>
   </div>
   <div class="topbar-center">
     <form id="searchForm">
@@ -685,7 +665,7 @@
     </button>
   </div>
   <div class="side-section">
-    <div class="side-label">Jelajahi</div>
+    <div class="side-label">Daftar Pemeran</div>
     <div id="tagList"></div>
   </div>
 </aside>
@@ -704,8 +684,7 @@
         <div class="watch-player" id="watchPlayer"></div>
         <div class="watch-info">
           <h1 class="watch-title" id="watchTitle"></h1>
-          <div class="watch-tags" id="watchTags"></div>
-          <p class="watch-desc" id="watchDesc"></p>
+          <div class="watch-meta" id="watchMeta"></div>
         </div>
       </div>
       <aside class="watch-related">
@@ -716,7 +695,7 @@
   </div>
 
   <footer>
-    <p>NGECR💦T.FUN — Dibuat dengan ☕ dan ❤️ </p>
+    <p>GO-CR💦T.FUN — Dibuat dengan ☕ dan ❤️ </p>
   </footer>
 </div>
 
@@ -729,8 +708,7 @@
   const watchView = document.getElementById('watchView');
   const watchPlayer = document.getElementById('watchPlayer');
   const watchTitle = document.getElementById('watchTitle');
-  const watchTags = document.getElementById('watchTags');
-  const watchDesc = document.getElementById('watchDesc');
+  const watchMeta = document.getElementById('watchMeta');
   const relatedList = document.getElementById('relatedList');
   const backBtn = document.getElementById('backBtn');
   const chipsRow = document.getElementById('chipsRow');
@@ -744,16 +722,17 @@
   let filteredData = [];
   let currentPage = 1;
   let PER_PAGE = 12;
-  let activeTag = null;
+  let activeFilter = null; // { type: 'tag'|'studio'|'cast', value }
   let searchQuery = '';
   const ROWS_PER_PAGE = 4;
 
   function calcPerPage(){
-    const containerWidth = grid.clientWidth || window.innerWidth - 40;
     const isMobile = window.innerWidth <= 640;
-    const minCol = isMobile ? 140 : 220;
-    const gap = isMobile ? 8 : 14;
-    const cols = Math.max(1, Math.floor((containerWidth + gap) / (minCol + gap)));
+    if(isMobile){
+      return 8;
+    }
+    const containerWidth = grid.clientWidth || window.innerWidth - 40;
+    const cols = Math.max(1, Math.floor((containerWidth + 14) / (220 + 14)));
     return cols * ROWS_PER_PAGE;
   }
 
@@ -795,7 +774,7 @@
 
   function resetToHome(){
     if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
-    activeTag = null;
+    activeFilter = null;
     searchQuery = '';
     searchInput.value = '';
     applyFilters();
@@ -803,9 +782,10 @@
     goToPage(1);
   }
 
-  function setActiveTag(tag){
+  function setFilter(type, value){
     if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
-    activeTag = (activeTag === tag) ? null : tag;
+    const isSame = activeFilter && activeFilter.type === type && activeFilter.value === value;
+    activeFilter = isSame ? null : (value === null ? null : { type, value });
     applyFilters();
     updateActiveChipsAndSideItems();
     goToPage(1);
@@ -814,47 +794,65 @@
 
   function applyFilters(){
     filteredData = allData.filter(item => {
-      const matchesTag = !activeTag || (item.tags && item.tags.includes(activeTag));
+      let matchesFilter = true;
+      if(activeFilter){
+        if(activeFilter.type === 'tag') matchesFilter = !!(item.tags && item.tags.includes(activeFilter.value));
+        else if(activeFilter.type === 'studio') matchesFilter = item.studio === activeFilter.value;
+        else if(activeFilter.type === 'cast') matchesFilter = !!(item.cast && item.cast.includes(activeFilter.value));
+      }
       const q = searchQuery;
       const matchesSearch = !q ||
         (item.title || '').toLowerCase().includes(q) ||
-        (item.description || '').toLowerCase().includes(q) ||
+        (item.studio || '').toLowerCase().includes(q) ||
+        (item.cast || []).some(c => c.toLowerCase().includes(q)) ||
         (item.tags || []).some(t => t.toLowerCase().includes(q));
-      return matchesTag && matchesSearch;
+      return matchesFilter && matchesSearch;
     });
   }
 
   function getUniqueTags(){
     const set = new Set();
     allData.forEach(item => (item.tags || []).forEach(t => set.add(t)));
-    return [...set];
+    return [...set].sort((a, b) => a.localeCompare(b, 'id'));
+  }
+
+  function getUniqueCast(){
+    const set = new Set();
+    allData.forEach(item => (item.cast || []).forEach(c => set.add(c)));
+    return [...set].sort((a, b) => a.localeCompare(b, 'id'));
   }
 
   function buildChipsAndSidebar(){
     const tags = getUniqueTags();
+    const castList = getUniqueCast();
 
     chipsRow.innerHTML = '';
     const allChip = document.createElement('button');
     allChip.className = 'chip';
     allChip.textContent = 'Semua';
+    allChip.dataset.filterType = 'tag';
     allChip.dataset.tag = '';
-    allChip.addEventListener('click', () => setActiveTag(null));
+    allChip.addEventListener('click', () => setFilter('tag', null));
     chipsRow.appendChild(allChip);
 
-    tagListEl.innerHTML = '';
     tags.forEach(tag => {
       const chip = document.createElement('button');
       chip.className = 'chip';
       chip.textContent = '#' + tag;
+      chip.dataset.filterType = 'tag';
       chip.dataset.tag = tag;
-      chip.addEventListener('click', () => setActiveTag(tag));
+      chip.addEventListener('click', () => setFilter('tag', tag));
       chipsRow.appendChild(chip);
+    });
 
+    tagListEl.innerHTML = '';
+    castList.forEach(person => {
       const sideBtn = document.createElement('button');
       sideBtn.className = 'side-item';
-      sideBtn.dataset.tag = tag;
-      sideBtn.innerHTML = '<span class="tag-dot"></span><span>#' + tag + '</span>';
-      sideBtn.addEventListener('click', () => setActiveTag(tag));
+      sideBtn.dataset.filterType = 'cast';
+      sideBtn.dataset.cast = person;
+      sideBtn.innerHTML = '<span class="tag-dot"></span><span>' + person + '</span>';
+      sideBtn.addEventListener('click', () => setFilter('cast', person));
       tagListEl.appendChild(sideBtn);
     });
 
@@ -862,14 +860,16 @@
   }
 
   function updateActiveChipsAndSideItems(){
+    const activeTagValue = (activeFilter && activeFilter.type === 'tag') ? activeFilter.value : '';
+    const activeCastValue = (activeFilter && activeFilter.type === 'cast') ? activeFilter.value : '';
     chipsRow.querySelectorAll('.chip').forEach(el => {
-      el.classList.toggle('active', el.dataset.tag === (activeTag || ''));
+      el.classList.toggle('active', el.dataset.tag === (activeTagValue || ''));
     });
     tagListEl.querySelectorAll('.side-item').forEach(el => {
-      el.classList.toggle('active', el.dataset.tag === activeTag);
+      el.classList.toggle('active', el.dataset.cast === activeCastValue && !!activeCastValue);
     });
     document.querySelectorAll('.side-item[data-action]').forEach(el => {
-      el.classList.toggle('active', el.dataset.action === 'home' && !activeTag && !searchQuery);
+      el.classList.toggle('active', el.dataset.action === 'home' && !activeFilter && !searchQuery);
     });
   }
 
@@ -914,13 +914,45 @@
     return f;
   }
 
+  function buildWatchMeta(item){
+    watchMeta.innerHTML = '';
+    const rows = [
+      { label: 'Studio', type: 'studio', values: item.studio ? [item.studio] : [] },
+      { label: 'Pemeran', type: 'cast', values: item.cast || [] },
+      { label: 'Tag', type: 'tag', values: item.tags || [] }
+    ];
+    rows.forEach(row => {
+      if(!row.values.length) return;
+      const rowEl = document.createElement('div');
+      rowEl.className = 'watch-meta-row';
+
+      const labelEl = document.createElement('span');
+      labelEl.className = 'meta-label';
+      labelEl.textContent = row.label + ':';
+      rowEl.appendChild(labelEl);
+
+      row.values.forEach(val => {
+        const btn = document.createElement('button');
+        btn.className = 'pill-btn';
+        btn.textContent = row.type === 'tag' ? '#' + val : val;
+        btn.addEventListener('click', () => {
+          closeWatch({ skipHistory: true });
+          setFilter(row.type, val);
+        });
+        rowEl.appendChild(btn);
+      });
+
+      watchMeta.appendChild(rowEl);
+    });
+  }
+
   function getVideoIdFromUrl(){
     const params = new URLSearchParams(window.location.search);
     return params.get('v');
   }
 
   function findItemByVideoId(vid){
-    return allData.find(item => encodeURIComponent(item.url) === vid);
+    return allData.find(item => item.url === vid);
   }
 
   function openWatch(item, opts = {}){
@@ -929,19 +961,7 @@
     watchPlayer.appendChild(el);
 
     watchTitle.textContent = item.title || 'Tanpa judul';
-    watchDesc.textContent = item.description || '';
-
-    watchTags.innerHTML = '';
-    (item.tags || []).forEach(t => {
-      const btn = document.createElement('button');
-      btn.textContent = '#' + t;
-      btn.addEventListener('click', () => {
-        closeWatch({ skipHistory: true });
-        setActiveTag(t);
-      });
-      watchTags.appendChild(btn);
-    });
-
+    buildWatchMeta(item);
     buildRelated(item);
 
     chipsRow.style.display = 'none';
@@ -949,7 +969,7 @@
     watchView.style.display = 'block';
 
     const url = new URL(window.location);
-    url.searchParams.set('v', encodeURIComponent(item.url));
+    url.searchParams.set('v', item.url);
     url.searchParams.delete('page');
     if(opts.replace){
       history.replaceState({ view: 'watch' }, '', url);
@@ -989,12 +1009,6 @@
       title.className = 'related-title';
       title.textContent = item.title || 'Tanpa judul';
       info.appendChild(title);
-      if(item.tags && item.tags.length){
-        const tagsLine = document.createElement('div');
-        tagsLine.className = 'related-tags';
-        tagsLine.textContent = item.tags.slice(0, 2).map(t => '#' + t).join(' ');
-        info.appendChild(tagsLine);
-      }
       row.appendChild(info);
 
       row.addEventListener('click', () => openWatch(item));
@@ -1042,7 +1056,7 @@
     const pageItems = items.slice(start, start + PER_PAGE);
 
     pageItems.forEach((item, i) => {
-      const { cover, url, title, tags } = item;
+      const { cover, url, title } = item;
       const card = document.createElement('div');
       card.className = 'card';
       card.style.animationDelay = (Math.min(i,24) * 25) + 'ms';
@@ -1071,11 +1085,6 @@
       const meta = document.createElement('div');
       meta.className = 'card-meta';
 
-      const avatar = document.createElement('div');
-      avatar.className = 'card-avatar';
-      avatar.textContent = (title || '?').trim().charAt(0).toUpperCase();
-      meta.appendChild(avatar);
-
       const text = document.createElement('div');
       text.className = 'card-text';
 
@@ -1083,21 +1092,6 @@
       h3.className = 'card-title';
       h3.textContent = title || 'Tanpa judul';
       text.appendChild(h3);
-
-      if(tags && tags.length){
-        const tagsEl = document.createElement('div');
-        tagsEl.className = 'card-tags';
-        tags.slice(0, 3).forEach(t => {
-          const btn = document.createElement('button');
-          btn.textContent = '#' + t;
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            setActiveTag(t);
-          });
-          tagsEl.appendChild(btn);
-        });
-        text.appendChild(tagsEl);
-      }
 
       meta.appendChild(text);
       card.appendChild(meta);

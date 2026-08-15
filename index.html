@@ -520,6 +520,118 @@
     color: #0a0a0d;
   }
 
+  /* Comment section */
+  .comment-section{
+    margin-top: 28px;
+  }
+  .comment-heading{
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text);
+    margin: 0 0 16px;
+  }
+  #commentForm{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  #commentName{
+    width: 100%;
+    max-width: 260px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+  }
+  #commentName:focus{ border-color: var(--amber-dim); }
+  #commentText{
+    width: 100%;
+    min-height: 70px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13.5px;
+    line-height: 1.5;
+    resize: vertical;
+    outline: none;
+  }
+  #commentText::placeholder, #commentName::placeholder{ color: var(--text-dim); }
+  #commentText:focus{ border-color: var(--amber-dim); }
+  #commentForm button{
+    align-self: flex-end;
+    background: var(--amber);
+    color: #0a0a0d;
+    border: 0;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 9px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: opacity .15s ease;
+  }
+  #commentForm button:hover{ opacity: .88; }
+
+  #commentList{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .comment-item{
+    display: flex;
+    gap: 12px;
+  }
+  .comment-avatar{
+    flex-shrink: 0;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: var(--amber);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 12px;
+    font-weight: 800;
+    border: 1px solid var(--line);
+  }
+  .comment-body{
+    min-width: 0;
+    flex: 1;
+  }
+  .comment-head{
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 3px;
+  }
+  .comment-name{
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .comment-time{
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .comment-text{
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--text-dim);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .comment-empty{
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
   /* Related videos sidebar */
   .related-label{
     font-size: 13px;
@@ -686,6 +798,16 @@
           <h1 class="watch-title" id="watchTitle"></h1>
           <div class="watch-meta" id="watchMeta"></div>
         </div>
+
+        <div class="comment-section">
+          <h2 class="comment-heading">Komentar (<span id="commentCount">0</span>)</h2>
+          <form id="commentForm">
+            <input type="text" id="commentName" placeholder="Nama (opsional)" maxlength="40">
+            <textarea id="commentText" placeholder="Tulis komentar..." maxlength="500" required></textarea>
+            <button type="submit">Kirim</button>
+          </form>
+          <div id="commentList"></div>
+        </div>
       </div>
       <aside class="watch-related">
         <div class="related-label">Video lainnya</div>
@@ -710,6 +832,12 @@
   const watchTitle = document.getElementById('watchTitle');
   const watchMeta = document.getElementById('watchMeta');
   const relatedList = document.getElementById('relatedList');
+  const commentForm = document.getElementById('commentForm');
+  const commentName = document.getElementById('commentName');
+  const commentText = document.getElementById('commentText');
+  const commentList = document.getElementById('commentList');
+  const commentCount = document.getElementById('commentCount');
+  let currentWatchItem = null;
   const backBtn = document.getElementById('backBtn');
   const chipsRow = document.getElementById('chipsRow');
   const tagListEl = document.getElementById('tagList');
@@ -955,14 +1083,101 @@
     return allData.find(item => item.url === vid);
   }
 
+  function commentKey(item){
+    return 'streamingin_comments::' + item.url;
+  }
+
+  function loadComments(item){
+    try{
+      const raw = localStorage.getItem(commentKey(item));
+      return raw ? JSON.parse(raw) : [];
+    }catch(e){
+      return [];
+    }
+  }
+
+  function saveComments(item, comments){
+    try{
+      localStorage.setItem(commentKey(item), JSON.stringify(comments));
+    }catch(e){
+      console.error('Gagal menyimpan komentar', e);
+    }
+  }
+
+  function formatCommentTime(ts){
+    const d = new Date(ts);
+    return d.toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+
+  function renderComments(item){
+    const comments = loadComments(item);
+    commentCount.textContent = comments.length;
+    commentList.innerHTML = '';
+
+    if(!comments.length){
+      commentList.innerHTML = '<div class="comment-empty">Belum ada komentar. Jadi yang pertama komentar!</div>';
+      return;
+    }
+
+    comments.slice().reverse().forEach(c => {
+      const row = document.createElement('div');
+      row.className = 'comment-item';
+
+      const avatar = document.createElement('div');
+      avatar.className = 'comment-avatar';
+      avatar.textContent = (c.name || '?').trim().charAt(0).toUpperCase();
+      row.appendChild(avatar);
+
+      const body = document.createElement('div');
+      body.className = 'comment-body';
+
+      const head = document.createElement('div');
+      head.className = 'comment-head';
+      const nameEl = document.createElement('span');
+      nameEl.className = 'comment-name';
+      nameEl.textContent = c.name || 'Anonim';
+      const timeEl = document.createElement('span');
+      timeEl.className = 'comment-time';
+      timeEl.textContent = formatCommentTime(c.ts);
+      head.appendChild(nameEl);
+      head.appendChild(timeEl);
+      body.appendChild(head);
+
+      const textEl = document.createElement('p');
+      textEl.className = 'comment-text';
+      textEl.textContent = c.text;
+      body.appendChild(textEl);
+
+      row.appendChild(body);
+      commentList.appendChild(row);
+    });
+  }
+
+  commentForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if(!currentWatchItem) return;
+    const text = commentText.value.trim();
+    if(!text) return;
+    const name = commentName.value.trim();
+
+    const comments = loadComments(currentWatchItem);
+    comments.push({ name: name || 'Anonim', text, ts: Date.now() });
+    saveComments(currentWatchItem, comments);
+
+    commentText.value = '';
+    renderComments(currentWatchItem);
+  });
+
   function openWatch(item, opts = {}){
     watchPlayer.innerHTML = '';
     const el = makeEmbedEl(item.url, { autoplay: true, muted: false, controls: true });
     watchPlayer.appendChild(el);
 
+    currentWatchItem = item;
     watchTitle.textContent = item.title || 'Tanpa judul';
     buildWatchMeta(item);
     buildRelated(item);
+    renderComments(item);
 
     chipsRow.style.display = 'none';
     homeMain.style.display = 'none';
