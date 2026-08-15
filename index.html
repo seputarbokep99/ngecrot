@@ -138,20 +138,6 @@
     flex-shrink: 0;
     display:flex; align-items:center;
   }
-  .video-count{
-    color: var(--text-dim);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    background: var(--bg-soft);
-    border: 1px solid var(--line);
-    padding: 6px 12px;
-    border-radius: 999px;
-    white-space: nowrap;
-  }
-  @media (max-width: 720px){
-    .video-count{ display:none; }
-  }
   @media (max-width: 560px){
     .brand span.txt{ display:none; }
   }
@@ -506,6 +492,7 @@
     transition: margin-left .2s ease;
     min-height: 100vh;
     flex: 1;
+    min-width: 0;
     display:flex;
     flex-direction: column;
   }
@@ -543,6 +530,8 @@
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
     scrollbar-width: none;
+    min-width: 0;
+    max-width: 100%;
   }
   #chipsRow::-webkit-scrollbar{ display:none; }
   .chip{
@@ -980,6 +969,57 @@
     cursor: pointer;
   }
   .profile-avatar-btn:hover{ border-color: var(--amber-dim); color: var(--amber); }
+
+  /* Crop foto profil */
+  .crop-viewport{
+    width: 260px;
+    height: 260px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    margin: 0 auto 16px;
+    background: #000;
+    touch-action: none;
+    cursor: grab;
+  }
+  .crop-viewport.dragging{ cursor: grabbing; }
+  #cropImage{
+    position: absolute;
+    top: 0; left: 0;
+    transform-origin: top left;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+    max-width: none;
+  }
+  .crop-circle-mask{
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.6);
+    pointer-events: none;
+  }
+  #cropZoom{
+    width: 100%;
+    margin-bottom: 16px;
+    accent-color: var(--amber);
+  }
+  .crop-actions{
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+  .crop-actions button{
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 9px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 0;
+  }
+  #cropConfirmBtn{ background: var(--amber); color: #0a0a0d; }
+  #cropCancelBtn{ background: none; color: var(--text-dim); border: 1px solid var(--line); }
   #profileName{
     background: var(--bg);
     border: 1px solid var(--line);
@@ -1300,7 +1340,6 @@
     </form>
   </div>
   <div class="topbar-right">
-    <div class="video-count" id="videoCount">Jumlah video: 0</div>
     <div id="authArea"></div>
   </div>
 </div>
@@ -1341,6 +1380,23 @@
       <button type="submit" id="profileSaveBtn">Simpan</button>
     </form>
     <div id="profileMsg"></div>
+  </div>
+</div>
+
+<div id="cropModal" class="login-modal">
+  <div class="login-box crop-box">
+    <button id="cropCloseBtn" class="login-close">✕</button>
+    <h3>Atur Posisi Foto</h3>
+    <p>Geser buat pindah posisi, pakai slider buat zoom.</p>
+    <div class="crop-viewport" id="cropViewport">
+      <img id="cropImage" draggable="false" alt="">
+      <div class="crop-circle-mask"></div>
+    </div>
+    <input type="range" id="cropZoom" min="1" max="3" step="0.01" value="1">
+    <div class="crop-actions">
+      <button type="button" id="cropCancelBtn">Batal</button>
+      <button type="button" id="cropConfirmBtn">Pakai Foto Ini</button>
+    </div>
   </div>
 </div>
 
@@ -1442,7 +1498,6 @@
 (function(){
   const grid = document.getElementById('grid');
   const paginationEl = document.getElementById('pagination');
-  const videoCountEl = document.getElementById('videoCount');
   const homeMain = document.getElementById('homeMain');
   const watchView = document.getElementById('watchView');
   const watchPlayer = document.getElementById('watchPlayer');
@@ -1784,6 +1839,29 @@
   loginModal.addEventListener('click', (e) => { if(e.target === loginModal) closeLoginModal(); });
   commentLoginBtn.addEventListener('click', () => openLoginModal('login'));
 
+  function translateAuthError(message){
+    const m = (message || '').toLowerCase();
+    if(m.includes('invalid login credentials')){
+      return 'Email atau password salah. Kalau belum punya akun, daftar dulu di bawah.';
+    }
+    if(m.includes('user already registered') || m.includes('already registered') || m.includes('already exists')){
+      return 'Email ini udah kedaftar. Coba masuk aja, atau pakai email lain.';
+    }
+    if(m.includes('password should be at least') || m.includes('password is too short')){
+      return 'Password minimal 6 karakter.';
+    }
+    if(m.includes('invalid email') || m.includes('unable to validate email')){
+      return 'Format email gak valid. Cek lagi penulisannya.';
+    }
+    if(m.includes('email rate limit') || m.includes('rate limit exceeded') || m.includes('too many requests')){
+      return 'Kebanyakan percobaan dalam waktu singkat. Coba lagi beberapa menit lagi.';
+    }
+    if(m.includes('network')){
+      return 'Gagal terhubung ke server. Cek koneksi internet kamu.';
+    }
+    return message;
+  }
+
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = loginEmail.value.trim();
@@ -1798,7 +1876,7 @@
       const { error } = await sb.auth.signInWithPassword({ email, password });
       loginSubmitBtn.disabled = false;
       if(error){
-        loginMsg.textContent = 'Email atau password salah. Belum punya akun? Daftar dulu di bawah.';
+        loginMsg.textContent = translateAuthError(error.message);
         loginMsg.className = 'error';
       } else {
         loginMsg.textContent = 'Berhasil masuk!';
@@ -1812,8 +1890,16 @@
         options: { emailRedirectTo: window.location.origin + window.location.pathname }
       });
       loginSubmitBtn.disabled = false;
+
+      // Supabase quirk: kalau email sudah terdaftar & confirm-email aktif,
+      // signUp tetap "sukses" tanpa error tapi identities-nya kosong.
+      const emailAlreadyUsed = !error && data && data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0;
+
       if(error){
-        loginMsg.textContent = 'Gagal daftar: ' + error.message;
+        loginMsg.textContent = translateAuthError(error.message);
+        loginMsg.className = 'error';
+      } else if(emailAlreadyUsed){
+        loginMsg.textContent = 'Email ini udah kedaftar. Coba masuk aja, atau pakai email lain.';
         loginMsg.className = 'error';
       } else if(data.session){
         loginMsg.textContent = 'Akun berhasil dibuat, kamu langsung masuk!';
@@ -1915,17 +2001,126 @@
   profileCloseBtn.addEventListener('click', closeProfileModal);
   profileModal.addEventListener('click', (e) => { if(e.target === profileModal) closeProfileModal(); });
 
+  // ============================================
+  // CROP FOTO PROFIL (pan + zoom sebelum jadi avatar)
+  // ============================================
+  const cropModal = document.getElementById('cropModal');
+  const cropCloseBtn = document.getElementById('cropCloseBtn');
+  const cropViewport = document.getElementById('cropViewport');
+  const cropImage = document.getElementById('cropImage');
+  const cropZoom = document.getElementById('cropZoom');
+  const cropCancelBtn = document.getElementById('cropCancelBtn');
+  const cropConfirmBtn = document.getElementById('cropConfirmBtn');
+
+  const CROP_SIZE = 260;
+  const CROP_OUTPUT = 400;
+  let cropNaturalW = 0, cropNaturalH = 0, cropBaseScale = 1;
+  let cropTx = 0, cropTy = 0, cropObjectUrl = null;
+  let cropDragging = false, cropStartX = 0, cropStartY = 0, cropStartTx = 0, cropStartTy = 0;
+
+  function cropApplyTransform(){
+    const scale = cropBaseScale * parseFloat(cropZoom.value);
+    cropImage.style.transform = `translate(${cropTx}px, ${cropTy}px) scale(${scale})`;
+  }
+
+  function cropClamp(){
+    const scale = cropBaseScale * parseFloat(cropZoom.value);
+    const dispW = cropNaturalW * scale;
+    const dispH = cropNaturalH * scale;
+    const minTx = Math.min(0, CROP_SIZE - dispW);
+    const minTy = Math.min(0, CROP_SIZE - dispH);
+    cropTx = Math.min(0, Math.max(minTx, cropTx));
+    cropTy = Math.min(0, Math.max(minTy, cropTy));
+  }
+
+  function openCropModal(file){
+    if(cropObjectUrl) URL.revokeObjectURL(cropObjectUrl);
+    cropObjectUrl = URL.createObjectURL(file);
+    cropImage.src = cropObjectUrl;
+    cropImage.onload = () => {
+      cropNaturalW = cropImage.naturalWidth;
+      cropNaturalH = cropImage.naturalHeight;
+      cropBaseScale = Math.max(CROP_SIZE / cropNaturalW, CROP_SIZE / cropNaturalH);
+      cropZoom.value = 1;
+      const dispW = cropNaturalW * cropBaseScale;
+      const dispH = cropNaturalH * cropBaseScale;
+      cropTx = (CROP_SIZE - dispW) / 2;
+      cropTy = (CROP_SIZE - dispH) / 2;
+      cropClamp();
+      cropApplyTransform();
+      cropModal.classList.add('open');
+    };
+  }
+  function closeCropModal(){
+    cropModal.classList.remove('open');
+  }
+  cropCloseBtn.addEventListener('click', closeCropModal);
+  cropCancelBtn.addEventListener('click', closeCropModal);
+  cropModal.addEventListener('click', (e) => { if(e.target === cropModal) closeCropModal(); });
+
+  cropZoom.addEventListener('input', () => {
+    cropClamp();
+    cropApplyTransform();
+  });
+
+  function cropPointerDown(x, y){
+    cropDragging = true;
+    cropStartX = x; cropStartY = y;
+    cropStartTx = cropTx; cropStartTy = cropTy;
+    cropViewport.classList.add('dragging');
+  }
+  function cropPointerMove(x, y){
+    if(!cropDragging) return;
+    cropTx = cropStartTx + (x - cropStartX);
+    cropTy = cropStartTy + (y - cropStartY);
+    cropClamp();
+    cropApplyTransform();
+  }
+  function cropPointerUp(){
+    cropDragging = false;
+    cropViewport.classList.remove('dragging');
+  }
+
+  cropViewport.addEventListener('mousedown', (e) => cropPointerDown(e.clientX, e.clientY));
+  window.addEventListener('mousemove', (e) => cropPointerMove(e.clientX, e.clientY));
+  window.addEventListener('mouseup', cropPointerUp);
+  cropViewport.addEventListener('touchstart', (e) => {
+    const t = e.touches[0];
+    cropPointerDown(t.clientX, t.clientY);
+  }, { passive: true });
+  cropViewport.addEventListener('touchmove', (e) => {
+    const t = e.touches[0];
+    cropPointerMove(t.clientX, t.clientY);
+  }, { passive: true });
+  cropViewport.addEventListener('touchend', cropPointerUp);
+
+  cropConfirmBtn.addEventListener('click', () => {
+    const scale = cropBaseScale * parseFloat(cropZoom.value);
+    const sx = -cropTx / scale;
+    const sy = -cropTy / scale;
+    const sSize = CROP_SIZE / scale;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = CROP_OUTPUT;
+    canvas.height = CROP_OUTPUT;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(cropImage, sx, sy, sSize, sSize, 0, 0, CROP_OUTPUT, CROP_OUTPUT);
+
+    canvas.toBlob((blob) => {
+      pendingAvatarFile = blob;
+      const url = URL.createObjectURL(blob);
+      profileAvatarPreview.src = url;
+      profileAvatarPreview.style.display = 'block';
+      profileAvatarPlaceholder.style.display = 'none';
+      closeCropModal();
+    }, 'image/png');
+  });
+
   profileAvatarInput.addEventListener('change', () => {
     const file = profileAvatarInput.files[0];
     if(!file) return;
-    pendingAvatarFile = file;
-    const reader = new FileReader();
-    reader.onload = () => {
-      profileAvatarPreview.src = reader.result;
-      profileAvatarPreview.style.display = 'block';
-      profileAvatarPlaceholder.style.display = 'none';
-    };
-    reader.readAsDataURL(file);
+    openCropModal(file);
+    profileAvatarInput.value = '';
   });
 
   profileForm.addEventListener('submit', async (e) => {
@@ -1938,9 +2133,8 @@
     let avatarUrl = currentProfile ? currentProfile.avatar_url : null;
 
     if(pendingAvatarFile){
-      const ext = pendingAvatarFile.name.split('.').pop();
-      const path = currentUser.id + '/avatar.' + ext;
-      const { error: uploadError } = await sb.storage.from('avatars').upload(path, pendingAvatarFile, { upsert: true });
+      const path = currentUser.id + '/avatar.png';
+      const { error: uploadError } = await sb.storage.from('avatars').upload(path, pendingAvatarFile, { upsert: true, contentType: 'image/png' });
       if(uploadError){
         profileMsg.textContent = 'Gagal upload foto: ' + uploadError.message;
         profileMsg.className = 'error';
@@ -2722,7 +2916,6 @@
     const videos = await fetchVideosFromDB();
     if(videos === null) return;
     allData = shuffle(videos);
-    videoCountEl.textContent = 'Jumlah video: ' + allData.length;
     buildChipsAndSidebar();
     applyFilters();
     PER_PAGE = calcPerPage();
@@ -2754,7 +2947,6 @@
 
     allData = shuffle(videos);
     filteredData = allData.slice();
-    videoCountEl.textContent = 'Jumlah video: ' + allData.length;
     buildChipsAndSidebar();
     PER_PAGE = calcPerPage();
 
