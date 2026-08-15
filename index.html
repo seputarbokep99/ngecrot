@@ -317,12 +317,12 @@
   /* Toast notification */
   #toastContainer{
     position: fixed;
-    bottom: 24px;
+    top: calc(var(--topbar-h) + 16px);
     left: 50%;
     transform: translateX(-50%);
     z-index: 100;
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
     gap: 10px;
     align-items: center;
     pointer-events: none;
@@ -341,7 +341,7 @@
     border-radius: 10px;
     box-shadow: 0 12px 30px -10px rgba(0,0,0,0.6);
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(-10px);
     transition: opacity .25s ease, transform .25s ease;
   }
   .toast.error{ border-left-color: #ff6b6b; }
@@ -2409,7 +2409,7 @@
     const successText = wasEdit ? 'Perubahan berhasil disimpan!' : 'Video berhasil ditambahkan!';
     adminMsg.textContent = successText;
     adminMsg.className = 'success';
-    showToast('✅ ' + successText);
+    showToast(successText);
     resetAdminForm();
     await reloadVideosFromDB();
     renderAdminVideoList();
@@ -2473,7 +2473,7 @@
         if(!confirm('Hapus video "' + v.title + '"? Aksi ini gak bisa dibatalkan.')) return;
         const { error: delError } = await sb.from('videos').delete().eq('id', v.id);
         if(delError){ showToast('Gagal menghapus: ' + delError.message, 'error'); return; }
-        showToast('🗑️ Video berhasil dihapus!');
+        showToast('Video berhasil dihapus!');
         await reloadVideosFromDB();
         renderAdminVideoList();
       });
