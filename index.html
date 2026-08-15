@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
   :root{
     --bg: #0a0a0d;
@@ -154,6 +155,137 @@
   @media (max-width: 560px){
     .brand span.txt{ display:none; }
   }
+
+  /* Auth */
+  #authArea{
+    display: flex;
+    align-items: center;
+  }
+  .auth-login-btn{
+    background: var(--amber);
+    color: #0a0a0d;
+    border: 0;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .auth-login-btn:hover{ opacity: .88; }
+  .auth-user{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .auth-avatar{
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: var(--amber);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 12px; font-weight: 800;
+    border: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .auth-email{
+    font-size: 12px;
+    color: var(--text-dim);
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  @media (max-width: 560px){ .auth-email{ display:none; } }
+  .auth-logout-btn{
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .auth-logout-btn:hover{ color: var(--amber); border-color: var(--amber-dim); }
+
+  .login-modal{
+    display:none;
+    position: fixed; inset:0;
+    z-index: 60;
+    background: rgba(6,6,8,0.85);
+    backdrop-filter: blur(8px);
+    align-items:center; justify-content:center;
+    padding: 20px;
+  }
+  .login-modal.open{ display:flex; }
+  .login-box{
+    position: relative;
+    width: 100%;
+    max-width: 380px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 28px 24px;
+  }
+  .login-box h3{
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .login-box p{
+    margin: 0 0 18px;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .login-close{
+    position: absolute; top: 12px; right: 12px;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: none;
+    border: 0;
+    color: var(--text-dim);
+    cursor: pointer;
+  }
+  .login-close:hover{ color: var(--text); }
+  #loginForm{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  #loginEmail{
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+  }
+  #loginEmail:focus{ border-color: var(--amber-dim); }
+  #loginForm button{
+    background: var(--amber);
+    color: #0a0a0d;
+    border: 0;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  #loginForm button:hover{ opacity: .88; }
+  #loginMsg{
+    margin-top: 12px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    min-height: 16px;
+  }
+  #loginMsg.success{ color: var(--amber); }
 
   /* Sidebar */
   #sidebar{
@@ -536,19 +668,6 @@
     gap: 10px;
     margin-bottom: 24px;
   }
-  #commentName{
-    width: 100%;
-    max-width: 260px;
-    background: var(--bg-soft);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 9px 12px;
-    color: var(--text);
-    font-family: inherit;
-    font-size: 13px;
-    outline: none;
-  }
-  #commentName:focus{ border-color: var(--amber-dim); }
   #commentText{
     width: 100%;
     min-height: 70px;
@@ -563,7 +682,7 @@
     resize: vertical;
     outline: none;
   }
-  #commentText::placeholder, #commentName::placeholder{ color: var(--text-dim); }
+  #commentText::placeholder{ color: var(--text-dim); }
   #commentText:focus{ border-color: var(--amber-dim); }
   #commentForm button{
     align-self: flex-end;
@@ -579,6 +698,23 @@
     transition: opacity .15s ease;
   }
   #commentForm button:hover{ opacity: .88; }
+
+  .comment-login-prompt{
+    margin-bottom: 20px;
+  }
+  #commentLoginBtn{
+    background: var(--bg-soft);
+    border: 1px dashed var(--line);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 13px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+  }
+  #commentLoginBtn:hover{ border-color: var(--amber-dim); color: var(--amber); }
 
   #commentList{
     display: flex;
@@ -765,6 +901,20 @@
   </div>
   <div class="topbar-right">
     <div class="video-count" id="videoCount">Jumlah video: 0</div>
+    <div id="authArea"></div>
+  </div>
+</div>
+
+<div id="loginModal" class="login-modal">
+  <div class="login-box">
+    <button id="loginCloseBtn" class="login-close">✕</button>
+    <h3>Masuk ke STREAMINGIN</h3>
+    <p>Masukin email kamu, nanti kita kirim link ajaib buat login (gak perlu password).</p>
+    <form id="loginForm">
+      <input type="email" id="loginEmail" placeholder="Email kamu" required>
+      <button type="submit">Kirim Link Login</button>
+    </form>
+    <div id="loginMsg"></div>
   </div>
 </div>
 
@@ -801,11 +951,13 @@
 
         <div class="comment-section">
           <h2 class="comment-heading">Komentar (<span id="commentCount">0</span>)</h2>
-          <form id="commentForm">
-            <input type="text" id="commentName" placeholder="Nama (opsional)" maxlength="40">
+          <form id="commentForm" style="display:none">
             <textarea id="commentText" placeholder="Tulis komentar..." maxlength="500" required></textarea>
             <button type="submit">Kirim</button>
           </form>
+          <div id="commentLoginPrompt" class="comment-login-prompt">
+            <button id="commentLoginBtn">Masuk buat komentar</button>
+          </div>
           <div id="commentList"></div>
         </div>
       </div>
@@ -833,7 +985,6 @@
   const watchMeta = document.getElementById('watchMeta');
   const relatedList = document.getElementById('relatedList');
   const commentForm = document.getElementById('commentForm');
-  const commentName = document.getElementById('commentName');
   const commentText = document.getElementById('commentText');
   const commentList = document.getElementById('commentList');
   const commentCount = document.getElementById('commentCount');
@@ -1083,43 +1234,133 @@
     return allData.find(item => item.url === vid);
   }
 
-  function commentKey(item){
-    return 'streamingin_comments::' + item.url;
-  }
+  // ============================================
+  // SUPABASE SETUP
+  // ============================================
+  const SUPABASE_URL = 'https://xjgdtgurfepfgndvgkgu.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_hKsycVXK-zdslNTNQB32Bg_MnnJRYpN';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  function loadComments(item){
-    try{
-      const raw = localStorage.getItem(commentKey(item));
-      return raw ? JSON.parse(raw) : [];
-    }catch(e){
-      return [];
+  let currentUser = null;
+
+  const authArea = document.getElementById('authArea');
+  const loginModal = document.getElementById('loginModal');
+  const loginCloseBtn = document.getElementById('loginCloseBtn');
+  const loginForm = document.getElementById('loginForm');
+  const loginEmail = document.getElementById('loginEmail');
+  const loginMsg = document.getElementById('loginMsg');
+  const commentLoginPrompt = document.getElementById('commentLoginPrompt');
+  const commentLoginBtn = document.getElementById('commentLoginBtn');
+
+  function openLoginModal(){
+    loginMsg.textContent = '';
+    loginMsg.className = '';
+    loginModal.classList.add('open');
+  }
+  function closeLoginModal(){
+    loginModal.classList.remove('open');
+  }
+  loginCloseBtn.addEventListener('click', closeLoginModal);
+  loginModal.addEventListener('click', (e) => { if(e.target === loginModal) closeLoginModal(); });
+  commentLoginBtn.addEventListener('click', openLoginModal);
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = loginEmail.value.trim();
+    if(!email) return;
+    loginMsg.textContent = 'Mengirim link login...';
+    loginMsg.className = '';
+    const { error } = await sb.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.href }
+    });
+    if(error){
+      loginMsg.textContent = 'Gagal: ' + error.message;
+      loginMsg.className = '';
+    } else {
+      loginMsg.textContent = 'Link login udah dikirim! Cek inbox email kamu (termasuk folder spam).';
+      loginMsg.className = 'success';
     }
-  }
+  });
 
-  function saveComments(item, comments){
-    try{
-      localStorage.setItem(commentKey(item), JSON.stringify(comments));
-    }catch(e){
-      console.error('Gagal menyimpan komentar', e);
+  function renderAuthArea(){
+    authArea.innerHTML = '';
+    if(currentUser){
+      const wrap = document.createElement('div');
+      wrap.className = 'auth-user';
+
+      const avatar = document.createElement('div');
+      avatar.className = 'auth-avatar';
+      avatar.textContent = (currentUser.email || '?').charAt(0).toUpperCase();
+      wrap.appendChild(avatar);
+
+      const emailEl = document.createElement('span');
+      emailEl.className = 'auth-email';
+      emailEl.textContent = currentUser.email;
+      wrap.appendChild(emailEl);
+
+      const logoutBtn = document.createElement('button');
+      logoutBtn.className = 'auth-logout-btn';
+      logoutBtn.textContent = 'Keluar';
+      logoutBtn.addEventListener('click', async () => {
+        await sb.auth.signOut();
+      });
+      wrap.appendChild(logoutBtn);
+
+      authArea.appendChild(wrap);
+    } else {
+      const btn = document.createElement('button');
+      btn.className = 'auth-login-btn';
+      btn.textContent = 'Masuk';
+      btn.addEventListener('click', openLoginModal);
+      authArea.appendChild(btn);
     }
+
+    commentForm.style.display = currentUser ? 'flex' : 'none';
+    commentLoginPrompt.style.display = currentUser ? 'none' : 'block';
   }
 
+  renderAuthArea();
+
+  sb.auth.onAuthStateChange((event, session) => {
+    currentUser = session ? session.user : null;
+    renderAuthArea();
+    if(currentUser) closeLoginModal();
+    if(currentWatchItem) renderComments(currentWatchItem);
+  });
+
+  // ============================================
+  // KOMENTAR (Supabase)
+  // ============================================
   function formatCommentTime(ts){
     const d = new Date(ts);
     return d.toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
   }
 
-  function renderComments(item){
-    const comments = loadComments(item);
-    commentCount.textContent = comments.length;
+  async function renderComments(item){
+    commentList.innerHTML = '<div class="comment-empty">Memuat komentar...</div>';
+
+    const { data, error } = await sb
+      .from('comments')
+      .select('*')
+      .eq('video_url', item.url)
+      .order('created_at', { ascending: false });
+
+    if(error){
+      commentList.innerHTML = '<div class="comment-empty">Gagal memuat komentar.</div>';
+      console.error(error);
+      return;
+    }
+
+    commentCount.textContent = data.length;
     commentList.innerHTML = '';
 
-    if(!comments.length){
+    if(!data.length){
       commentList.innerHTML = '<div class="comment-empty">Belum ada komentar. Jadi yang pertama komentar!</div>';
       return;
     }
 
-    comments.slice().reverse().forEach(c => {
+    data.forEach(c => {
       const row = document.createElement('div');
       row.className = 'comment-item';
 
@@ -1138,7 +1379,7 @@
       nameEl.textContent = c.name || 'Anonim';
       const timeEl = document.createElement('span');
       timeEl.className = 'comment-time';
-      timeEl.textContent = formatCommentTime(c.ts);
+      timeEl.textContent = formatCommentTime(c.created_at);
       head.appendChild(nameEl);
       head.appendChild(timeEl);
       body.appendChild(head);
@@ -1153,16 +1394,28 @@
     });
   }
 
-  commentForm.addEventListener('submit', (e) => {
+  commentForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if(!currentWatchItem) return;
+    if(!currentWatchItem || !currentUser) return;
     const text = commentText.value.trim();
     if(!text) return;
-    const name = commentName.value.trim();
 
-    const comments = loadComments(currentWatchItem);
-    comments.push({ name: name || 'Anonim', text, ts: Date.now() });
-    saveComments(currentWatchItem, comments);
+    const submitBtn = commentForm.querySelector('button');
+    submitBtn.disabled = true;
+
+    const { error } = await sb.from('comments').insert({
+      video_url: currentWatchItem.url,
+      user_id: currentUser.id,
+      name: currentUser.email.split('@')[0],
+      text
+    });
+
+    submitBtn.disabled = false;
+
+    if(error){
+      alert('Gagal mengirim komentar: ' + error.message);
+      return;
+    }
 
     commentText.value = '';
     renderComments(currentWatchItem);
