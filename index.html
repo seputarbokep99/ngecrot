@@ -572,11 +572,6 @@
   .related-item:hover .related-title{
     color: var(--amber);
   }
-  .related-tags{
-    margin-top: 5px;
-    font-size: 11px;
-    color: var(--text-dim);
-  }
   @media (max-width: 640px){
     .related-list{ gap: 18px; }
     .related-item{
@@ -588,7 +583,6 @@
       width: 100%;
     }
     .related-title{ font-size: 14.5px; }
-    .related-tags{ display:none; }
   }
 
   .empty, .loading{
@@ -819,13 +813,13 @@
   function getUniqueTags(){
     const set = new Set();
     allData.forEach(item => (item.tags || []).forEach(t => set.add(t)));
-    return [...set];
+    return [...set].sort((a, b) => a.localeCompare(b, 'id'));
   }
 
   function getUniqueCast(){
     const set = new Set();
     allData.forEach(item => (item.cast || []).forEach(c => set.add(c)));
-    return [...set];
+    return [...set].sort((a, b) => a.localeCompare(b, 'id'));
   }
 
   function buildChipsAndSidebar(){
@@ -1015,12 +1009,6 @@
       title.className = 'related-title';
       title.textContent = item.title || 'Tanpa judul';
       info.appendChild(title);
-      if(item.tags && item.tags.length){
-        const tagsLine = document.createElement('div');
-        tagsLine.className = 'related-tags';
-        tagsLine.textContent = item.tags.slice(0, 2).map(t => '#' + t).join(' ');
-        info.appendChild(tagsLine);
-      }
       row.appendChild(info);
 
       row.addEventListener('click', () => openWatch(item));
