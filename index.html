@@ -314,6 +314,39 @@
     text-decoration: underline;
   }
 
+  /* Toast notification */
+  #toastContainer{
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 10px;
+    align-items: center;
+    pointer-events: none;
+  }
+  .toast{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--amber);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 12px 18px;
+    border-radius: 10px;
+    box-shadow: 0 12px 30px -10px rgba(0,0,0,0.6);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .25s ease, transform .25s ease;
+  }
+  .toast.error{ border-left-color: #ff6b6b; }
+  .toast.show{ opacity: 1; transform: translateY(0); }
+
   /* Admin panel */
   .admin-box{
     max-width: 480px;
@@ -635,6 +668,11 @@
   }
   .card:hover .card-title{
     color: var(--amber);
+  }
+  .card-stats{
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-dim);
   }
   .card:hover .hover-ring{
     opacity: 1;
@@ -1433,6 +1471,7 @@
 </div>
 
 <div id="sidebarOverlay"></div>
+<div id="toastContainer"></div>
 <aside id="sidebar">
   <div class="side-section">
     <button class="side-item active" data-action="home">
@@ -1502,6 +1541,46 @@
 
 <script>
 (function(){
+  const toastContainer = document.getElementById('toastContainer');
+
+  function formatViewsShort(n){
+    if(n < 1000) return n + 'x ditonton';
+    if(n < 1000000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + ' rb x ditonton';
+    return (n / 1000000).toFixed(1).replace(/\.0$/, '') + ' jt x ditonton';
+  }
+
+  function formatRelativeDate(dateStr){
+    if(!dateStr) return '';
+    const then = new Date(dateStr).getTime();
+    const now = Date.now();
+    const diffSec = Math.max(0, Math.floor((now - then) / 1000));
+
+    const units = [
+      ['tahun', 31536000],
+      ['bulan', 2592000],
+      ['minggu', 604800],
+      ['hari', 86400],
+      ['jam', 3600],
+      ['menit', 60]
+    ];
+    for(const [label, secs] of units){
+      const val = Math.floor(diffSec / secs);
+      if(val >= 1) return val + ' ' + label + ' lalu';
+    }
+    return 'baru saja';
+  }
+  function showToast(message, type){
+    const el = document.createElement('div');
+    el.className = 'toast' + (type === 'error' ? ' error' : '');
+    el.textContent = message;
+    toastContainer.appendChild(el);
+    requestAnimationFrame(() => el.classList.add('show'));
+    setTimeout(() => {
+      el.classList.remove('show');
+      setTimeout(() => el.remove(), 300);
+    }, 2800);
+  }
+
   const grid = document.getElementById('grid');
   const paginationEl = document.getElementById('pagination');
   const homeMain = document.getElementById('homeMain');
@@ -2270,7 +2349,8 @@
   }
   adminPanelBtn.addEventListener('click', () => { openAdminModal(); closeMobileSidebar(); });
   adminCloseBtn.addEventListener('click', closeAdminModal);
-  adminModal.addEventListener('click', (e) => { if(e.target === adminModal) closeAdminModal(); });
+  // Sengaja TIDAK ada klik-di-luar-buat-nutup di sini,
+  // biar form gak ke-cancel gak sengaja pas lagi diisi/edit.
   adminCancelEditBtn.addEventListener('click', resetAdminForm);
 
   function parseCommaList(str){
@@ -2321,8 +2401,10 @@
     }
 
     const wasEdit = !!adminVideoIdInput.value;
-    adminMsg.textContent = wasEdit ? 'Perubahan berhasil disimpan!' : 'Video berhasil ditambahkan!';
+    const successText = wasEdit ? 'Perubahan berhasil disimpan!' : 'Video berhasil ditambahkan!';
+    adminMsg.textContent = successText;
     adminMsg.className = 'success';
+    showToast('✅ ' + successText);
     resetAdminForm();
     await reloadVideosFromDB();
     renderAdminVideoList();
@@ -2385,7 +2467,8 @@
       delBtn.addEventListener('click', async () => {
         if(!confirm('Hapus video "' + v.title + '"? Aksi ini gak bisa dibatalkan.')) return;
         const { error: delError } = await sb.from('videos').delete().eq('id', v.id);
-        if(delError){ alert('Gagal menghapus: ' + delError.message); return; }
+        if(delError){ showToast('Gagal menghapus: ' + delError.message, 'error'); return; }
+        showToast('🗑️ Video berhasil dihapus!');
         await reloadVideosFromDB();
         renderAdminVideoList();
       });
@@ -2856,7 +2939,7 @@
     const pageItems = items.slice(start, start + PER_PAGE);
 
     pageItems.forEach((item, i) => {
-      const { cover, url, title } = item;
+      const { cover, url, title, views, createdAt } = item;
       const card = document.createElement('div');
       card.className = 'card';
       card.style.animationDelay = (Math.min(i,24) * 25) + 'ms';
@@ -2892,6 +2975,13 @@
       h3.className = 'card-title';
       h3.textContent = title || 'Tanpa judul';
       text.appendChild(h3);
+
+      const statsEl = document.createElement('div');
+      statsEl.className = 'card-stats';
+      const viewsPart = formatViewsShort(views || 0);
+      const datePart = formatRelativeDate(createdAt);
+      statsEl.textContent = datePart ? (viewsPart + ' • ' + datePart) : viewsPart;
+      text.appendChild(statsEl);
 
       meta.appendChild(text);
       card.appendChild(meta);
@@ -2955,11 +3045,20 @@
   grid.innerHTML = '<div class="loading">Memuat video…</div>';
 
   async function fetchVideosFromDB(){
-    const { data, error } = await sb.from('videos').select('*').order('created_at', { ascending: true });
+    const [{ data, error }, { data: viewRows }] = await Promise.all([
+      sb.from('videos').select('*').order('created_at', { ascending: true }),
+      sb.from('video_views').select('video_url')
+    ]);
     if(error){
       console.error(error);
       return null;
     }
+
+    const viewCounts = {};
+    (viewRows || []).forEach(r => {
+      viewCounts[r.video_url] = (viewCounts[r.video_url] || 0) + 1;
+    });
+
     return (data || [])
       .map(v => ({
         cover: v.cover,
@@ -2967,7 +3066,9 @@
         title: v.title,
         studio: v.studio,
         cast: v.cast_names || [],
-        tags: v.tags || []
+        tags: v.tags || [],
+        createdAt: v.created_at,
+        views: viewCounts[v.url] || 0
       }))
       .filter(item => item.cover && item.url);
   }
