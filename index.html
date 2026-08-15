@@ -505,13 +505,28 @@
     color: var(--text);
     line-height: 1.3;
   }
-  .watch-tags{
+  .watch-meta{
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .watch-meta-row{
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 8px;
-    margin-bottom: 16px;
   }
-  .watch-tags button{
+  .meta-label{
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-dim);
+    margin-right: 2px;
+  }
+  .pill-btn{
     font-family: inherit;
     font-size: 12px;
     color: var(--amber);
@@ -522,19 +537,9 @@
     cursor: pointer;
     transition: background .15s ease, color .15s ease;
   }
-  .watch-tags button:hover{
+  .pill-btn:hover{
     background: var(--amber);
     color: #0a0a0d;
-  }
-  .watch-desc{
-    margin: 0;
-    color: var(--text-dim);
-    font-size: 14px;
-    line-height: 1.7;
-    background: var(--bg-soft);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 16px 18px;
   }
 
   /* Related videos sidebar */
@@ -707,8 +712,7 @@
         <div class="watch-player" id="watchPlayer"></div>
         <div class="watch-info">
           <h1 class="watch-title" id="watchTitle"></h1>
-          <div class="watch-tags" id="watchTags"></div>
-          <p class="watch-desc" id="watchDesc"></p>
+          <div class="watch-meta" id="watchMeta"></div>
         </div>
       </div>
       <aside class="watch-related">
@@ -732,8 +736,7 @@
   const watchView = document.getElementById('watchView');
   const watchPlayer = document.getElementById('watchPlayer');
   const watchTitle = document.getElementById('watchTitle');
-  const watchTags = document.getElementById('watchTags');
-  const watchDesc = document.getElementById('watchDesc');
+  const watchMeta = document.getElementById('watchMeta');
   const relatedList = document.getElementById('relatedList');
   const backBtn = document.getElementById('backBtn');
   const chipsRow = document.getElementById('chipsRow');
@@ -747,7 +750,7 @@
   let filteredData = [];
   let currentPage = 1;
   let PER_PAGE = 12;
-  let activeTag = null;
+  let activeFilter = null; // { type: 'tag'|'studio'|'cast', value }
   let searchQuery = '';
   const ROWS_PER_PAGE = 4;
 
@@ -799,7 +802,7 @@
 
   function resetToHome(){
     if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
-    activeTag = null;
+    activeFilter = null;
     searchQuery = '';
     searchInput.value = '';
     applyFilters();
@@ -807,9 +810,10 @@
     goToPage(1);
   }
 
-  function setActiveTag(tag){
+  function setFilter(type, value){
     if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
-    activeTag = (activeTag === tag) ? null : tag;
+    const isSame = activeFilter && activeFilter.type === type && activeFilter.value === value;
+    activeFilter = isSame ? null : (value === null ? null : { type, value });
     applyFilters();
     updateActiveChipsAndSideItems();
     goToPage(1);
@@ -818,13 +822,19 @@
 
   function applyFilters(){
     filteredData = allData.filter(item => {
-      const matchesTag = !activeTag || (item.tags && item.tags.includes(activeTag));
+      let matchesFilter = true;
+      if(activeFilter){
+        if(activeFilter.type === 'tag') matchesFilter = !!(item.tags && item.tags.includes(activeFilter.value));
+        else if(activeFilter.type === 'studio') matchesFilter = item.studio === activeFilter.value;
+        else if(activeFilter.type === 'cast') matchesFilter = !!(item.cast && item.cast.includes(activeFilter.value));
+      }
       const q = searchQuery;
       const matchesSearch = !q ||
         (item.title || '').toLowerCase().includes(q) ||
-        (item.description || '').toLowerCase().includes(q) ||
+        (item.studio || '').toLowerCase().includes(q) ||
+        (item.cast || []).some(c => c.toLowerCase().includes(q)) ||
         (item.tags || []).some(t => t.toLowerCase().includes(q));
-      return matchesTag && matchesSearch;
+      return matchesFilter && matchesSearch;
     });
   }
 
@@ -841,8 +851,9 @@
     const allChip = document.createElement('button');
     allChip.className = 'chip';
     allChip.textContent = 'Semua';
+    allChip.dataset.filterType = 'tag';
     allChip.dataset.tag = '';
-    allChip.addEventListener('click', () => setActiveTag(null));
+    allChip.addEventListener('click', () => setFilter('tag', null));
     chipsRow.appendChild(allChip);
 
     tagListEl.innerHTML = '';
@@ -850,15 +861,17 @@
       const chip = document.createElement('button');
       chip.className = 'chip';
       chip.textContent = '#' + tag;
+      chip.dataset.filterType = 'tag';
       chip.dataset.tag = tag;
-      chip.addEventListener('click', () => setActiveTag(tag));
+      chip.addEventListener('click', () => setFilter('tag', tag));
       chipsRow.appendChild(chip);
 
       const sideBtn = document.createElement('button');
       sideBtn.className = 'side-item';
+      sideBtn.dataset.filterType = 'tag';
       sideBtn.dataset.tag = tag;
       sideBtn.innerHTML = '<span class="tag-dot"></span><span>#' + tag + '</span>';
-      sideBtn.addEventListener('click', () => setActiveTag(tag));
+      sideBtn.addEventListener('click', () => setFilter('tag', tag));
       tagListEl.appendChild(sideBtn);
     });
 
@@ -866,14 +879,15 @@
   }
 
   function updateActiveChipsAndSideItems(){
+    const activeTagValue = (activeFilter && activeFilter.type === 'tag') ? activeFilter.value : '';
     chipsRow.querySelectorAll('.chip').forEach(el => {
-      el.classList.toggle('active', el.dataset.tag === (activeTag || ''));
+      el.classList.toggle('active', el.dataset.tag === (activeTagValue || ''));
     });
     tagListEl.querySelectorAll('.side-item').forEach(el => {
-      el.classList.toggle('active', el.dataset.tag === activeTag);
+      el.classList.toggle('active', el.dataset.tag === activeTagValue);
     });
     document.querySelectorAll('.side-item[data-action]').forEach(el => {
-      el.classList.toggle('active', el.dataset.action === 'home' && !activeTag && !searchQuery);
+      el.classList.toggle('active', el.dataset.action === 'home' && !activeFilter && !searchQuery);
     });
   }
 
@@ -918,6 +932,38 @@
     return f;
   }
 
+  function buildWatchMeta(item){
+    watchMeta.innerHTML = '';
+    const rows = [
+      { label: 'Studio', type: 'studio', values: item.studio ? [item.studio] : [] },
+      { label: 'Pemeran', type: 'cast', values: item.cast || [] },
+      { label: 'Tag', type: 'tag', values: item.tags || [] }
+    ];
+    rows.forEach(row => {
+      if(!row.values.length) return;
+      const rowEl = document.createElement('div');
+      rowEl.className = 'watch-meta-row';
+
+      const labelEl = document.createElement('span');
+      labelEl.className = 'meta-label';
+      labelEl.textContent = row.label + ':';
+      rowEl.appendChild(labelEl);
+
+      row.values.forEach(val => {
+        const btn = document.createElement('button');
+        btn.className = 'pill-btn';
+        btn.textContent = row.type === 'tag' ? '#' + val : val;
+        btn.addEventListener('click', () => {
+          closeWatch({ skipHistory: true });
+          setFilter(row.type, val);
+        });
+        rowEl.appendChild(btn);
+      });
+
+      watchMeta.appendChild(rowEl);
+    });
+  }
+
   function getVideoIdFromUrl(){
     const params = new URLSearchParams(window.location.search);
     return params.get('v');
@@ -933,19 +979,7 @@
     watchPlayer.appendChild(el);
 
     watchTitle.textContent = item.title || 'Tanpa judul';
-    watchDesc.textContent = item.description || '';
-
-    watchTags.innerHTML = '';
-    (item.tags || []).forEach(t => {
-      const btn = document.createElement('button');
-      btn.textContent = '#' + t;
-      btn.addEventListener('click', () => {
-        closeWatch({ skipHistory: true });
-        setActiveTag(t);
-      });
-      watchTags.appendChild(btn);
-    });
-
+    buildWatchMeta(item);
     buildRelated(item);
 
     chipsRow.style.display = 'none';
@@ -1091,7 +1125,7 @@
           btn.textContent = '#' + t;
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            setActiveTag(t);
+            setFilter('tag', t);
           });
           tagsEl.appendChild(btn);
         });
