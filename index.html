@@ -787,6 +787,257 @@
     color: var(--text-dim);
   }
 
+  /* Watch stats: views + like */
+  .watch-stats{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 10px 0 14px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .like-btn{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .like-btn svg{ width: 16px; height: 16px; }
+  .like-btn:hover{ border-color: var(--amber-dim); color: var(--amber); }
+  .like-btn.liked{
+    color: var(--amber);
+    border-color: var(--amber);
+    background: rgba(255,61,129,0.08);
+  }
+  .like-btn.liked svg{ fill: var(--amber); }
+
+  /* Profile modal */
+  .profile-avatar-wrap{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .profile-avatar-preview, .profile-avatar-placeholder{
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--line);
+  }
+  .profile-avatar-placeholder{
+    background: var(--teal);
+    color: var(--amber);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 20px; font-weight: 800;
+  }
+  .profile-avatar-btn{
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .profile-avatar-btn:hover{ border-color: var(--amber-dim); color: var(--amber); }
+  #profileName{
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+  }
+  #profileName:focus{ border-color: var(--amber-dim); }
+  #profileForm{ display:flex; flex-direction:column; gap:12px; }
+  #profileForm button{
+    background: var(--amber);
+    color: #0a0a0d;
+    border: 0;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  #profileForm button:disabled{ opacity:.6; cursor:default; }
+  #profileMsg{
+    margin-top: 12px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+  #profileMsg.success{ color: var(--amber); }
+  #profileMsg.error{ color: #ff6b6b; }
+  .profile-trigger{
+    cursor: pointer;
+    border: 0;
+    background: none;
+    padding: 0;
+  }
+  .profile-trigger .auth-avatar, .profile-trigger .auth-avatar-img{
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  /* Comment: item, reply, reactions, menu */
+  .comment-item{
+    display: flex;
+    gap: 12px;
+  }
+  .comment-avatar-img{
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .comment-body{ min-width:0; flex:1; }
+  .comment-head{
+    display:flex; align-items:baseline; gap:8px;
+    position: relative;
+  }
+  .comment-edited{
+    font-size: 10.5px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+  .comment-menu-btn{
+    margin-left: auto;
+    background:none; border:0;
+    color: var(--text-dim);
+    cursor:pointer;
+    font-size: 15px;
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+  .comment-menu-btn:hover{ background: var(--bg-soft); color: var(--text); }
+  .comment-menu{
+    display:none;
+    position:absolute; right:0; top:22px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow:hidden;
+    z-index: 5;
+    min-width: 100px;
+  }
+  .comment-menu.open{ display:block; }
+  .comment-menu button{
+    display:block; width:100%;
+    text-align:left;
+    background:none; border:0;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 12.5px;
+    padding: 9px 12px;
+    cursor:pointer;
+  }
+  .comment-menu button:hover{ background: var(--bg); }
+  .comment-menu button.danger{ color: #ff6b6b; }
+
+  .comment-actions{
+    display:flex; align-items:center; gap: 4px;
+    margin-top: 6px;
+  }
+  .reaction-btn{
+    display:flex; align-items:center; gap:4px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    font-size: 12px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .reaction-btn:hover{ border-color: var(--amber-dim); }
+  .reaction-btn.active{
+    border-color: var(--amber);
+    color: var(--amber);
+    background: rgba(255,61,129,0.08);
+  }
+  .reply-btn{
+    background:none; border:0;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 3px 6px;
+  }
+  .reply-btn:hover{ color: var(--amber); }
+
+  .reply-form{
+    display:none;
+    margin-top: 10px;
+    gap: 8px;
+    flex-direction: column;
+  }
+  .reply-form.open{ display:flex; }
+  .reply-form textarea{
+    width:100%;
+    min-height: 54px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    resize: vertical;
+    outline: none;
+  }
+  .reply-form-actions{
+    display:flex; gap:8px; justify-content:flex-end;
+  }
+  .reply-form-actions button{
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor:pointer;
+    border: 0;
+  }
+  .reply-form-actions .reply-send{ background: var(--amber); color:#0a0a0d; }
+  .reply-form-actions .reply-cancel{ background: none; color: var(--text-dim); border: 1px solid var(--line); }
+
+  .replies-list{
+    margin-top: 12px;
+    padding-left: 16px;
+    border-left: 2px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .comment-edit-form{ display:flex; flex-direction:column; gap:8px; }
+  .comment-edit-form textarea{
+    width:100%; min-height:54px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13.5px;
+    resize: vertical;
+    outline: none;
+  }
+
   /* Related videos sidebar */
   .related-label{
     font-size: 13px;
@@ -939,6 +1190,25 @@
   </div>
 </div>
 
+<div id="profileModal" class="login-modal">
+  <div class="login-box">
+    <button id="profileCloseBtn" class="login-close">✕</button>
+    <h3>Edit Profil</h3>
+    <p>Ubah nama & foto profil kamu.</p>
+    <div class="profile-avatar-wrap">
+      <img id="profileAvatarPreview" class="profile-avatar-preview" src="" alt="">
+      <div id="profileAvatarPlaceholder" class="profile-avatar-placeholder">?</div>
+      <label for="profileAvatarInput" class="profile-avatar-btn">Ganti Foto</label>
+      <input type="file" id="profileAvatarInput" accept="image/*" style="display:none">
+    </div>
+    <form id="profileForm">
+      <input type="text" id="profileName" placeholder="Nama tampilan" maxlength="40" required>
+      <button type="submit" id="profileSaveBtn">Simpan</button>
+    </form>
+    <div id="profileMsg"></div>
+  </div>
+</div>
+
 <div id="sidebarOverlay"></div>
 <aside id="sidebar">
   <div class="side-section">
@@ -967,6 +1237,13 @@
         <div class="watch-player" id="watchPlayer"></div>
         <div class="watch-info">
           <h1 class="watch-title" id="watchTitle"></h1>
+          <div class="watch-stats">
+            <span id="watchViews">0x ditonton</span>
+            <button id="likeBtn" class="like-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+              <span id="likeCount">0</span>
+            </button>
+          </div>
           <div class="watch-meta" id="watchMeta"></div>
         </div>
 
@@ -1263,6 +1540,18 @@
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   let currentUser = null;
+  let currentProfile = null; // { display_name, avatar_url }
+
+  const profileModal = document.getElementById('profileModal');
+  const profileCloseBtn = document.getElementById('profileCloseBtn');
+  const profileForm = document.getElementById('profileForm');
+  const profileName = document.getElementById('profileName');
+  const profileAvatarInput = document.getElementById('profileAvatarInput');
+  const profileAvatarPreview = document.getElementById('profileAvatarPreview');
+  const profileAvatarPlaceholder = document.getElementById('profileAvatarPlaceholder');
+  const profileSaveBtn = document.getElementById('profileSaveBtn');
+  const profileMsg = document.getElementById('profileMsg');
+  let pendingAvatarFile = null;
 
   const authArea = document.getElementById('authArea');
   const loginModal = document.getElementById('loginModal');
@@ -1337,7 +1626,11 @@
       }
     } else {
       loginMsg.textContent = 'Membuat akun...';
-      const { data, error } = await sb.auth.signUp({ email, password });
+      const { data, error } = await sb.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: window.location.origin + window.location.pathname }
+      });
       loginSubmitBtn.disabled = false;
       if(error){
         loginMsg.textContent = 'Gagal daftar: ' + error.message;
@@ -1354,20 +1647,45 @@
     }
   });
 
+  function displayNameFor(userId, fallbackEmail){
+    if(currentUser && userId === currentUser.id && currentProfile && currentProfile.display_name){
+      return currentProfile.display_name;
+    }
+    return (fallbackEmail || '').split('@')[0] || 'Anonim';
+  }
+
+  async function loadCurrentProfile(){
+    if(!currentUser){ currentProfile = null; return; }
+    const { data } = await sb.from('profiles').select('display_name, avatar_url').eq('id', currentUser.id).single();
+    currentProfile = data || { display_name: currentUser.email.split('@')[0], avatar_url: null };
+  }
+
   function renderAuthArea(){
     authArea.innerHTML = '';
     if(currentUser){
       const wrap = document.createElement('div');
       wrap.className = 'auth-user';
 
-      const avatar = document.createElement('div');
-      avatar.className = 'auth-avatar';
-      avatar.textContent = (currentUser.email || '?').charAt(0).toUpperCase();
-      wrap.appendChild(avatar);
+      const trigger = document.createElement('button');
+      trigger.className = 'profile-trigger';
+      trigger.title = 'Edit profil';
+      if(currentProfile && currentProfile.avatar_url){
+        const img = document.createElement('img');
+        img.className = 'auth-avatar-img';
+        img.src = currentProfile.avatar_url;
+        trigger.appendChild(img);
+      } else {
+        const avatar = document.createElement('div');
+        avatar.className = 'auth-avatar';
+        avatar.textContent = displayNameFor(currentUser.id, currentUser.email).charAt(0).toUpperCase();
+        trigger.appendChild(avatar);
+      }
+      trigger.addEventListener('click', openProfileModal);
+      wrap.appendChild(trigger);
 
       const emailEl = document.createElement('span');
       emailEl.className = 'auth-email';
-      emailEl.textContent = currentUser.email;
+      emailEl.textContent = displayNameFor(currentUser.id, currentUser.email);
       wrap.appendChild(emailEl);
 
       const logoutBtn = document.createElement('button');
@@ -1391,31 +1709,140 @@
     commentLoginPrompt.style.display = currentUser ? 'none' : 'block';
   }
 
+  function openProfileModal(){
+    if(!currentUser) return;
+    pendingAvatarFile = null;
+    profileMsg.textContent = '';
+    profileMsg.className = '';
+    profileName.value = (currentProfile && currentProfile.display_name) || currentUser.email.split('@')[0];
+    if(currentProfile && currentProfile.avatar_url){
+      profileAvatarPreview.src = currentProfile.avatar_url;
+      profileAvatarPreview.style.display = 'block';
+      profileAvatarPlaceholder.style.display = 'none';
+    } else {
+      profileAvatarPreview.style.display = 'none';
+      profileAvatarPlaceholder.style.display = 'flex';
+      profileAvatarPlaceholder.textContent = displayNameFor(currentUser.id, currentUser.email).charAt(0).toUpperCase();
+    }
+    profileModal.classList.add('open');
+  }
+  function closeProfileModal(){
+    profileModal.classList.remove('open');
+  }
+  profileCloseBtn.addEventListener('click', closeProfileModal);
+  profileModal.addEventListener('click', (e) => { if(e.target === profileModal) closeProfileModal(); });
+
+  profileAvatarInput.addEventListener('change', () => {
+    const file = profileAvatarInput.files[0];
+    if(!file) return;
+    pendingAvatarFile = file;
+    const reader = new FileReader();
+    reader.onload = () => {
+      profileAvatarPreview.src = reader.result;
+      profileAvatarPreview.style.display = 'block';
+      profileAvatarPlaceholder.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  profileForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if(!currentUser) return;
+    profileSaveBtn.disabled = true;
+    profileMsg.textContent = 'Menyimpan...';
+    profileMsg.className = '';
+
+    let avatarUrl = currentProfile ? currentProfile.avatar_url : null;
+
+    if(pendingAvatarFile){
+      const ext = pendingAvatarFile.name.split('.').pop();
+      const path = currentUser.id + '/avatar.' + ext;
+      const { error: uploadError } = await sb.storage.from('avatars').upload(path, pendingAvatarFile, { upsert: true });
+      if(uploadError){
+        profileMsg.textContent = 'Gagal upload foto: ' + uploadError.message;
+        profileMsg.className = 'error';
+        profileSaveBtn.disabled = false;
+        return;
+      }
+      const { data: pub } = sb.storage.from('avatars').getPublicUrl(path);
+      avatarUrl = pub.publicUrl + '?t=' + Date.now();
+    }
+
+    const name = profileName.value.trim();
+    const { error } = await sb.from('profiles').upsert({
+      id: currentUser.id,
+      display_name: name,
+      avatar_url: avatarUrl,
+      updated_at: new Date().toISOString()
+    });
+
+    profileSaveBtn.disabled = false;
+
+    if(error){
+      profileMsg.textContent = 'Gagal menyimpan: ' + error.message;
+      profileMsg.className = 'error';
+      return;
+    }
+
+    currentProfile = { display_name: name, avatar_url: avatarUrl };
+    profileMsg.textContent = 'Profil berhasil disimpan!';
+    profileMsg.className = 'success';
+    pendingAvatarFile = null;
+    renderAuthArea();
+    if(currentWatchItem) renderComments(currentWatchItem);
+    setTimeout(closeProfileModal, 900);
+  });
+
   renderAuthArea();
 
-  sb.auth.onAuthStateChange((event, session) => {
+  sb.auth.onAuthStateChange(async (event, session) => {
     currentUser = session ? session.user : null;
+    await loadCurrentProfile();
     renderAuthArea();
     if(currentUser) closeLoginModal();
     if(currentWatchItem) renderComments(currentWatchItem);
   });
 
   // ============================================
-  // KOMENTAR (Supabase)
+  // KOMENTAR (Supabase) — reply, edit, hapus, reaksi
   // ============================================
+  const REACTIONS = ['👍', '❤️', '😂'];
+
   function formatCommentTime(ts){
     const d = new Date(ts);
     return d.toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
   }
 
+  async function fetchProfilesMap(userIds){
+    const uniqueIds = [...new Set(userIds)];
+    if(!uniqueIds.length) return {};
+    const { data } = await sb.from('profiles').select('id, display_name, avatar_url').in('id', uniqueIds);
+    const map = {};
+    (data || []).forEach(p => { map[p.id] = p; });
+    return map;
+  }
+
+  function buildAvatarEl(profile, fallbackChar){
+    if(profile && profile.avatar_url){
+      const img = document.createElement('img');
+      img.className = 'comment-avatar-img';
+      img.src = profile.avatar_url;
+      img.alt = '';
+      return img;
+    }
+    const div = document.createElement('div');
+    div.className = 'comment-avatar';
+    div.textContent = (fallbackChar || '?').toUpperCase();
+    return div;
+  }
+
   async function renderComments(item){
     commentList.innerHTML = '<div class="comment-empty">Memuat komentar...</div>';
 
-    const { data, error } = await sb
-      .from('comments')
-      .select('*')
-      .eq('video_url', item.url)
-      .order('created_at', { ascending: false });
+    const [{ data: allComments, error }, { data: allReactions }] = await Promise.all([
+      sb.from('comments').select('*').eq('video_url', item.url).order('created_at', { ascending: true }),
+      sb.from('comment_reactions').select('*')
+    ]);
 
     if(error){
       commentList.innerHTML = '<div class="comment-empty">Gagal memuat komentar.</div>';
@@ -1423,46 +1850,243 @@
       return;
     }
 
-    commentCount.textContent = data.length;
+    const comments = allComments || [];
+    const reactions = allReactions || [];
+    const profileMap = await fetchProfilesMap(comments.map(c => c.user_id));
+
+    const topLevel = comments.filter(c => !c.parent_id);
+    const repliesByParent = {};
+    comments.filter(c => c.parent_id).forEach(c => {
+      (repliesByParent[c.parent_id] = repliesByParent[c.parent_id] || []).push(c);
+    });
+
+    const reactionsByComment = {};
+    reactions.forEach(r => {
+      (reactionsByComment[r.comment_id] = reactionsByComment[r.comment_id] || []).push(r);
+    });
+
+    function engagementScore(c){
+      const replyCount = (repliesByParent[c.id] || []).length;
+      const reactionCount = (reactionsByComment[c.id] || []).length;
+      return replyCount + reactionCount;
+    }
+
+    const sortedTopLevel = topLevel.slice().sort((a, b) => {
+      const diff = engagementScore(b) - engagementScore(a);
+      if(diff !== 0) return diff;
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+
+    commentCount.textContent = topLevel.length;
     commentList.innerHTML = '';
 
-    if(!data.length){
+    if(!sortedTopLevel.length){
       commentList.innerHTML = '<div class="comment-empty">Belum ada komentar. Jadi yang pertama komentar!</div>';
       return;
     }
 
-    data.forEach(c => {
-      const row = document.createElement('div');
-      row.className = 'comment-item';
-
-      const avatar = document.createElement('div');
-      avatar.className = 'comment-avatar';
-      avatar.textContent = (c.name || '?').trim().charAt(0).toUpperCase();
-      row.appendChild(avatar);
-
-      const body = document.createElement('div');
-      body.className = 'comment-body';
-
-      const head = document.createElement('div');
-      head.className = 'comment-head';
-      const nameEl = document.createElement('span');
-      nameEl.className = 'comment-name';
-      nameEl.textContent = c.name || 'Anonim';
-      const timeEl = document.createElement('span');
-      timeEl.className = 'comment-time';
-      timeEl.textContent = formatCommentTime(c.created_at);
-      head.appendChild(nameEl);
-      head.appendChild(timeEl);
-      body.appendChild(head);
-
-      const textEl = document.createElement('p');
-      textEl.className = 'comment-text';
-      textEl.textContent = c.text;
-      body.appendChild(textEl);
-
-      row.appendChild(body);
-      commentList.appendChild(row);
+    const shown = sortedTopLevel.slice(0, 5);
+    shown.forEach(c => {
+      commentList.appendChild(buildCommentEl(c, item, profileMap, reactionsByComment, repliesByParent, false));
     });
+  }
+
+  function buildCommentEl(c, item, profileMap, reactionsByComment, repliesByParent, isReply){
+    const profile = profileMap[c.user_id];
+    const displayName = (profile && profile.display_name) || 'Anonim';
+
+    const row = document.createElement('div');
+    row.className = 'comment-item';
+
+    row.appendChild(buildAvatarEl(profile, displayName.charAt(0)));
+
+    const body = document.createElement('div');
+    body.className = 'comment-body';
+
+    const head = document.createElement('div');
+    head.className = 'comment-head';
+    const nameEl = document.createElement('span');
+    nameEl.className = 'comment-name';
+    nameEl.textContent = displayName;
+    const timeEl = document.createElement('span');
+    timeEl.className = 'comment-time';
+    timeEl.textContent = formatCommentTime(c.created_at);
+    head.appendChild(nameEl);
+    head.appendChild(timeEl);
+    if(c.updated_at){
+      const editedEl = document.createElement('span');
+      editedEl.className = 'comment-edited';
+      editedEl.textContent = '(diedit)';
+      head.appendChild(editedEl);
+    }
+
+    if(currentUser && currentUser.id === c.user_id){
+      const menuBtn = document.createElement('button');
+      menuBtn.className = 'comment-menu-btn';
+      menuBtn.textContent = '⋯';
+      const menu = document.createElement('div');
+      menu.className = 'comment-menu';
+      const editBtn = document.createElement('button');
+      editBtn.textContent = 'Edit';
+      const delBtn = document.createElement('button');
+      delBtn.className = 'danger';
+      delBtn.textContent = 'Hapus';
+      menu.appendChild(editBtn);
+      menu.appendChild(delBtn);
+      menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.querySelectorAll('.comment-menu.open').forEach(m => { if(m !== menu) m.classList.remove('open'); });
+        menu.classList.toggle('open');
+      });
+      document.addEventListener('click', () => menu.classList.remove('open'));
+      editBtn.addEventListener('click', () => {
+        menu.classList.remove('open');
+        startEditComment(c, textEl, body);
+      });
+      delBtn.addEventListener('click', async () => {
+        menu.classList.remove('open');
+        if(!confirm('Hapus komentar ini?')) return;
+        const { error } = await sb.from('comments').delete().eq('id', c.id);
+        if(error){ alert('Gagal hapus: ' + error.message); return; }
+        renderComments(item);
+      });
+      head.appendChild(menuBtn);
+      head.appendChild(menu);
+    }
+
+    body.appendChild(head);
+
+    const textEl = document.createElement('p');
+    textEl.className = 'comment-text';
+    textEl.textContent = c.text;
+    body.appendChild(textEl);
+
+    // Reactions bar
+    const actions = document.createElement('div');
+    actions.className = 'comment-actions';
+    const myReactions = (reactionsByComment[c.id] || []);
+    const myReaction = currentUser ? myReactions.find(r => r.user_id === currentUser.id) : null;
+
+    REACTIONS.forEach(emoji => {
+      const count = myReactions.filter(r => r.emoji === emoji).length;
+      const btn = document.createElement('button');
+      btn.className = 'reaction-btn' + (myReaction && myReaction.emoji === emoji ? ' active' : '');
+      btn.textContent = emoji + (count > 0 ? ' ' + count : '');
+      btn.addEventListener('click', async () => {
+        if(!currentUser){ openLoginModal('login'); return; }
+        if(myReaction && myReaction.emoji === emoji){
+          await sb.from('comment_reactions').delete().eq('comment_id', c.id).eq('user_id', currentUser.id);
+        } else {
+          await sb.from('comment_reactions').upsert({ comment_id: c.id, user_id: currentUser.id, emoji });
+        }
+        renderComments(item);
+      });
+      actions.appendChild(btn);
+    });
+
+    if(!isReply){
+      const replyBtn = document.createElement('button');
+      replyBtn.className = 'reply-btn';
+      replyBtn.textContent = 'Balas';
+      replyBtn.addEventListener('click', () => {
+        if(!currentUser){ openLoginModal('login'); return; }
+        replyForm.classList.toggle('open');
+        if(replyForm.classList.contains('open')) replyForm.querySelector('textarea').focus();
+      });
+      actions.appendChild(replyBtn);
+    }
+
+    body.appendChild(actions);
+
+    // Reply form (only for top-level comments)
+    var replyForm;
+    if(!isReply){
+      replyForm = document.createElement('div');
+      replyForm.className = 'reply-form';
+      const ta = document.createElement('textarea');
+      ta.placeholder = 'Tulis balasan...';
+      ta.maxLength = 500;
+      replyForm.appendChild(ta);
+      const formActions = document.createElement('div');
+      formActions.className = 'reply-form-actions';
+      const cancelBtn = document.createElement('button');
+      cancelBtn.className = 'reply-cancel';
+      cancelBtn.type = 'button';
+      cancelBtn.textContent = 'Batal';
+      cancelBtn.addEventListener('click', () => { replyForm.classList.remove('open'); ta.value=''; });
+      const sendBtn = document.createElement('button');
+      sendBtn.className = 'reply-send';
+      sendBtn.type = 'button';
+      sendBtn.textContent = 'Kirim';
+      sendBtn.addEventListener('click', async () => {
+        const text = ta.value.trim();
+        if(!text || !currentUser) return;
+        sendBtn.disabled = true;
+        const { error } = await sb.from('comments').insert({
+          video_url: item.url,
+          user_id: currentUser.id,
+          name: displayNameFor(currentUser.id, currentUser.email),
+          text,
+          parent_id: c.id
+        });
+        sendBtn.disabled = false;
+        if(error){ alert('Gagal membalas: ' + error.message); return; }
+        renderComments(item);
+      });
+      formActions.appendChild(cancelBtn);
+      formActions.appendChild(sendBtn);
+      replyForm.appendChild(formActions);
+      body.appendChild(replyForm);
+
+      // Replies list
+      const childReplies = (repliesByParent[c.id] || []).sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+      if(childReplies.length){
+        const list = document.createElement('div');
+        list.className = 'replies-list';
+        childReplies.forEach(rc => {
+          list.appendChild(buildCommentEl(rc, item, profileMap, reactionsByComment, repliesByParent, true));
+        });
+        body.appendChild(list);
+      }
+    }
+
+    row.appendChild(body);
+    return row;
+  }
+
+  function startEditComment(c, textEl, body){
+    const form = document.createElement('div');
+    form.className = 'comment-edit-form';
+    const ta = document.createElement('textarea');
+    ta.value = c.text;
+    ta.maxLength = 500;
+    form.appendChild(ta);
+    const actionsRow = document.createElement('div');
+    actionsRow.className = 'reply-form-actions';
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'reply-cancel';
+    cancelBtn.type = 'button';
+    cancelBtn.textContent = 'Batal';
+    cancelBtn.addEventListener('click', () => {
+      form.replaceWith(textEl);
+    });
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'reply-send';
+    saveBtn.type = 'button';
+    saveBtn.textContent = 'Simpan';
+    saveBtn.addEventListener('click', async () => {
+      const newText = ta.value.trim();
+      if(!newText) return;
+      saveBtn.disabled = true;
+      const { error } = await sb.from('comments').update({ text: newText, updated_at: new Date().toISOString() }).eq('id', c.id);
+      saveBtn.disabled = false;
+      if(error){ alert('Gagal menyimpan: ' + error.message); return; }
+      renderComments(currentWatchItem);
+    });
+    actionsRow.appendChild(cancelBtn);
+    actionsRow.appendChild(saveBtn);
+    form.appendChild(actionsRow);
+    textEl.replaceWith(form);
   }
 
   commentForm.addEventListener('submit', async (e) => {
@@ -1477,7 +2101,7 @@
     const { error } = await sb.from('comments').insert({
       video_url: currentWatchItem.url,
       user_id: currentUser.id,
-      name: currentUser.email.split('@')[0],
+      name: displayNameFor(currentUser.id, currentUser.email),
       text
     });
 
@@ -1492,6 +2116,47 @@
     renderComments(currentWatchItem);
   });
 
+  // ============================================
+  // LIKE & VIEWS
+  // ============================================
+  const likeBtn = document.getElementById('likeBtn');
+  const likeCountEl = document.getElementById('likeCount');
+  const watchViewsEl = document.getElementById('watchViews');
+
+  async function recordView(item){
+    await sb.from('video_views').insert({ video_url: item.url });
+  }
+
+  async function refreshViewCount(item){
+    const { count } = await sb.from('video_views').select('*', { count: 'exact', head: true }).eq('video_url', item.url);
+    watchViewsEl.textContent = (count || 0).toLocaleString('id-ID') + 'x ditonton';
+  }
+
+  async function refreshLikeState(item){
+    const { count } = await sb.from('video_likes').select('*', { count: 'exact', head: true }).eq('video_url', item.url);
+    likeCountEl.textContent = count || 0;
+
+    if(currentUser){
+      const { data } = await sb.from('video_likes').select('*').eq('video_url', item.url).eq('user_id', currentUser.id).maybeSingle();
+      likeBtn.classList.toggle('liked', !!data);
+    } else {
+      likeBtn.classList.remove('liked');
+    }
+  }
+
+  likeBtn.addEventListener('click', async () => {
+    if(!currentWatchItem) return;
+    if(!currentUser){ openLoginModal('login'); return; }
+    likeBtn.disabled = true;
+    if(likeBtn.classList.contains('liked')){
+      await sb.from('video_likes').delete().eq('video_url', currentWatchItem.url).eq('user_id', currentUser.id);
+    } else {
+      await sb.from('video_likes').insert({ video_url: currentWatchItem.url, user_id: currentUser.id });
+    }
+    likeBtn.disabled = false;
+    refreshLikeState(currentWatchItem);
+  });
+
   function openWatch(item, opts = {}){
     watchPlayer.innerHTML = '';
     const el = makeEmbedEl(item.url, { autoplay: true, muted: false, controls: true });
@@ -1502,6 +2167,8 @@
     buildWatchMeta(item);
     buildRelated(item);
     renderComments(item);
+    recordView(item).then(() => refreshViewCount(item));
+    refreshLikeState(item);
 
     chipsRow.style.display = 'none';
     homeMain.style.display = 'none';
