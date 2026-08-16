@@ -1538,6 +1538,10 @@
     <h3 id="adminFormTitle">Tambah Video Baru</h3>
     <form id="adminForm">
       <input type="hidden" id="adminVideoId">
+      <select id="adminContentType">
+        <option value="video">Video Panjang</option>
+        <option value="clip">Clip</option>
+      </select>
       <input type="url" id="adminCover" placeholder="URL Cover (link GitHub biasa juga bisa)" required>
       <input type="url" id="adminUrl" placeholder="URL Video (embed)" required>
       <input type="text" id="adminTitle" placeholder="Judul" required>
@@ -1582,6 +1586,14 @@
     <button class="side-item active" data-action="home">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
       <span>Beranda</span>
+    </button>
+    <button class="side-item" data-action="video">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="15" height="14" rx="2"/><path d="m22 8-5 4 5 4V8Z"/></svg>
+      <span>Video Panjang</span>
+    </button>
+    <button class="side-item" data-action="clip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg>
+      <span>Clip</span>
     </button>
   </div>
   <div class="side-section" id="adminSideSection" style="display:none">
@@ -1776,6 +1788,7 @@
   let currentPage = 1;
   let PER_PAGE = 12;
   let activeFilter = null; // { type: 'tag'|'studio'|'cast', value }
+  let activeContentType = null; // null (semua) | 'video' | 'clip'
   let searchQuery = '';
   const ROWS_PER_PAGE = 4;
 
@@ -1828,11 +1841,24 @@
   function resetToHome(){
     if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
     activeFilter = null;
+    activeContentType = null;
     searchQuery = '';
     searchInput.value = '';
     applyFilters();
     updateActiveChipsAndSideItems();
     goToPage(1);
+  }
+
+  function setContentType(type){
+    if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
+    activeContentType = (activeContentType === type) ? null : type;
+    activeFilter = null;
+    searchQuery = '';
+    searchInput.value = '';
+    applyFilters();
+    updateActiveChipsAndSideItems();
+    goToPage(1);
+    closeMobileSidebar();
   }
 
   function setFilter(type, value){
@@ -1853,13 +1879,14 @@
         else if(activeFilter.type === 'studio') matchesFilter = item.studio === activeFilter.value;
         else if(activeFilter.type === 'cast') matchesFilter = !!(item.cast && item.cast.includes(activeFilter.value));
       }
+      const matchesContentType = !activeContentType || item.contentType === activeContentType;
       const q = searchQuery;
       const matchesSearch = !q ||
         (item.title || '').toLowerCase().includes(q) ||
         (item.studio || '').toLowerCase().includes(q) ||
         (item.cast || []).some(c => c.toLowerCase().includes(q)) ||
         (item.tags || []).some(t => t.toLowerCase().includes(q));
-      return matchesFilter && matchesSearch;
+      return matchesFilter && matchesContentType && matchesSearch;
     });
   }
 
@@ -1922,7 +1949,11 @@
       el.classList.toggle('active', el.dataset.cast === activeCastValue && !!activeCastValue);
     });
     document.querySelectorAll('.side-item[data-action]').forEach(el => {
-      el.classList.toggle('active', el.dataset.action === 'home' && !activeFilter && !searchQuery);
+      const action = el.dataset.action;
+      let isActive = false;
+      if(action === 'home') isActive = !activeFilter && !activeContentType && !searchQuery;
+      else if(action === 'video' || action === 'clip') isActive = activeContentType === action;
+      el.classList.toggle('active', isActive);
     });
   }
 
@@ -1930,6 +1961,8 @@
     resetToHome();
     closeMobileSidebar();
   });
+  document.querySelector('.side-item[data-action="video"]').addEventListener('click', () => setContentType('video'));
+  document.querySelector('.side-item[data-action="clip"]').addEventListener('click', () => setContentType('clip'));
 
   function shuffle(arr){
     const a = arr.slice();
@@ -2451,6 +2484,7 @@
   const adminTags = document.getElementById('adminTags');
   const adminDuration = document.getElementById('adminDuration');
   const adminCoverRatio = document.getElementById('adminCoverRatio');
+  const adminContentType = document.getElementById('adminContentType');
   const adminFormTitle = document.getElementById('adminFormTitle');
   const adminSubmitBtn = document.getElementById('adminSubmitBtn');
   const adminCancelEditBtn = document.getElementById('adminCancelEditBtn');
@@ -2514,7 +2548,8 @@
       cast_names: parseCommaList(adminCast.value),
       tags: parseCommaList(adminTags.value),
       duration: adminDuration.value.trim() || null,
-      cover_ratio: adminCoverRatio.value
+      cover_ratio: adminCoverRatio.value,
+      content_type: adminContentType.value
     };
 
     let error;
@@ -2587,6 +2622,7 @@
         adminTags.value = (v.tags || []).join(', ');
         adminDuration.value = v.duration || '';
         adminCoverRatio.value = v.cover_ratio || '16:9';
+        adminContentType.value = v.content_type || 'video';
         adminFormTitle.textContent = 'Edit Video';
         adminSubmitBtn.textContent = 'Simpan Perubahan';
         adminCancelEditBtn.style.display = 'inline-block';
@@ -3239,7 +3275,8 @@
         createdAt: v.created_at,
         views: viewCounts[v.url] || 0,
         duration: v.duration || '',
-        coverRatio: v.cover_ratio || '16:9'
+        coverRatio: v.cover_ratio || '16:9',
+        contentType: v.content_type || 'video'
       }))
       .filter(item => item.cover && item.url);
   }
