@@ -869,6 +869,37 @@
     width:100%; height:100%; border:0; display:block;
   }
 
+  .server-switcher{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .server-switcher-label{
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-right: 2px;
+  }
+  .server-switcher button{
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    padding: 6px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .server-switcher button:hover{ border-color: var(--amber-dim); color: var(--text); }
+  .server-switcher button.active{
+    background: var(--amber);
+    color: #0a0a0d;
+    border-color: var(--amber);
+  }
+
   .watch-info{
     padding-top: 20px;
   }
@@ -1539,7 +1570,9 @@
     <form id="adminForm">
       <input type="hidden" id="adminVideoId">
       <input type="url" id="adminCover" placeholder="URL Cover (link GitHub biasa juga bisa)" required>
-      <input type="url" id="adminUrl" placeholder="URL Video (embed)" required>
+      <input type="url" id="adminUrl" placeholder="URL Video - Server 1 (utama, wajib)" required>
+      <input type="url" id="adminUrl2" placeholder="URL Video - Server 2 (opsional, cadangan)">
+      <input type="url" id="adminUrl3" placeholder="URL Video - Server 3 (opsional, cadangan)">
       <input type="text" id="adminTitle" placeholder="Judul" required>
       <input type="text" id="adminStudio" placeholder="Studio">
       <input type="text" id="adminCast" placeholder="Pemeran (pisahkan koma, contoh: Udin, Idin)">
@@ -1608,6 +1641,7 @@
     <div class="watch-layout">
       <div class="watch-main">
         <div class="watch-player" id="watchPlayer"></div>
+        <div class="server-switcher" id="serverSwitcher" style="display:none"></div>
         <div class="watch-info">
           <h1 class="watch-title" id="watchTitle"></h1>
           <div class="watch-stats">
@@ -1714,6 +1748,7 @@
   const homeMain = document.getElementById('homeMain');
   const watchView = document.getElementById('watchView');
   const watchPlayer = document.getElementById('watchPlayer');
+  const serverSwitcher = document.getElementById('serverSwitcher');
   const watchTitle = document.getElementById('watchTitle');
   const watchMeta = document.getElementById('watchMeta');
   const relatedList = document.getElementById('relatedList');
@@ -2445,6 +2480,8 @@
   const adminVideoIdInput = document.getElementById('adminVideoId');
   const adminCover = document.getElementById('adminCover');
   const adminUrl = document.getElementById('adminUrl');
+  const adminUrl2 = document.getElementById('adminUrl2');
+  const adminUrl3 = document.getElementById('adminUrl3');
   const adminTitle = document.getElementById('adminTitle');
   const adminStudio = document.getElementById('adminStudio');
   const adminCast = document.getElementById('adminCast');
@@ -2509,6 +2546,8 @@
     const payload = {
       cover: toRawGithubUrl(adminCover.value.trim()),
       url: toRawGithubUrl(adminUrl.value.trim()),
+      url2: adminUrl2.value.trim() ? toRawGithubUrl(adminUrl2.value.trim()) : null,
+      url3: adminUrl3.value.trim() ? toRawGithubUrl(adminUrl3.value.trim()) : null,
       title: adminTitle.value.trim(),
       studio: adminStudio.value.trim() || null,
       cast_names: parseCommaList(adminCast.value),
@@ -2581,6 +2620,8 @@
         adminVideoIdInput.value = v.id;
         adminCover.value = v.cover;
         adminUrl.value = v.url;
+        adminUrl2.value = v.url2 || '';
+        adminUrl3.value = v.url3 || '';
         adminTitle.value = v.title;
         adminStudio.value = v.studio || '';
         adminCast.value = (v.cast_names || []).join(', ');
@@ -2968,10 +3009,59 @@
     refreshLikeState(currentWatchItem);
   });
 
-  function openWatch(item, opts = {}){
+  function playWatchServer(servers, index){
     watchPlayer.innerHTML = '';
-    const el = makeEmbedEl(item.url, { autoplay: true, muted: false, controls: true });
+    const url = servers[index];
+    const el = makeEmbedEl(url, { autoplay: true, muted: false, controls: true });
+
+    if(el.tagName === 'VIDEO'){
+      el.addEventListener('error', () => {
+        if(index + 1 < servers.length){
+          showToast('Server ' + (index + 1) + ' gagal dimuat, coba Server ' + (index + 2) + '...', 'error');
+          playWatchServer(servers, index + 1);
+          highlightActiveServerBtn(index + 1);
+        }
+      });
+    }
+
     watchPlayer.appendChild(el);
+  }
+
+  function highlightActiveServerBtn(index){
+    serverSwitcher.querySelectorAll('button').forEach((btn, i) => {
+      btn.classList.toggle('active', i === index);
+    });
+  }
+
+  function buildServerSwitcher(servers){
+    serverSwitcher.innerHTML = '';
+    if(servers.length <= 1){
+      serverSwitcher.style.display = 'none';
+      return;
+    }
+    serverSwitcher.style.display = 'flex';
+
+    const label = document.createElement('span');
+    label.className = 'server-switcher-label';
+    label.textContent = 'Server:';
+    serverSwitcher.appendChild(label);
+
+    servers.forEach((_, i) => {
+      const btn = document.createElement('button');
+      btn.textContent = 'Server ' + (i + 1);
+      if(i === 0) btn.classList.add('active');
+      btn.addEventListener('click', () => {
+        playWatchServer(servers, i);
+        highlightActiveServerBtn(i);
+      });
+      serverSwitcher.appendChild(btn);
+    });
+  }
+
+  function openWatch(item, opts = {}){
+    const servers = [item.url, item.url2, item.url3].filter(Boolean);
+    playWatchServer(servers, 0);
+    buildServerSwitcher(servers);
 
     currentWatchItem = item;
     watchTitle.textContent = item.title || 'Tanpa judul';
@@ -3087,6 +3177,66 @@
     }
   });
 
+  function createVideoCard(item, animIndex){
+    const { cover, title, views, createdAt, duration, coverRatio } = item;
+    const card = document.createElement('div');
+    card.className = 'card';
+    if(animIndex !== undefined) card.style.animationDelay = (Math.min(animIndex,24) * 25) + 'ms';
+
+    const thumb = document.createElement('div');
+    thumb.className = 'thumb';
+    thumb.style.aspectRatio = coverRatio === '3:2' ? '3 / 2' : '16 / 9';
+
+    const img = document.createElement('img');
+    img.className = 'cover';
+    img.src = cover;
+    img.loading = 'lazy';
+    img.alt = '';
+    thumb.appendChild(img);
+
+    const ring = document.createElement('div');
+    ring.className = 'hover-ring';
+    thumb.appendChild(ring);
+
+    const play = document.createElement('div');
+    play.className = 'play';
+    play.innerHTML = '<svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>';
+    thumb.appendChild(play);
+
+    if(duration){
+      const durationEl = document.createElement('div');
+      durationEl.className = 'duration-badge';
+      durationEl.textContent = duration;
+      thumb.appendChild(durationEl);
+    }
+
+    card.appendChild(thumb);
+
+    const meta = document.createElement('div');
+    meta.className = 'card-meta';
+
+    const text = document.createElement('div');
+    text.className = 'card-text';
+
+    const h3 = document.createElement('h3');
+    h3.className = 'card-title';
+    h3.textContent = title || 'Tanpa judul';
+    text.appendChild(h3);
+
+    const statsEl = document.createElement('div');
+    statsEl.className = 'card-stats';
+    const viewsPart = formatViewsShort(views || 0);
+    const datePart = formatRelativeDate(createdAt);
+    statsEl.textContent = datePart ? (viewsPart + ' • ' + datePart) : viewsPart;
+    text.appendChild(statsEl);
+
+    meta.appendChild(text);
+    card.appendChild(meta);
+
+    card.addEventListener('click', () => openWatch(item));
+    return card;
+  }
+
   function render(items){
     grid.innerHTML = '';
     if(!items.length){
@@ -3098,63 +3248,7 @@
     const pageItems = items.slice(start, start + PER_PAGE);
 
     pageItems.forEach((item, i) => {
-      const { cover, url, title, views, createdAt, duration, coverRatio } = item;
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.style.animationDelay = (Math.min(i,24) * 25) + 'ms';
-
-      const thumb = document.createElement('div');
-      thumb.className = 'thumb';
-      thumb.style.aspectRatio = coverRatio === '3:2' ? '3 / 2' : '16 / 9';
-
-      const img = document.createElement('img');
-      img.className = 'cover';
-      img.src = cover;
-      img.loading = 'lazy';
-      img.alt = '';
-      thumb.appendChild(img);
-
-      const ring = document.createElement('div');
-      ring.className = 'hover-ring';
-      thumb.appendChild(ring);
-
-      const play = document.createElement('div');
-      play.className = 'play';
-      play.innerHTML = '<svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>';
-      thumb.appendChild(play);
-
-      if(duration){
-        const durationEl = document.createElement('div');
-        durationEl.className = 'duration-badge';
-        durationEl.textContent = duration;
-        thumb.appendChild(durationEl);
-      }
-
-      card.appendChild(thumb);
-
-      const meta = document.createElement('div');
-      meta.className = 'card-meta';
-
-      const text = document.createElement('div');
-      text.className = 'card-text';
-
-      const h3 = document.createElement('h3');
-      h3.className = 'card-title';
-      h3.textContent = title || 'Tanpa judul';
-      text.appendChild(h3);
-
-      const statsEl = document.createElement('div');
-      statsEl.className = 'card-stats';
-      const viewsPart = formatViewsShort(views || 0);
-      const datePart = formatRelativeDate(createdAt);
-      statsEl.textContent = datePart ? (viewsPart + ' • ' + datePart) : viewsPart;
-      text.appendChild(statsEl);
-
-      meta.appendChild(text);
-      card.appendChild(meta);
-
-      card.addEventListener('click', () => openWatch(item));
-      grid.appendChild(card);
+      grid.appendChild(createVideoCard(item, i));
     });
   }
 
@@ -3232,6 +3326,8 @@
       .map(v => ({
         cover: v.cover,
         url: v.url,
+        url2: v.url2 || null,
+        url3: v.url3 || null,
         title: v.title,
         studio: v.studio,
         cast: v.cast_names || [],
