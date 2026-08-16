@@ -741,6 +741,20 @@
     fill: #0a0a0d;
   }
 
+  .duration-badge{
+    position: absolute;
+    right: 8px; bottom: 10px;
+    background: rgba(10,10,13,0.75);
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 2;
+    letter-spacing: 0.02em;
+  }
+
   /* Watch view */
   .watch-view{
     padding: 24px 20px 60px;
@@ -1461,6 +1475,7 @@
       <input type="text" id="adminStudio" placeholder="Studio">
       <input type="text" id="adminCast" placeholder="Pemeran (pisahkan koma, contoh: Udin, Idin)">
       <input type="text" id="adminTags" placeholder="Tag (pisahkan koma, contoh: kartun, malaysia)">
+      <input type="text" id="adminDuration" placeholder="Durasi (contoh: 14:05)">
       <div class="admin-form-actions">
         <button type="button" id="adminCancelEditBtn" style="display:none">Batal Edit</button>
         <button type="submit" id="adminSubmitBtn">Tambah Video</button>
@@ -2326,6 +2341,7 @@
   const adminStudio = document.getElementById('adminStudio');
   const adminCast = document.getElementById('adminCast');
   const adminTags = document.getElementById('adminTags');
+  const adminDuration = document.getElementById('adminDuration');
   const adminFormTitle = document.getElementById('adminFormTitle');
   const adminSubmitBtn = document.getElementById('adminSubmitBtn');
   const adminCancelEditBtn = document.getElementById('adminCancelEditBtn');
@@ -2387,7 +2403,8 @@
       title: adminTitle.value.trim(),
       studio: adminStudio.value.trim() || null,
       cast_names: parseCommaList(adminCast.value),
-      tags: parseCommaList(adminTags.value)
+      tags: parseCommaList(adminTags.value),
+      duration: adminDuration.value.trim() || null
     };
 
     let error;
@@ -2458,6 +2475,7 @@
         adminStudio.value = v.studio || '';
         adminCast.value = (v.cast_names || []).join(', ');
         adminTags.value = (v.tags || []).join(', ');
+        adminDuration.value = v.duration || '';
         adminFormTitle.textContent = 'Edit Video';
         adminSubmitBtn.textContent = 'Simpan Perubahan';
         adminCancelEditBtn.style.display = 'inline-block';
@@ -2899,6 +2917,12 @@
       img.loading = 'lazy';
       img.alt = '';
       thumb.appendChild(img);
+      if(item.duration){
+        const durationEl = document.createElement('div');
+        durationEl.className = 'duration-badge';
+        durationEl.textContent = item.duration;
+        thumb.appendChild(durationEl);
+      }
       row.appendChild(thumb);
 
       const info = document.createElement('div');
@@ -2962,7 +2986,7 @@
     const pageItems = items.slice(start, start + PER_PAGE);
 
     pageItems.forEach((item, i) => {
-      const { cover, url, title, views, createdAt } = item;
+      const { cover, url, title, views, createdAt, duration } = item;
       const card = document.createElement('div');
       card.className = 'card';
       card.style.animationDelay = (Math.min(i,24) * 25) + 'ms';
@@ -2985,6 +3009,13 @@
       play.className = 'play';
       play.innerHTML = '<svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>';
       thumb.appendChild(play);
+
+      if(duration){
+        const durationEl = document.createElement('div');
+        durationEl.className = 'duration-badge';
+        durationEl.textContent = duration;
+        thumb.appendChild(durationEl);
+      }
 
       card.appendChild(thumb);
 
@@ -3093,7 +3124,8 @@
         cast: v.cast_names || [],
         tags: v.tags || [],
         createdAt: v.created_at,
-        views: viewCounts[v.url] || 0
+        views: viewCounts[v.url] || 0,
+        duration: v.duration || ''
       }))
       .filter(item => item.cover && item.url);
   }
