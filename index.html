@@ -474,6 +474,47 @@
     font-weight: 800;
     color: var(--text);
   }
+  .admin-hint{
+    margin: -6px 0 12px;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  #featuredTagsForm{
+    display: flex;
+    gap: 8px;
+  }
+  #featuredTagsInput{
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+  }
+  #featuredTagsInput:focus{ border-color: var(--amber-dim); }
+  #featuredTagsSaveBtn{
+    background: var(--amber);
+    color: #0a0a0d;
+    border: 0;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 9px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  #featuredTagsMsg{
+    margin-top: 10px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+  #featuredTagsMsg.success{ color: var(--amber); }
+  #featuredTagsMsg.error{ color: #ff6b6b; }
   .admin-video-list{
     display: flex;
     flex-direction: column;
@@ -680,6 +721,43 @@
     flex: 1 0 auto;
     display: flex;
     flex-direction: column;
+  }
+
+  /* Home sections (Trending / Terbaru / per-tag) */
+  #homeSections{
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .home-section-title{
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text);
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .home-section-title .trend-icon{ color: var(--amber); }
+  .home-row{
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    cursor: grab;
+  }
+  .home-row::-webkit-scrollbar{ display: none; }
+  .home-row .card{
+    flex: 0 0 auto;
+    width: 240px;
+  }
+  @media (max-width: 640px){
+    .home-row .card{ width: 190px; }
+  }
+  .home-section-empty{
+    color: var(--text-dim);
+    font-size: 13px;
   }
 
   .grid{
@@ -1593,6 +1671,16 @@
 
     <h4 class="admin-list-title">Semua Video (<span id="adminVideoCount">0</span>)</h4>
     <div id="adminVideoList" class="admin-video-list"></div>
+
+    <hr class="admin-divider">
+
+    <h4 class="admin-list-title">Tag Unggulan di Beranda</h4>
+    <p class="admin-hint">Tiap tag di sini bakal jadi baris tersendiri di beranda (di bawah Video Terbaru). Pisahkan pakai koma.</p>
+    <form id="featuredTagsForm">
+      <input type="text" id="featuredTagsInput" placeholder="Contoh: kartun, aksi, musik">
+      <button type="submit" id="featuredTagsSaveBtn">Simpan Tag Unggulan</button>
+    </form>
+    <div id="featuredTagsMsg"></div>
   </div>
 </div>
 
@@ -1632,8 +1720,9 @@
 <div id="contentCol">
   <div id="chipsRow"></div>
   <main id="homeMain">
-    <div id="grid" class="grid"></div>
-    <div id="pagination" class="pagination"></div>
+    <div id="homeSections"></div>
+    <div id="grid" class="grid" style="display:none"></div>
+    <div id="pagination" class="pagination" style="display:none"></div>
   </main>
 
   <div id="watchView" class="watch-view" style="display:none">
@@ -1744,6 +1833,8 @@
   }
 
   const grid = document.getElementById('grid');
+  const homeSections = document.getElementById('homeSections');
+  let featuredTags = [];
   const paginationEl = document.getElementById('pagination');
   const homeMain = document.getElementById('homeMain');
   const watchView = document.getElementById('watchView');
@@ -1761,7 +1852,7 @@
   const chipsRow = document.getElementById('chipsRow');
 
   // Drag-to-scroll pakai mouse (klik-tahan-geser)
-  (function enableDragScroll(el){
+  function enableDragScroll(el){
     let isDown = false;
     let startX = 0;
     let startScroll = 0;
@@ -1799,7 +1890,8 @@
         e.preventDefault();
       }
     }, { passive: false });
-  })(chipsRow);
+  }
+  enableDragScroll(chipsRow);
   const tagListEl = document.getElementById('tagList');
   const searchForm = document.getElementById('searchForm');
   const searchInput = document.getElementById('searchInput');
@@ -2494,6 +2586,10 @@
   const adminMsg = document.getElementById('adminMsg');
   const adminVideoList = document.getElementById('adminVideoList');
   const adminVideoCount = document.getElementById('adminVideoCount');
+  const featuredTagsForm = document.getElementById('featuredTagsForm');
+  const featuredTagsInput = document.getElementById('featuredTagsInput');
+  const featuredTagsSaveBtn = document.getElementById('featuredTagsSaveBtn');
+  const featuredTagsMsg = document.getElementById('featuredTagsMsg');
 
   function resetAdminForm(){
     adminVideoIdInput.value = '';
@@ -2509,6 +2605,9 @@
     if(!currentProfile || !currentProfile.is_admin) return;
     resetAdminForm();
     renderAdminVideoList();
+    featuredTagsInput.value = featuredTags.join(', ');
+    featuredTagsMsg.textContent = '';
+    featuredTagsMsg.className = '';
     adminModal.classList.add('open');
   }
   function closeAdminModal(){
@@ -2516,6 +2615,30 @@
   }
   adminPanelBtn.addEventListener('click', () => { openAdminModal(); closeMobileSidebar(); });
   adminCloseBtn.addEventListener('click', closeAdminModal);
+
+  featuredTagsForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    featuredTagsSaveBtn.disabled = true;
+    featuredTagsMsg.textContent = 'Menyimpan...';
+    featuredTagsMsg.className = '';
+
+    const tags = parseCommaList(featuredTagsInput.value);
+    const { error } = await sb.from('site_settings').update({ featured_tags: tags }).eq('id', true);
+
+    featuredTagsSaveBtn.disabled = false;
+
+    if(error){
+      featuredTagsMsg.textContent = 'Gagal menyimpan: ' + error.message;
+      featuredTagsMsg.className = 'error';
+      return;
+    }
+
+    featuredTags = tags;
+    featuredTagsMsg.textContent = 'Tersimpan!';
+    featuredTagsMsg.className = 'success';
+    showToast('Tag unggulan homepage berhasil diperbarui');
+    updateHomeViewMode();
+  });
   // Sengaja TIDAK ada klik-di-luar-buat-nutup di sini,
   // biar form gak ke-cancel gak sengaja pas lagi diisi/edit.
   adminCancelEditBtn.addEventListener('click', resetAdminForm);
@@ -3237,6 +3360,73 @@
     return card;
   }
 
+  function buildHomeRow(title, items, opts = {}){
+    const section = document.createElement('div');
+    section.className = 'home-section';
+
+    const h2 = document.createElement('h2');
+    h2.className = 'home-section-title';
+    if(opts.trending){
+      h2.innerHTML = '<svg class="trend-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg>';
+      h2.appendChild(document.createTextNode(' ' + title));
+    } else {
+      h2.textContent = title;
+    }
+    section.appendChild(h2);
+
+    if(!items.length){
+      const empty = document.createElement('div');
+      empty.className = 'home-section-empty';
+      empty.textContent = 'Belum ada video di kategori ini.';
+      section.appendChild(empty);
+      return section;
+    }
+
+    const row = document.createElement('div');
+    row.className = 'home-row';
+    items.forEach((item, i) => row.appendChild(createVideoCard(item, i)));
+    section.appendChild(row);
+    enableDragScroll(row);
+
+    return section;
+  }
+
+  function buildHomeSections(){
+    homeSections.innerHTML = '';
+    const videos = allData;
+    if(!videos.length){
+      homeSections.innerHTML = '<div class="empty">Belum ada video. Tambahkan lewat panel admin.</div>';
+      return;
+    }
+
+    const trending = videos.slice().sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 12);
+    homeSections.appendChild(buildHomeRow('Video Trending', trending, { trending: true }));
+
+    const terbaru = videos.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 12);
+    homeSections.appendChild(buildHomeRow('Video Terbaru', terbaru));
+
+    featuredTags.forEach(tag => {
+      const tagged = videos.filter(v => (v.tags || []).includes(tag)).slice(0, 12);
+      if(tagged.length){
+        homeSections.appendChild(buildHomeRow('#' + tag, tagged));
+      }
+    });
+  }
+
+  function updateHomeViewMode(){
+    const isBrowsing = !activeFilter && !searchQuery;
+    if(isBrowsing){
+      homeSections.style.display = 'flex';
+      grid.style.display = 'none';
+      paginationEl.style.display = 'none';
+      buildHomeSections();
+    } else {
+      homeSections.style.display = 'none';
+      grid.style.display = 'grid';
+      paginationEl.style.display = 'flex';
+    }
+  }
+
   function render(items){
     grid.innerHTML = '';
     if(!items.length){
@@ -3287,12 +3477,19 @@
   }
 
   function goToPage(page, opts = {}){
+    updateHomeViewMode();
+    const isBrowsing = !activeFilter && !searchQuery;
+
     const totalPages = Math.max(1, Math.ceil(filteredData.length / PER_PAGE));
     currentPage = Math.min(Math.max(1, page), totalPages);
-    render(filteredData);
-    renderPagination(filteredData);
+
+    if(!isBrowsing){
+      render(filteredData);
+      renderPagination(filteredData);
+    }
+
     const url = new URL(window.location);
-    if(currentPage > 1) url.searchParams.set('page', currentPage); else url.searchParams.delete('page');
+    if(currentPage > 1 && !isBrowsing) url.searchParams.set('page', currentPage); else url.searchParams.delete('page');
     history.replaceState(null, '', url);
     if(!opts.skipScroll){
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -3366,7 +3563,12 @@
   });
 
   (async () => {
-    const videos = await fetchVideosFromDB();
+    const [videos, settingsRes] = await Promise.all([
+      fetchVideosFromDB(),
+      sb.from('site_settings').select('featured_tags').eq('id', true).single()
+    ]);
+
+    featuredTags = (settingsRes.data && settingsRes.data.featured_tags) || [];
 
     if(videos === null){
       grid.innerHTML = '<div class="empty">Gagal memuat daftar video dari database.<br>Cek koneksi internet atau pengaturan Supabase kamu.</div>';
