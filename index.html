@@ -316,6 +316,106 @@
     text-decoration: underline;
   }
 
+  /* Clips view (gaya TikTok/Shorts) */
+  .clips-view{
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    background: #000;
+  }
+  .clips-view.open{ display: block; }
+  .clips-close-btn{
+    position: fixed;
+    top: 16px; right: 16px;
+    z-index: 95;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: rgba(20,20,24,0.6);
+    backdrop-filter: blur(6px);
+    border: 0;
+    color: var(--text);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .clips-close-btn:hover{ background: var(--amber); color: #0a0a0d; }
+  .clips-feed{
+    height: 100vh;
+    height: 100dvh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+  }
+  .clips-feed::-webkit-scrollbar{ display: none; }
+  .clip-slide{
+    height: 100vh;
+    height: 100dvh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .clip-player{
+    position: relative;
+    height: 100%;
+    max-height: 100vh;
+    max-height: 100dvh;
+    aspect-ratio: 9 / 16;
+    max-width: 100%;
+    background: #000;
+  }
+  .clip-player iframe, .clip-player video{
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+  .clip-slide-info{
+    position: absolute;
+    left: 0; right: 60px; bottom: 0;
+    padding: 20px 16px 28px;
+    background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+    pointer-events: none;
+  }
+  .clip-slide-title{
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin: 0 0 6px;
+  }
+  .clip-slide-stats{
+    color: rgba(255,255,255,0.75);
+    font-size: 12px;
+  }
+  .clip-mute-btn{
+    position: absolute;
+    right: 14px; bottom: 90px;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: rgba(20,20,24,0.6);
+    backdrop-filter: blur(6px);
+    border: 0;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .clip-mute-btn svg{ width: 19px; height: 19px; }
+  .clips-empty{
+    color: var(--text-dim);
+    text-align: center;
+    padding: 40px 24px;
+    font-size: 14px;
+  }
+
   /* Age gate */
   .age-gate{
     display: none;
@@ -1656,6 +1756,11 @@
   </footer>
 </div>
 
+<div id="clipsView" class="clips-view">
+  <button id="clipsCloseBtn" class="clips-close-btn">✕</button>
+  <div id="clipsFeed" class="clips-feed"></div>
+</div>
+
 <script>
 (function(){
   // ============================================
@@ -1962,7 +2067,7 @@
     closeMobileSidebar();
   });
   document.querySelector('.side-item[data-action="video"]').addEventListener('click', () => setContentType('video'));
-  document.querySelector('.side-item[data-action="clip"]').addEventListener('click', () => setContentType('clip'));
+  document.querySelector('.side-item[data-action="clip"]').addEventListener('click', () => openClipsView());
 
   function shuffle(arr){
     const a = arr.slice();
@@ -3031,6 +3136,103 @@
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  // ============================================
+  // CLIPS VIEW — feed vertikal gaya TikTok/Shorts
+  // ============================================
+  const clipsView = document.getElementById('clipsView');
+  const clipsFeed = document.getElementById('clipsFeed');
+  const clipsCloseBtn = document.getElementById('clipsCloseBtn');
+  let clipsObserver = null;
+
+  function buildClipSlide(item){
+    const slide = document.createElement('div');
+    slide.className = 'clip-slide';
+
+    const player = document.createElement('div');
+    player.className = 'clip-player';
+    player.dataset.url = item.url;
+    slide.appendChild(player);
+
+    const muteBtn = document.createElement('button');
+    muteBtn.className = 'clip-mute-btn';
+    muteBtn.dataset.muted = 'true';
+    muteBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+    muteBtn.addEventListener('click', () => {
+      const el = player.querySelector('.frame');
+      if(!el) return;
+      const isMuted = muteBtn.dataset.muted === 'true';
+      if(el.tagName === 'VIDEO'){
+        el.muted = !isMuted;
+      } else {
+        // Re-buat iframe dengan mute state baru (embed provider gak selalu support toggle live)
+        player.innerHTML = '';
+        const newEl = makeEmbedEl(item.url, { autoplay: true, muted: isMuted ? false : true, controls: false });
+        player.appendChild(newEl);
+      }
+      muteBtn.dataset.muted = isMuted ? 'false' : 'true';
+      muteBtn.innerHTML = isMuted
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+    });
+    slide.appendChild(muteBtn);
+
+    const info = document.createElement('div');
+    info.className = 'clip-slide-info';
+    const title = document.createElement('div');
+    title.className = 'clip-slide-title';
+    title.textContent = item.title || 'Tanpa judul';
+    info.appendChild(title);
+    const stats = document.createElement('div');
+    stats.className = 'clip-slide-stats';
+    stats.textContent = formatViewsShort(item.views || 0);
+    info.appendChild(stats);
+    slide.appendChild(info);
+
+    return slide;
+  }
+
+  function openClipsView(){
+    const clips = allData.filter(it => it.contentType === 'clip');
+    clipsFeed.innerHTML = '';
+
+    if(!clips.length){
+      clipsFeed.innerHTML = '<div class="clips-empty">Belum ada clip yang di-upload.</div>';
+    } else {
+      clips.forEach(item => clipsFeed.appendChild(buildClipSlide(item)));
+    }
+
+    clipsView.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    closeMobileSidebar();
+
+    if(clipsObserver) clipsObserver.disconnect();
+    clipsObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const player = entry.target.querySelector('.clip-player');
+        if(!player) return;
+        if(entry.isIntersecting){
+          if(!player.querySelector('.frame')){
+            const el = makeEmbedEl(player.dataset.url, { autoplay: true, muted: true, controls: false });
+            player.appendChild(el);
+          }
+        } else {
+          player.innerHTML = '';
+        }
+      });
+    }, { threshold: 0.6 });
+
+    clipsFeed.querySelectorAll('.clip-slide').forEach(slide => clipsObserver.observe(slide));
+  }
+
+  function closeClipsView(){
+    clipsView.classList.remove('open');
+    document.body.style.overflow = '';
+    if(clipsObserver) clipsObserver.disconnect();
+    clipsFeed.innerHTML = '';
+  }
+
+  clipsCloseBtn.addEventListener('click', closeClipsView);
 
   function buildRelated(currentItem){
     relatedList.innerHTML = '';
