@@ -258,11 +258,12 @@
     position: relative;
   }
   .password-field #loginPassword{
-    padding-right: 40px;
+    padding-right: 38px;
+    box-sizing: border-box;
   }
   .toggle-password-btn{
     position: absolute;
-    right: 6px; top: 50%;
+    right: 3px; top: 50%;
     transform: translateY(-50%);
     background: none;
     border: 0;
@@ -272,6 +273,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
   }
   .toggle-password-btn:hover{ color: var(--amber); }
   .toggle-password-btn svg{ width: 17px; height: 17px; }
@@ -313,6 +315,73 @@
     padding: 0;
     text-decoration: underline;
   }
+
+  /* Age gate */
+  .age-gate{
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(6,6,8,0.96);
+    backdrop-filter: blur(10px);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .age-gate.open{ display: flex; }
+  .age-gate-box{
+    width: 100%;
+    max-width: 400px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 32px 28px;
+    text-align: center;
+  }
+  .age-gate-icon{
+    width: 56px; height: 56px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: rgba(255,61,129,0.12);
+    border: 1px solid var(--amber-dim);
+    color: var(--amber);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+  }
+  .age-gate-box h3{
+    margin: 0 0 10px;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .age-gate-box p{
+    margin: 0 0 22px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text-dim);
+  }
+  .age-gate-box p strong{ color: var(--text); }
+  .age-gate-actions{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .age-gate-actions button{
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 11px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 0;
+  }
+  #ageGateConfirmBtn{ background: var(--amber); color: #0a0a0d; }
+  #ageGateConfirmBtn:hover{ opacity: .88; }
+  #ageGateLeaveBtn{ background: none; color: var(--text-dim); border: 1px solid var(--line); }
+  #ageGateLeaveBtn:hover{ color: var(--text); }
 
   /* Toast notification */
   #toastContainer{
@@ -358,7 +427,7 @@
     flex-direction: column;
     gap: 10px;
   }
-  #adminForm input{
+  #adminForm input, #adminForm select{
     background: var(--bg);
     border: 1px solid var(--line);
     border-radius: 8px;
@@ -369,7 +438,7 @@
     outline: none;
     width: 100%;
   }
-  #adminForm input:focus{ border-color: var(--amber-dim); }
+  #adminForm input:focus, #adminForm select:focus{ border-color: var(--amber-dim); }
   .admin-form-actions{
     display: flex;
     gap: 8px;
@@ -1476,6 +1545,10 @@
       <input type="text" id="adminCast" placeholder="Pemeran (pisahkan koma, contoh: Udin, Idin)">
       <input type="text" id="adminTags" placeholder="Tag (pisahkan koma, contoh: kartun, malaysia)">
       <input type="text" id="adminDuration" placeholder="Durasi (contoh: 14:05)">
+      <select id="adminCoverRatio">
+        <option value="16:9">Cover 16:9 (landscape lebar)</option>
+        <option value="3:2">Cover 3:2 (landscape)</option>
+      </select>
       <div class="admin-form-actions">
         <button type="button" id="adminCancelEditBtn" style="display:none">Batal Edit</button>
         <button type="submit" id="adminSubmitBtn">Tambah Video</button>
@@ -1492,6 +1565,18 @@
 
 <div id="sidebarOverlay"></div>
 <div id="toastContainer"></div>
+
+<div id="ageGate" class="age-gate">
+  <div class="age-gate-box">
+    <div class="age-gate-icon">18+</div>
+    <h3>Konfirmasi Usia</h3>
+    <p>GO-CR💦T.FUN berisi konten porno yang mungkin gak cocok buat semua umur. Dengan melanjutkan, kamu konfirmasi bahwa usia kamu <strong>18 tahun ke atas</strong>.</p>
+    <div class="age-gate-actions">
+      <button type="button" id="ageGateLeaveBtn">Saya belum 18 tahun</button>
+      <button type="button" id="ageGateConfirmBtn">Saya sudah 18 tahun ke atas</button>
+    </div>
+  </div>
+</div>
 <aside id="sidebar">
   <div class="side-section">
     <button class="side-item active" data-action="home">
@@ -1561,6 +1646,29 @@
 
 <script>
 (function(){
+  // ============================================
+  // AGE GATE — konfirmasi umur 12+
+  // ============================================
+  const AGE_GATE_KEY = 'streamingin_age_confirmed';
+  const ageGate = document.getElementById('ageGate');
+  const ageGateConfirmBtn = document.getElementById('ageGateConfirmBtn');
+  const ageGateLeaveBtn = document.getElementById('ageGateLeaveBtn');
+
+  if(localStorage.getItem(AGE_GATE_KEY) !== 'yes'){
+    ageGate.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  ageGateConfirmBtn.addEventListener('click', () => {
+    localStorage.setItem(AGE_GATE_KEY, 'yes');
+    ageGate.classList.remove('open');
+    document.body.style.overflow = '';
+  });
+
+  ageGateLeaveBtn.addEventListener('click', () => {
+    window.location.href = 'https://www.google.com';
+  });
+
   const toastContainer = document.getElementById('toastContainer');
 
   function formatViewsShort(n){
@@ -2342,6 +2450,7 @@
   const adminCast = document.getElementById('adminCast');
   const adminTags = document.getElementById('adminTags');
   const adminDuration = document.getElementById('adminDuration');
+  const adminCoverRatio = document.getElementById('adminCoverRatio');
   const adminFormTitle = document.getElementById('adminFormTitle');
   const adminSubmitBtn = document.getElementById('adminSubmitBtn');
   const adminCancelEditBtn = document.getElementById('adminCancelEditBtn');
@@ -2404,7 +2513,8 @@
       studio: adminStudio.value.trim() || null,
       cast_names: parseCommaList(adminCast.value),
       tags: parseCommaList(adminTags.value),
-      duration: adminDuration.value.trim() || null
+      duration: adminDuration.value.trim() || null,
+      cover_ratio: adminCoverRatio.value
     };
 
     let error;
@@ -2476,6 +2586,7 @@
         adminCast.value = (v.cast_names || []).join(', ');
         adminTags.value = (v.tags || []).join(', ');
         adminDuration.value = v.duration || '';
+        adminCoverRatio.value = v.cover_ratio || '16:9';
         adminFormTitle.textContent = 'Edit Video';
         adminSubmitBtn.textContent = 'Simpan Perubahan';
         adminCancelEditBtn.style.display = 'inline-block';
@@ -2912,6 +3023,7 @@
 
       const thumb = document.createElement('div');
       thumb.className = 'related-thumb';
+      thumb.style.aspectRatio = item.coverRatio === '3:2' ? '3 / 2' : '16 / 9';
       const img = document.createElement('img');
       img.src = item.cover;
       img.loading = 'lazy';
@@ -2986,13 +3098,14 @@
     const pageItems = items.slice(start, start + PER_PAGE);
 
     pageItems.forEach((item, i) => {
-      const { cover, url, title, views, createdAt, duration } = item;
+      const { cover, url, title, views, createdAt, duration, coverRatio } = item;
       const card = document.createElement('div');
       card.className = 'card';
       card.style.animationDelay = (Math.min(i,24) * 25) + 'ms';
 
       const thumb = document.createElement('div');
       thumb.className = 'thumb';
+      thumb.style.aspectRatio = coverRatio === '3:2' ? '3 / 2' : '16 / 9';
 
       const img = document.createElement('img');
       img.className = 'cover';
@@ -3125,7 +3238,8 @@
         tags: v.tags || [],
         createdAt: v.created_at,
         views: viewCounts[v.url] || 0,
-        duration: v.duration || ''
+        duration: v.duration || '',
+        coverRatio: v.cover_ratio || '16:9'
       }))
       .filter(item => item.cover && item.url);
   }
