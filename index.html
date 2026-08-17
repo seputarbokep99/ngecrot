@@ -729,16 +729,35 @@
     flex-direction: column;
     gap: 32px;
   }
+  .home-title-row{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
   .home-section-title{
     font-size: 17px;
     font-weight: 800;
     color: var(--text);
-    margin: 0 0 14px;
+    margin: 0;
     display: flex;
     align-items: center;
     gap: 8px;
   }
   .home-section-title .trend-icon{ color: var(--amber); }
+  .see-all-btn{
+    flex-shrink: 0;
+    background: none;
+    border: 0;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 4px 6px;
+  }
+  .see-all-btn:hover{ color: var(--amber); }
   .home-row-wrap{
     position: relative;
   }
@@ -1940,6 +1959,7 @@
   let currentPage = 1;
   let PER_PAGE = 12;
   let activeFilter = null; // { type: 'tag'|'studio'|'cast', value }
+  let activeSort = null; // null | 'trending'
   let searchQuery = '';
   const ROWS_PER_PAGE = 4;
 
@@ -1985,6 +2005,7 @@
   });
   function applySearch(){
     searchQuery = searchInput.value.trim().toLowerCase();
+    activeSort = null;
     applyFilters();
     goToPage(1, { skipScroll: true });
   }
@@ -1992,6 +2013,7 @@
   function resetToHome(){
     if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
     activeFilter = null;
+    activeSort = null;
     searchQuery = '';
     searchInput.value = '';
     applyFilters();
@@ -2001,12 +2023,24 @@
 
   function setFilter(type, value){
     if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
+    activeSort = null;
     const isSame = activeFilter && activeFilter.type === type && activeFilter.value === value;
     activeFilter = isSame ? null : (value === null ? null : { type, value });
     applyFilters();
     updateActiveChipsAndSideItems();
     goToPage(1);
     closeMobileSidebar();
+  }
+
+  function setTrendingView(){
+    if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
+    activeFilter = null;
+    searchQuery = '';
+    searchInput.value = '';
+    activeSort = 'trending';
+    applyFilters();
+    updateActiveChipsAndSideItems();
+    goToPage(1);
   }
 
   function applyFilters(){
@@ -2025,6 +2059,9 @@
         (item.tags || []).some(t => t.toLowerCase().includes(q));
       return matchesFilter && matchesSearch;
     });
+    if(activeSort === 'trending'){
+      filteredData.sort((a, b) => (b.views || 0) - (a.views || 0));
+    }
   }
 
   function getUniqueTags(){
@@ -2086,7 +2123,7 @@
       el.classList.toggle('active', el.dataset.cast === activeCastValue && !!activeCastValue);
     });
     document.querySelectorAll('.side-item[data-action]').forEach(el => {
-      el.classList.toggle('active', el.dataset.action === 'home' && !activeFilter && !searchQuery);
+      el.classList.toggle('active', el.dataset.action === 'home' && !activeFilter && !searchQuery && !activeSort);
     });
   }
 
@@ -3401,6 +3438,9 @@
     const section = document.createElement('div');
     section.className = 'home-section';
 
+    const titleRow = document.createElement('div');
+    titleRow.className = 'home-title-row';
+
     const h2 = document.createElement('h2');
     h2.className = 'home-section-title';
     if(opts.trending){
@@ -3409,7 +3449,17 @@
     } else {
       h2.textContent = title;
     }
-    section.appendChild(h2);
+    titleRow.appendChild(h2);
+
+    if(opts.onSeeAll){
+      const seeAllBtn = document.createElement('button');
+      seeAllBtn.className = 'see-all-btn';
+      seeAllBtn.textContent = 'Lihat semua +';
+      seeAllBtn.addEventListener('click', opts.onSeeAll);
+      titleRow.appendChild(seeAllBtn);
+    }
+
+    section.appendChild(titleRow);
 
     if(!items.length){
       const empty = document.createElement('div');
@@ -3435,7 +3485,9 @@
     const row = document.createElement('div');
     row.className = 'home-row';
     items.forEach((item, i) => row.appendChild(createVideoCard(item, i)));
-    enableDragScroll(row);
+    // Sengaja gak pakai enableDragScroll di sini — di PC/desktop navigasi
+    // baris ini murni lewat tombol panah, bukan drag/scroll mouse.
+    // Di HP/tablet tetap bisa di-swipe normal (native touch scroll browser).
 
     prevBtn.addEventListener('click', () => {
       row.scrollBy({ left: -row.clientWidth * 0.85, behavior: 'smooth' });
@@ -3452,6 +3504,8 @@
     return section;
   }
 
+  const HOME_ROW_LIMIT = 10;
+
   function buildHomeSections(){
     homeSections.innerHTML = '';
     const videos = allData;
@@ -3460,22 +3514,22 @@
       return;
     }
 
-    const trending = videos.slice().sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 12);
-    homeSections.appendChild(buildHomeRow('Video Trending', trending, { trending: true }));
+    const trending = videos.slice().sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, HOME_ROW_LIMIT);
+    homeSections.appendChild(buildHomeRow('Video Trending', trending, { trending: true, onSeeAll: setTrendingView }));
 
-    const terbaru = videos.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 12);
-    homeSections.appendChild(buildHomeRow('Video Terbaru', terbaru));
+    const terbaru = videos.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, HOME_ROW_LIMIT);
+    homeSections.appendChild(buildHomeRow('Video Terbaru', terbaru, { onSeeAll: resetToHome }));
 
     featuredTags.forEach(tag => {
-      const tagged = videos.filter(v => (v.tags || []).includes(tag)).slice(0, 12);
+      const tagged = videos.filter(v => (v.tags || []).includes(tag)).slice(0, HOME_ROW_LIMIT);
       if(tagged.length){
-        homeSections.appendChild(buildHomeRow('#' + tag, tagged));
+        homeSections.appendChild(buildHomeRow('#' + tag, tagged, { onSeeAll: () => setFilter('tag', tag) }));
       }
     });
   }
 
   function updateHomeViewMode(){
-    const isBrowsing = !activeFilter && !searchQuery;
+    const isBrowsing = !activeFilter && !searchQuery && !activeSort;
     if(isBrowsing){
       homeSections.style.display = 'flex';
       grid.style.display = 'none';
