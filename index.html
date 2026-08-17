@@ -727,14 +727,14 @@
   #homeSections{
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 22px;
   }
   .home-title-row{
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 14px;
+    margin-bottom: 8px;
   }
   .home-section-title{
     font-size: 17px;
@@ -3593,7 +3593,7 @@
 
   function goToPage(page, opts = {}){
     updateHomeViewMode();
-    const isBrowsing = !activeFilter && !searchQuery;
+    const isBrowsing = !activeFilter && !searchQuery && !activeSort;
 
     const totalPages = Math.max(1, Math.ceil(filteredData.length / PER_PAGE));
     currentPage = Math.min(Math.max(1, page), totalPages);
@@ -3607,7 +3607,7 @@
     if(currentPage > 1 && !isBrowsing) url.searchParams.set('page', currentPage); else url.searchParams.delete('page');
     history.replaceState(null, '', url);
     if(!opts.skipScroll){
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: 'auto' });
     }
   }
 
