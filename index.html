@@ -739,6 +739,9 @@
     gap: 8px;
   }
   .home-section-title .trend-icon{ color: var(--amber); }
+  .home-row-wrap{
+    position: relative;
+  }
   .home-row{
     display: flex;
     gap: 14px;
@@ -746,6 +749,8 @@
     scrollbar-width: none;
     padding-bottom: 4px;
     cursor: grab;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
   }
   .home-row::-webkit-scrollbar{ display: none; }
   .home-row .card{
@@ -758,6 +763,35 @@
   .home-section-empty{
     color: var(--text-dim);
     font-size: 13px;
+  }
+
+  /* Tombol panah geser baris — cuma muncul di device dengan mouse (PC/laptop) */
+  .row-arrow{
+    display: none;
+    position: absolute;
+    top: 0;
+    bottom: 4px;
+    width: 40px;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to right, var(--bg) 20%, transparent);
+    border: 0;
+    color: var(--text);
+    cursor: pointer;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity .15s ease;
+  }
+  .row-arrow svg{ width: 22px; height: 22px; }
+  .row-arrow-left{ left: 0; }
+  .row-arrow-right{
+    right: 0;
+    background: linear-gradient(to left, var(--bg) 20%, transparent);
+  }
+  @media (hover: hover) and (pointer: fine){
+    .row-arrow{ display: flex; }
+    .home-row-wrap:hover .row-arrow{ opacity: 1; }
+    .row-arrow:hover{ color: var(--amber); }
   }
 
   .grid{
@@ -3385,11 +3419,35 @@
       return section;
     }
 
+    const rowWrap = document.createElement('div');
+    rowWrap.className = 'home-row-wrap';
+
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'row-arrow row-arrow-left';
+    prevBtn.setAttribute('aria-label', 'Geser ke kiri');
+    prevBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'row-arrow row-arrow-right';
+    nextBtn.setAttribute('aria-label', 'Geser ke kanan');
+    nextBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+
     const row = document.createElement('div');
     row.className = 'home-row';
     items.forEach((item, i) => row.appendChild(createVideoCard(item, i)));
-    section.appendChild(row);
     enableDragScroll(row);
+
+    prevBtn.addEventListener('click', () => {
+      row.scrollBy({ left: -row.clientWidth * 0.85, behavior: 'smooth' });
+    });
+    nextBtn.addEventListener('click', () => {
+      row.scrollBy({ left: row.clientWidth * 0.85, behavior: 'smooth' });
+    });
+
+    rowWrap.appendChild(prevBtn);
+    rowWrap.appendChild(row);
+    rowWrap.appendChild(nextBtn);
+    section.appendChild(rowWrap);
 
     return section;
   }
