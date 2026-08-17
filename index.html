@@ -3522,7 +3522,7 @@
     featuredTags.forEach(tag => {
       const tagged = videos.filter(v => (v.tags || []).includes(tag)).slice(0, HOME_ROW_LIMIT);
       if(tagged.length){
-        homeSections.appendChild(buildHomeRow('Video ' + titleCase(tag), tagged, { onSeeAll: () => setFilter('tag', tag) }));
+        homeSections.appendChild(buildHomeRow(titleCase(tag), tagged, { onSeeAll: () => setFilter('tag', tag) }));
       }
     });
   }
