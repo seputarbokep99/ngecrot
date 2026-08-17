@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GO-CR💦T.FUN</title>
+<title>Reel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
@@ -1609,7 +1609,7 @@
     <button id="hamburger" aria-label="Menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
-    <a href="#" class="brand" id="titleLink"><span class="dot"></span><span class="txt">GO-CR💦T.FUN</span></a>
+    <a href="#" class="brand" id="titleLink"><span class="dot"></span><span class="txt">STREAMINGIN</span></a>
   </div>
   <div class="topbar-center">
     <form id="searchForm">
@@ -1627,7 +1627,7 @@
 <div id="loginModal" class="login-modal">
   <div class="login-box">
     <button id="loginCloseBtn" class="login-close">✕</button>
-    <h3 id="loginTitle">Masuk ke GO-CR💦T.FUN</h3>
+    <h3 id="loginTitle">Masuk ke STREAMINGIN</h3>
     <p id="loginDesc">Masukin email dan password kamu.</p>
     <form id="loginForm">
       <input type="email" id="loginEmail" placeholder="Email kamu" required autocomplete="email">
@@ -1730,10 +1730,10 @@
   <div class="age-gate-box">
     <div class="age-gate-icon">18+</div>
     <h3>Konfirmasi Usia</h3>
-    <p>GO-CR💦T.FUN berisi konten video dewasa yang mungkin gak cocok buat semua umur. Dengan melanjutkan, kamu konfirmasi bahwa usia kamu <strong>18 tahun ke atas</strong>.</p>
+    <p>STREAMINGIN berisi campuran konten (aksi/perkelahian, tema peperangan, hingga kartun anak) yang mungkin gak cocok buat semua umur. Dengan melanjutkan, kamu konfirmasi bahwa usia kamu <strong>12 tahun ke atas</strong>.</p>
     <div class="age-gate-actions">
-      <button type="button" id="ageGateLeaveBtn">Saya belum 18 tahun</button>
-      <button type="button" id="ageGateConfirmBtn">Saya sudah 18 tahun ke atas</button>
+      <button type="button" id="ageGateLeaveBtn">Saya belum 12 tahun</button>
+      <button type="button" id="ageGateConfirmBtn">Saya sudah 12 tahun ke atas</button>
     </div>
   </div>
 </div>
@@ -1801,14 +1801,14 @@
   </div>
 
   <footer>
-    <p>GO-CR💦T.FUN — Dibuat dengan ☕ dan ❤️ </p>
+    <p>Dibuat dengan ☕ dan ❤️ — STREAMINGIN</p>
   </footer>
 </div>
 
 <script>
 (function(){
   // ============================================
-  // AGE GATE — konfirmasi umur 18+
+  // AGE GATE — konfirmasi umur 12+
   // ============================================
   const AGE_GATE_KEY = 'konfirmasi_usia';
   const ageGate = document.getElementById('ageGate');
@@ -2256,13 +2256,13 @@
 
   function updateAuthModalUI(){
     if(authMode === 'login'){
-      loginTitle.textContent = 'Masuk ke GO-CR💦T.FUN';
+      loginTitle.textContent = 'Masuk ke STREAMINGIN';
       loginDesc.textContent = 'Masukin email dan password akun kamu.';
       loginSubmitBtn.textContent = 'Masuk';
       authToggleText.innerHTML = 'Belum punya akun? <button type="button" id="toggleAuthBtn">Daftar di sini</button>';
     } else {
       loginTitle.textContent = 'Daftar Akun Baru';
-      loginDesc.textContent = 'Bikin akun dulu buat bisa komentar di GO-CR💦T.FUN.';
+      loginDesc.textContent = 'Bikin akun dulu buat bisa komentar di STREAMINGIN.';
       loginSubmitBtn.textContent = 'Daftar';
       authToggleText.innerHTML = 'Sudah punya akun? <button type="button" id="toggleAuthBtn">Masuk di sini</button>';
     }
