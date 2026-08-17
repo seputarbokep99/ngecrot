@@ -3600,6 +3600,20 @@
 
     const url = new URL(window.location);
     if(currentPage > 1 && !isBrowsing) url.searchParams.set('page', currentPage); else url.searchParams.delete('page');
+
+    url.searchParams.delete('ftype');
+    url.searchParams.delete('fval');
+    url.searchParams.delete('sort');
+    url.searchParams.delete('q');
+    if(activeFilter){
+      url.searchParams.set('ftype', activeFilter.type);
+      url.searchParams.set('fval', activeFilter.value);
+    } else if(activeSort){
+      url.searchParams.set('sort', activeSort);
+    } else if(searchQuery){
+      url.searchParams.set('q', searchQuery);
+    }
+
     history.replaceState(null, '', url);
     if(!opts.skipScroll){
       window.scrollTo({ top: 0, behavior: 'auto' });
@@ -3672,6 +3686,23 @@
     }, 200);
   });
 
+  function restoreStateFromUrl(){
+    const params = new URLSearchParams(window.location.search);
+    const ftype = params.get('ftype');
+    const fval = params.get('fval');
+    const sort = params.get('sort');
+    const q = params.get('q');
+
+    if(ftype && fval){
+      activeFilter = { type: ftype, value: fval };
+    } else if(sort === 'trending' || sort === 'terbaru'){
+      activeSort = sort;
+    } else if(q){
+      searchQuery = q.toLowerCase();
+      searchInput.value = q;
+    }
+  }
+
   (async () => {
     const [videos, settingsRes] = await Promise.all([
       fetchVideosFromDB(),
@@ -3686,8 +3717,10 @@
     }
 
     allData = videos;
-    filteredData = allData.slice();
+    restoreStateFromUrl();
+    applyFilters();
     buildChipsAndSidebar();
+    updateActiveChipsAndSideItems();
     PER_PAGE = calcPerPage();
 
     const vid = getVideoIdFromUrl();
