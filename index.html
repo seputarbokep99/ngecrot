@@ -1852,32 +1852,35 @@
   const chipsRow = document.getElementById('chipsRow');
 
   // Drag-to-scroll pakai mouse (klik-tahan-geser)
-  function enableDragScroll(el){
-    let isDown = false;
-    let startX = 0;
-    let startScroll = 0;
-    let moved = false;
+  // Sistem drag-to-scroll global — listener mousemove/mouseup cuma dipasang
+  // SEKALI di sini, dishare buat semua elemen yang manggil enableDragScroll().
+  // Ini sengaja gak dipasang per-elemen biar gak numpuk tiap kali baris
+  // video di-rebuild (misal pas resize / rebuild homepage) — kalau tiap
+  // enableDragScroll() nempelin listener baru ke window, listener lama gak
+  // pernah kehapus dan numpuk terus, bikin drag "nyangkut" & scroll jadi lag.
+  let dragState = null; // { el, startX, startScroll, moved }
 
+  window.addEventListener('mousemove', (e) => {
+    if(!dragState) return;
+    const dx = e.pageX - dragState.startX;
+    if(Math.abs(dx) > 4) dragState.moved = true;
+    dragState.el.scrollLeft = dragState.startScroll - dx;
+  });
+
+  window.addEventListener('mouseup', () => {
+    if(dragState) dragState.el.style.cursor = '';
+    dragState = null;
+  });
+
+  function enableDragScroll(el){
     el.addEventListener('mousedown', (e) => {
-      isDown = true;
-      moved = false;
-      startX = e.pageX;
-      startScroll = el.scrollLeft;
+      dragState = { el, startX: e.pageX, startScroll: el.scrollLeft, moved: false };
       el.style.cursor = 'grabbing';
     });
-    window.addEventListener('mouseup', () => {
-      isDown = false;
-      el.style.cursor = '';
-    });
-    window.addEventListener('mousemove', (e) => {
-      if(!isDown) return;
-      const dx = e.pageX - startX;
-      if(Math.abs(dx) > 4) moved = true;
-      el.scrollLeft = startScroll - dx;
-    });
+
     // Cegah klik chip ke-trigger kalau tadi user lagi drag (bukan klik biasa)
     el.addEventListener('click', (e) => {
-      if(moved){
+      if(dragState && dragState.el === el && dragState.moved){
         e.stopPropagation();
         e.preventDefault();
       }
