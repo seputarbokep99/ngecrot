@@ -2043,6 +2043,17 @@
     goToPage(1);
   }
 
+  function setTerbaruView(){
+    if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
+    activeFilter = null;
+    searchQuery = '';
+    searchInput.value = '';
+    activeSort = 'terbaru';
+    applyFilters();
+    updateActiveChipsAndSideItems();
+    goToPage(1);
+  }
+
   function applyFilters(){
     filteredData = allData.filter(item => {
       let matchesFilter = true;
@@ -2061,6 +2072,8 @@
     });
     if(activeSort === 'trending'){
       filteredData.sort((a, b) => (b.views || 0) - (a.views || 0));
+    } else if(activeSort === 'terbaru'){
+      filteredData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
   }
 
@@ -3518,7 +3531,7 @@
     homeSections.appendChild(buildHomeRow('Video Trending', trending, { trending: true, onSeeAll: setTrendingView }));
 
     const terbaru = videos.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, HOME_ROW_LIMIT);
-    homeSections.appendChild(buildHomeRow('Video Terbaru', terbaru, { onSeeAll: resetToHome }));
+    homeSections.appendChild(buildHomeRow('Video Terbaru', terbaru, { onSeeAll: setTerbaruView }));
 
     featuredTags.forEach(tag => {
       const tagged = videos.filter(v => (v.tags || []).includes(tag)).slice(0, HOME_ROW_LIMIT);
