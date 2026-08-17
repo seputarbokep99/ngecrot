@@ -1995,7 +1995,7 @@
   }
 
   function resetToHome(){
-    if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
+    if(watchView.style.display === 'block') closeWatch();
     activeFilter = null;
     activeSort = null;
     searchQuery = '';
@@ -2006,7 +2006,7 @@
   }
 
   function setFilter(type, value){
-    if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
+    if(watchView.style.display === 'block') closeWatch();
     activeSort = null;
     const isSame = activeFilter && activeFilter.type === type && activeFilter.value === value;
     activeFilter = isSame ? null : (value === null ? null : { type, value });
@@ -2017,7 +2017,7 @@
   }
 
   function setTrendingView(){
-    if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
+    if(watchView.style.display === 'block') closeWatch();
     activeFilter = null;
     searchQuery = '';
     searchInput.value = '';
@@ -2028,7 +2028,7 @@
   }
 
   function setTerbaruView(){
-    if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
+    if(watchView.style.display === 'block') closeWatch();
     activeFilter = null;
     searchQuery = '';
     searchInput.value = '';
@@ -2187,7 +2187,7 @@
         btn.className = 'pill-btn';
         btn.textContent = row.type === 'tag' ? '#' + val : val;
         btn.addEventListener('click', () => {
-          closeWatch({ skipHistory: true });
+          closeWatch();
           setFilter(row.type, val);
         });
         rowEl.appendChild(btn);
