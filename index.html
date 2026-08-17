@@ -3501,6 +3501,10 @@
 
   const HOME_ROW_LIMIT = 10;
 
+  function titleCase(str){
+    return str.replace(/(^|[\s-])\S/g, c => c.toUpperCase());
+  }
+
   function buildHomeSections(){
     homeSections.innerHTML = '';
     const videos = allData;
@@ -3518,7 +3522,7 @@
     featuredTags.forEach(tag => {
       const tagged = videos.filter(v => (v.tags || []).includes(tag)).slice(0, HOME_ROW_LIMIT);
       if(tagged.length){
-        homeSections.appendChild(buildHomeRow('#' + tag, tagged, { onSeeAll: () => setFilter('tag', tag) }));
+        homeSections.appendChild(buildHomeRow('Video ' + titleCase(tag), tagged, { onSeeAll: () => setFilter('tag', tag) }));
       }
     });
   }
