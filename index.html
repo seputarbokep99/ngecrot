@@ -163,24 +163,14 @@
     .brand span.txt{ display:none; }
   }
 
-  /* Auth */
+  /* Auth Area (Hidden by default for public) */
   #authArea{
+    display: none; /* Disembunyikan dari publik */
+  }
+  #authArea.visible {
     display: flex;
-    align-items: center;
   }
-  .auth-login-btn{
-    background: var(--amber);
-    color: #0a0a0d;
-    border: 0;
-    font-family: inherit;
-    font-size: 12.5px;
-    font-weight: 700;
-    padding: 8px 16px;
-    border-radius: 999px;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-  .auth-login-btn:hover{ opacity: .88; }
+  
   .auth-user{
     display: flex;
     align-items: center;
@@ -307,23 +297,6 @@
   }
   #loginMsg.success{ color: var(--amber); }
   #loginMsg.error{ color: #ff6b6b; }
-  .auth-toggle-text{
-    margin-top: 14px;
-    font-size: 12.5px;
-    color: var(--text-dim);
-    text-align: center;
-  }
-  .auth-toggle-text button{
-    background: none;
-    border: 0;
-    color: var(--amber);
-    font-family: inherit;
-    font-size: 12.5px;
-    font-weight: 700;
-    cursor: pointer;
-    padding: 0;
-    text-decoration: underline;
-  }
 
   /* Age gate */
   .age-gate{
@@ -1205,21 +1178,9 @@
 
   .comment-login-prompt{
     margin-bottom: 20px;
+    display: none; /* Hidden because no public login */
   }
-  #commentLoginBtn{
-    background: var(--bg-soft);
-    border: 1px dashed var(--line);
-    color: var(--text-dim);
-    font-family: inherit;
-    font-size: 13px;
-    padding: 12px 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    width: 100%;
-    text-align: center;
-  }
-  #commentLoginBtn:hover{ border-color: var(--amber-dim); color: var(--amber); }
-
+  
   #commentList{
     display: flex;
     flex-direction: column;
@@ -1716,15 +1677,16 @@
   </div>
 </div>
 
+<!-- Login Modal (Only accessible via /admin) -->
 <div id="loginModal" class="login-modal">
   <div class="login-box">
     <button id="loginCloseBtn" class="login-close">✕</button>
-    <h3 id="loginTitle">Masuk ke GO-CR💦T.FUN</h3>
-    <p id="loginDesc">Masukin email dan password kamu.</p>
+    <h3 id="loginTitle">Admin Login</h3>
+    <p id="loginDesc">Masukin email dan password admin.</p>
     <form id="loginForm">
-      <input type="email" id="loginEmail" placeholder="Email kamu" required autocomplete="email">
+      <input type="email" id="loginEmail" placeholder="Email admin" required autocomplete="email">
       <div class="password-field">
-        <input type="password" id="loginPassword" placeholder="Password (minimal 6 karakter)" minlength="6" required autocomplete="current-password">
+        <input type="password" id="loginPassword" placeholder="Password" minlength="6" required autocomplete="current-password">
         <button type="button" id="togglePasswordBtn" class="toggle-password-btn" aria-label="Tampilkan password">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
@@ -1732,7 +1694,6 @@
       <button type="submit" id="loginSubmitBtn">Masuk</button>
     </form>
     <div id="loginMsg"></div>
-    <div class="auth-toggle-text" id="authToggleText"></div>
   </div>
 </div>
 
@@ -1772,7 +1733,7 @@
   </div>
 </div>
 
-<!-- ADMIN MODAL DIPERBAIKI -->
+<!-- ADMIN MODAL -->
 <div id="adminModal" class="login-modal">
   <div class="login-box admin-box">
     <button id="adminCloseBtn" class="login-close">✕</button>
@@ -1897,9 +1858,6 @@
             <textarea id="commentText" placeholder="Tulis komentar..." maxlength="500" required></textarea>
             <button type="submit">Kirim</button>
           </form>
-          <div id="commentLoginPrompt" class="comment-login-prompt">
-            <button id="commentLoginBtn">Masuk buat komentar</button>
-          </div>
           <div id="commentList"></div>
         </div>
       </div>
@@ -2392,71 +2350,6 @@
   const loginTitle = document.getElementById('loginTitle');
   const loginDesc = document.getElementById('loginDesc');
   const loginSubmitBtn = document.getElementById('loginSubmitBtn');
-  const authToggleText = document.getElementById('authToggleText');
-  const commentLoginPrompt = document.getElementById('commentLoginPrompt');
-  const commentLoginBtn = document.getElementById('commentLoginBtn');
-
-  let authMode = 'login'; 
-
-  function updateAuthModalUI(){
-    if(authMode === 'login'){
-      loginTitle.textContent = 'Masuk ke GO-CR💦T.FUN';
-      loginDesc.textContent = 'Masukin email dan password akun kamu.';
-      loginSubmitBtn.textContent = 'Masuk';
-      authToggleText.innerHTML = 'Belum punya akun? <button type="button" id="toggleAuthBtn">Daftar di sini</button>';
-    } else {
-      loginTitle.textContent = 'Daftar Akun Baru';
-      loginDesc.textContent = 'Bikin akun dulu buat bisa komentar di GO-CR💦T.FUN.';
-      loginSubmitBtn.textContent = 'Daftar';
-      authToggleText.innerHTML = 'Sudah punya akun? <button type="button" id="toggleAuthBtn">Masuk di sini</button>';
-    }
-    document.getElementById('toggleAuthBtn').addEventListener('click', () => {
-      authMode = (authMode === 'login') ? 'signup' : 'login';
-      loginMsg.textContent = '';
-      loginMsg.className = '';
-      updateAuthModalUI();
-    });
-  }
-
-  function openLoginModal(mode){
-    authMode = mode || 'login';
-    loginMsg.textContent = '';
-    loginMsg.className = '';
-    loginForm.reset();
-    loginPassword.type = 'password';
-    togglePasswordBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>';
-    updateAuthModalUI();
-    loginModal.classList.add('open');
-  }
-  function closeLoginModal(){
-    loginModal.classList.remove('open');
-  }
-  loginCloseBtn.addEventListener('click', closeLoginModal);
-  loginModal.addEventListener('click', (e) => { if(e.target === loginModal) closeLoginModal(); });
-  commentLoginBtn.addEventListener('click', () => openLoginModal('login'));
-
-  function translateAuthError(message){
-    const m = (message || '').toLowerCase();
-    if(m.includes('invalid login credentials')){
-      return 'Email atau password salah. Kalau belum punya akun, daftar dulu di bawah.';
-    }
-    if(m.includes('user already registered') || m.includes('already registered') || m.includes('already exists')){
-      return 'Email ini udah kedaftar. Coba masuk aja, atau pakai email lain.';
-    }
-    if(m.includes('password should be at least') || m.includes('password is too short')){
-      return 'Password minimal 6 karakter.';
-    }
-    if(m.includes('invalid email') || m.includes('unable to validate email')){
-      return 'Format email gak valid. Cek lagi penulisannya.';
-    }
-    if(m.includes('email rate limit') || m.includes('rate limit exceeded') || m.includes('too many requests')){
-      return 'Kebanyakan percobaan dalam waktu singkat. Coba lagi beberapa menit lagi.';
-    }
-    if(m.includes('network')){
-      return 'Gagal terhubung ke server. Cek koneksi internet kamu.';
-    }
-    return message;
-  }
 
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -2466,44 +2359,21 @@
 
     loginSubmitBtn.disabled = true;
     loginMsg.className = '';
+    loginMsg.textContent = 'Sedang masuk...';
 
-    if(authMode === 'login'){
-      loginMsg.textContent = 'Sedang masuk...';
-      const { error } = await sb.auth.signInWithPassword({ email, password });
-      loginSubmitBtn.disabled = false;
-      if(error){
-        loginMsg.textContent = translateAuthError(error.message);
-        loginMsg.className = 'error';
-      } else {
-        loginMsg.textContent = 'Berhasil masuk!';
-        loginMsg.className = 'success';
-      }
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    loginSubmitBtn.disabled = false;
+    
+    if(error){
+      loginMsg.textContent = 'Login gagal: ' + error.message;
+      loginMsg.className = 'error';
     } else {
-      loginMsg.textContent = 'Membuat akun...';
-      const { data, error } = await sb.auth.signUp({
-        email,
-        password,
-        options: { emailRedirectTo: window.location.origin + window.location.pathname }
-      });
-      loginSubmitBtn.disabled = false;
-
-      const emailAlreadyUsed = !error && data && data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0;
-
-      if(error){
-        loginMsg.textContent = translateAuthError(error.message);
-        loginMsg.className = 'error';
-      } else if(emailAlreadyUsed){
-        loginMsg.textContent = 'Email ini udah kedaftar. Coba masuk aja, atau pakai email lain.';
-        loginMsg.className = 'error';
-      } else if(data.session){
-        loginMsg.textContent = 'Akun berhasil dibuat, kamu langsung masuk!';
-        loginMsg.className = 'success';
-      } else {
-        loginMsg.textContent = 'Akun berhasil dibuat! Cek email kamu buat verifikasi dulu sebelum bisa masuk.';
-        loginMsg.className = 'success';
-        authMode = 'login';
-        updateAuthModalUI();
-      }
+      loginMsg.textContent = 'Berhasil masuk!';
+      loginMsg.className = 'success';
+      setTimeout(() => {
+        closeLoginModal();
+        checkAdminAccess(); // Cek ulang setelah login
+      }, 1000);
     }
   });
 
@@ -2522,7 +2392,8 @@
 
   function renderAuthArea(){
     authArea.innerHTML = '';
-    if(currentUser){
+    if(currentUser && currentProfile && currentProfile.is_admin){
+      authArea.classList.add('visible');
       const wrap = document.createElement('div');
       wrap.className = 'auth-user';
 
@@ -2553,21 +2424,17 @@
       logoutBtn.textContent = 'Keluar';
       logoutBtn.addEventListener('click', async () => {
         await sb.auth.signOut();
+        window.location.href = window.location.pathname; // Refresh ke halaman utama tanpa /admin
       });
       wrap.appendChild(logoutBtn);
 
       authArea.appendChild(wrap);
     } else {
-      const btn = document.createElement('button');
-      btn.className = 'auth-login-btn';
-      btn.textContent = 'Masuk';
-      btn.addEventListener('click', () => openLoginModal('login'));
-      authArea.appendChild(btn);
+      authArea.classList.remove('visible');
     }
 
-    commentForm.style.display = currentUser ? 'flex' : 'none';
-    commentLoginPrompt.style.display = currentUser ? 'none' : 'block';
-
+    commentForm.style.display = (currentUser && currentProfile && currentProfile.is_admin) ? 'flex' : 'none';
+    
     const isAdmin = !!(currentProfile && currentProfile.is_admin);
     document.getElementById('adminSideSection').style.display = isAdmin ? 'block' : 'none';
   }
@@ -2770,12 +2637,40 @@
     currentUser = session ? session.user : null;
     await loadCurrentProfile();
     renderAuthArea();
-    if(currentUser) closeLoginModal();
+    if(currentUser) checkAdminAccess(); // Re-check admin status
     if(currentWatchItem) renderComments(currentWatchItem);
   });
 
   // ============================================
-  // ADMIN PANEL LOGIC (UPDATED)
+  // ADMIN ACCESS CHECK (/admin)
+  // ============================================
+  function checkAdminAccess() {
+    const path = window.location.pathname;
+    const isAdminPath = path.endsWith('/admin') || path.endsWith('/admin.html');
+    
+    if (isAdminPath) {
+      if (currentUser && currentProfile && currentProfile.is_admin) {
+        // Sudah login sebagai admin, buka panel
+        openAdminModal();
+      } else {
+        // Belum login atau bukan admin, tampilkan form login
+        loginModal.classList.add('open');
+      }
+    }
+  }
+
+  function closeLoginModal(){
+    loginModal.classList.remove('open');
+    // Jika menutup login modal di halaman /admin tanpa login, redirect ke home
+    if (window.location.pathname.endsWith('/admin')) {
+       window.history.pushState({}, '', window.location.pathname.replace('/admin', ''));
+    }
+  }
+  loginCloseBtn.addEventListener('click', closeLoginModal);
+  loginModal.addEventListener('click', (e) => { if(e.target === loginModal) closeLoginModal(); });
+
+  // ============================================
+  // ADMIN PANEL LOGIC
   // ============================================
   const adminSideSection = document.getElementById('adminSideSection');
   const adminPanelBtn = document.getElementById('adminPanelBtn');
@@ -3227,7 +3122,7 @@
       btn.className = 'reaction-btn' + (myReaction && myReaction.emoji === emoji ? ' active' : '');
       btn.textContent = emoji + (count > 0 ? ' ' + count : '');
       btn.addEventListener('click', async () => {
-        if(!currentUser){ openLoginModal('login'); return; }
+        if(!currentUser){ return; } // Only admin can react now
         if(myReaction && myReaction.emoji === emoji){
           await sb.from('comment_reactions').delete().eq('comment_id', c.id).eq('user_id', currentUser.id);
         } else {
@@ -3243,7 +3138,7 @@
       replyBtn.className = 'reply-btn';
       replyBtn.textContent = 'Balas';
       replyBtn.addEventListener('click', () => {
-        if(!currentUser){ openLoginModal('login'); return; }
+        if(!currentUser){ return; } // Only admin can reply
         replyForm.classList.toggle('open');
         if(replyForm.classList.contains('open')) replyForm.querySelector('textarea').focus();
       });
@@ -3400,7 +3295,7 @@
 
   likeBtn.addEventListener('click', async () => {
     if(!currentWatchItem) return;
-    if(!currentUser){ openLoginModal('login'); return; }
+    if(!currentUser){ return; } // Only admin can like
     likeBtn.disabled = true;
     if(likeBtn.classList.contains('liked')){
       await sb.from('video_likes').delete().eq('video_url', currentWatchItem.url).eq('user_id', currentUser.id);
@@ -3965,6 +3860,9 @@
       const startPage = Math.min(getPageFromUrl(), totalPages);
       goToPage(startPage, { skipScroll: true });
     }
+    
+    // Check for admin access on load
+    checkAdminAccess();
   })();
 })();
 </script>
