@@ -25,6 +25,27 @@
 
   *{ box-sizing: border-box; }
 
+  /* Scrollbar dark */
+  html{
+    scrollbar-color: var(--line) var(--bg);
+    scrollbar-width: thin;
+  }
+  ::-webkit-scrollbar{
+    width: 11px;
+    height: 11px;
+  }
+  ::-webkit-scrollbar-track{
+    background: var(--bg);
+  }
+  ::-webkit-scrollbar-thumb{
+    background: var(--line);
+    border-radius: 999px;
+    border: 2px solid var(--bg);
+  }
+  ::-webkit-scrollbar-thumb:hover{
+    background: var(--amber-dim);
+  }
+
   html,body{
     margin:0; padding:0;
     background: var(--bg);
@@ -416,11 +437,32 @@
   .toast.error{ border-left-color: #ff6b6b; }
   .toast.show{ opacity: 1; transform: translateY(0); }
 
-  /* Admin panel */
+  /* Admin panel — full page, bukan card kecil di tengah */
+  #adminModal{
+    padding: 0;
+    align-items: stretch;
+    justify-content: stretch;
+  }
   .admin-box{
-    max-width: 480px;
-    max-height: 88vh;
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    max-height: none;
+    border-radius: 0;
+    border: 0;
     overflow-y: auto;
+    padding: 24px 24px 60px;
+  }
+  @media (min-width: 720px){
+    .admin-box{
+      padding: 32px 48px 80px;
+    }
+    .admin-box > *{
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+    }
   }
   #adminForm{
     display: flex;
@@ -439,6 +481,34 @@
     width: 100%;
   }
   #adminForm input:focus, #adminForm select:focus{ border-color: var(--amber-dim); }
+  .admin-field-block{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .category-template-list{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .category-chip{
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 7px 13px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .category-chip:hover{ border-color: var(--amber-dim); }
+  .category-chip.selected{
+    background: var(--amber);
+    border-color: var(--amber);
+    color: #0a0a0d;
+  }
   .admin-form-actions{
     display: flex;
     gap: 8px;
@@ -1696,7 +1766,11 @@
       <input type="text" id="adminTitle" placeholder="Judul" required>
       <input type="text" id="adminStudio" placeholder="Studio">
       <input type="text" id="adminCast" placeholder="Pemeran (pisahkan koma, contoh: Udin, Idin)">
-      <input type="text" id="adminTags" placeholder="Tag (pisahkan koma, contoh: kartun, malaysia)">
+      <div class="admin-field-block">
+        <label class="admin-field-label">Kategori (pilih satu atau lebih)</label>
+        <div id="categoryTemplateList" class="category-template-list"></div>
+        <input type="text" id="adminTagsCustom" placeholder="Kategori lain (opsional, pisah koma)">
+      </div>
       <input type="text" id="adminDuration" placeholder="Durasi (contoh: 14:05)">
       <select id="adminCoverRatio">
         <option value="16:9">Cover 16:9 (landscape lebar)</option>
@@ -2083,6 +2157,13 @@
 
     chipsRow.innerHTML = '';
 
+    const allBtn = document.createElement('button');
+    allBtn.className = 'chip';
+    allBtn.dataset.sortBtn = 'all';
+    allBtn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Semua Video';
+    allBtn.addEventListener('click', setAllVideosView);
+    chipsRow.appendChild(allBtn);
+
     const trendingBtn = document.createElement('button');
     trendingBtn.className = 'chip';
     trendingBtn.dataset.sortBtn = 'trending';
@@ -2149,6 +2230,17 @@
     searchQuery = '';
     searchInput.value = '';
     activeSort = 'random';
+    applyFilters();
+    updateActiveChipsAndSideItems();
+    goToPage(1);
+  }
+
+  function setAllVideosView(){
+    if(watchView.style.display === 'block') closeWatch();
+    activeFilter = null;
+    searchQuery = '';
+    searchInput.value = '';
+    activeSort = 'all';
     applyFilters();
     updateActiveChipsAndSideItems();
     goToPage(1);
@@ -2673,7 +2765,8 @@
   const adminTitle = document.getElementById('adminTitle');
   const adminStudio = document.getElementById('adminStudio');
   const adminCast = document.getElementById('adminCast');
-  const adminTags = document.getElementById('adminTags');
+  const categoryTemplateList = document.getElementById('categoryTemplateList');
+  const adminTagsCustom = document.getElementById('adminTagsCustom');
   const adminDuration = document.getElementById('adminDuration');
   const adminCoverRatio = document.getElementById('adminCoverRatio');
   const adminFormTitle = document.getElementById('adminFormTitle');
@@ -2681,6 +2774,40 @@
   const adminCancelEditBtn = document.getElementById('adminCancelEditBtn');
   const adminMsg = document.getElementById('adminMsg');
   const adminVideoList = document.getElementById('adminVideoList');
+
+  const CATEGORY_TEMPLATES = [
+    'masak', 'kartun', 'action', 'drama', 'komedi', 'horror',
+    'musik', 'olahraga', 'edukasi', 'anime', 'misteri', 'romantis',
+    'dokumenter', 'vlog', 'trailer'
+  ];
+
+  CATEGORY_TEMPLATES.forEach(cat => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'category-chip';
+    chip.dataset.cat = cat;
+    chip.textContent = titleCase(cat);
+    chip.addEventListener('click', () => chip.classList.toggle('selected'));
+    categoryTemplateList.appendChild(chip);
+  });
+
+  function getSelectedCategories(){
+    const templateSelected = [...categoryTemplateList.querySelectorAll('.category-chip.selected')].map(el => el.dataset.cat);
+    const custom = parseCommaList(adminTagsCustom.value);
+    return [...new Set([...templateSelected, ...custom])];
+  }
+
+  function setSelectedCategories(tags){
+    const tagSet = new Set(tags || []);
+    const leftover = [];
+    categoryTemplateList.querySelectorAll('.category-chip').forEach(chip => {
+      const isMatch = tagSet.has(chip.dataset.cat);
+      chip.classList.toggle('selected', isMatch);
+      if(isMatch) tagSet.delete(chip.dataset.cat);
+    });
+    tagSet.forEach(t => leftover.push(t));
+    adminTagsCustom.value = leftover.join(', ');
+  }
   const adminVideoCount = document.getElementById('adminVideoCount');
   const featuredTagsForm = document.getElementById('featuredTagsForm');
   const featuredTagsInput = document.getElementById('featuredTagsInput');
@@ -2690,6 +2817,7 @@
   function resetAdminForm(){
     adminVideoIdInput.value = '';
     adminForm.reset();
+    categoryTemplateList.querySelectorAll('.category-chip.selected').forEach(chip => chip.classList.remove('selected'));
     adminFormTitle.textContent = 'Tambah Video Baru';
     adminSubmitBtn.textContent = 'Tambah Video';
     adminCancelEditBtn.style.display = 'none';
@@ -2770,7 +2898,7 @@
       title: adminTitle.value.trim(),
       studio: adminStudio.value.trim() || null,
       cast_names: parseCommaList(adminCast.value),
-      tags: parseCommaList(adminTags.value),
+      tags: getSelectedCategories(),
       duration: adminDuration.value.trim() || null,
       cover_ratio: adminCoverRatio.value
     };
@@ -2844,7 +2972,7 @@
         adminTitle.value = v.title;
         adminStudio.value = v.studio || '';
         adminCast.value = (v.cast_names || []).join(', ');
-        adminTags.value = (v.tags || []).join(', ');
+        setSelectedCategories(v.tags || []);
         adminDuration.value = v.duration || '';
         adminCoverRatio.value = v.cover_ratio || '16:9';
         adminFormTitle.textContent = 'Edit Video';
@@ -3724,7 +3852,7 @@
 
     if(ftype && fval){
       activeFilter = { type: ftype, value: fval };
-    } else if(sort === 'trending' || sort === 'terbaru' || sort === 'random'){
+    } else if(sort === 'trending' || sort === 'terbaru' || sort === 'random' || sort === 'all'){
       activeSort = sort;
     } else if(q){
       searchQuery = q.toLowerCase();
