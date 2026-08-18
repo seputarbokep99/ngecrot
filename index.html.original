@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GO-CR💦T.FUN</title>
+<title>Reel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
@@ -24,27 +24,6 @@
   }
 
   *{ box-sizing: border-box; }
-
-  /* Scrollbar dark */
-  html{
-    scrollbar-color: var(--line) var(--bg);
-    scrollbar-width: thin;
-  }
-  ::-webkit-scrollbar{
-    width: 11px;
-    height: 11px;
-  }
-  ::-webkit-scrollbar-track{
-    background: var(--bg);
-  }
-  ::-webkit-scrollbar-thumb{
-    background: var(--line);
-    border-radius: 999px;
-    border: 2px solid var(--bg);
-  }
-  ::-webkit-scrollbar-thumb:hover{
-    background: var(--amber-dim);
-  }
 
   html,body{
     margin:0; padding:0;
@@ -236,6 +215,18 @@
     border-radius: 16px;
     padding: 28px 24px;
   }
+  .login-box h3{
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .login-box p{
+    margin: 0 0 18px;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
   .login-close{
     position: absolute; top: 12px; right: 12px;
     width: 28px; height: 28px;
@@ -425,79 +416,12 @@
   .toast.error{ border-left-color: #ff6b6b; }
   .toast.show{ opacity: 1; transform: translateY(0); }
 
-  /* Admin panel — full page layout */
-  #adminModal{
-    padding: 0;
-    align-items: stretch;
-    justify-content: stretch;
-  }
+  /* Admin panel */
   .admin-box{
-    width: 100%;
-    max-width: 100%;
-    height: 100vh;
-    height: 100dvh;
-    max-height: none;
-    border-radius: 0;
-    border: 0;
+    max-width: 480px;
+    max-height: 88vh;
     overflow-y: auto;
-    padding: 24px 24px 60px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
   }
-  @media (min-width: 720px){
-    .admin-box{
-      padding: 32px 48px 80px;
-    }
-    .admin-box > *{
-      max-width: 640px;
-      margin-left: auto;
-      margin-right: auto;
-      width: 100%;
-    }
-  }
-  
-  /* Admin Tabs */
-  .admin-tabs {
-    display: flex;
-    gap: 12px;
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 12px;
-    margin-bottom: 12px;
-  }
-  .admin-tab-btn {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 700;
-    padding: 8px 16px;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.2s;
-  }
-  .admin-tab-btn:hover {
-    color: var(--text);
-    background: var(--bg-soft);
-  }
-  .admin-tab-btn.active {
-    background: var(--amber);
-    color: #0a0a0d;
-  }
-  
-  .admin-section {
-    display: none;
-    animation: fadeIn 0.3s ease;
-  }
-  .admin-section.active {
-    display: block;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
   #adminForm{
     display: flex;
     flex-direction: column;
@@ -515,34 +439,6 @@
     width: 100%;
   }
   #adminForm input:focus, #adminForm select:focus{ border-color: var(--amber-dim); }
-  .admin-field-block{
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .category-template-list{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .category-chip{
-    background: var(--bg);
-    border: 1px solid var(--line);
-    color: var(--text-dim);
-    font-family: inherit;
-    font-size: 12.5px;
-    font-weight: 600;
-    padding: 7px 13px;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: background .15s ease, border-color .15s ease, color .15s ease;
-  }
-  .category-chip:hover{ border-color: var(--amber-dim); }
-  .category-chip.selected{
-    background: var(--amber);
-    border-color: var(--amber);
-    color: #0a0a0d;
-  }
   .admin-form-actions{
     display: flex;
     gap: 8px;
@@ -567,12 +463,63 @@
   }
   #adminMsg.success{ color: var(--amber); }
   #adminMsg.error{ color: #ff6b6b; }
-  
+  .admin-divider{
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 20px 0 14px;
+  }
+  .admin-list-title{
+    margin: 0 0 12px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .admin-hint{
+    margin: -6px 0 12px;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  #featuredTagsForm{
+    display: flex;
+    gap: 8px;
+  }
+  #featuredTagsInput{
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+  }
+  #featuredTagsInput:focus{ border-color: var(--amber-dim); }
+  #featuredTagsSaveBtn{
+    background: var(--amber);
+    color: #0a0a0d;
+    border: 0;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 9px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  #featuredTagsMsg{
+    margin-top: 10px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+  #featuredTagsMsg.success{ color: var(--amber); }
+  #featuredTagsMsg.error{ color: #ff6b6b; }
   .admin-video-list{
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 400px;
+    max-height: 300px;
     overflow-y: auto;
   }
   .admin-video-row{
@@ -617,42 +564,6 @@
   }
   .admin-video-actions button:hover{ color: var(--amber); border-color: var(--amber-dim); }
   .admin-video-actions button.danger:hover{ color: #ff6b6b; border-color: #ff6b6b; }
-
-  #featuredTagsForm{
-    display: flex;
-    gap: 8px;
-  }
-  #featuredTagsInput{
-    flex: 1;
-    background: var(--bg);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 9px 12px;
-    color: var(--text);
-    font-family: inherit;
-    font-size: 13px;
-    outline: none;
-  }
-  #featuredTagsInput:focus{ border-color: var(--amber-dim); }
-  #featuredTagsSaveBtn{
-    background: var(--amber);
-    color: #0a0a0d;
-    border: 0;
-    font-family: inherit;
-    font-size: 12.5px;
-    font-weight: 700;
-    padding: 9px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-  #featuredTagsMsg{
-    margin-top: 10px;
-    font-size: 12.5px;
-    color: var(--text-dim);
-  }
-  #featuredTagsMsg.success{ color: var(--amber); }
-  #featuredTagsMsg.error{ color: #ff6b6b; }
 
   /* Sidebar */
   #sidebar{
@@ -770,9 +681,6 @@
   #chipsRow::-webkit-scrollbar{ display:none; }
   .chip{
     flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    gap: 6px;
     background: var(--bg-soft);
     border: 1px solid var(--line);
     color: var(--text);
@@ -1701,7 +1609,7 @@
     <button id="hamburger" aria-label="Menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
-    <a href="#" class="brand" id="titleLink"><span class="dot"></span><span class="txt">GO-CR💦T.FUN</span></a>
+    <a href="#" class="brand" id="titleLink"><span class="dot"></span><span class="txt">STREAMINGIN</span></a>
   </div>
   <div class="topbar-center">
     <form id="searchForm">
@@ -1719,7 +1627,7 @@
 <div id="loginModal" class="login-modal">
   <div class="login-box">
     <button id="loginCloseBtn" class="login-close">✕</button>
-    <h3 id="loginTitle">Masuk ke GO-CR💦T.FUN</h3>
+    <h3 id="loginTitle">Masuk ke STREAMINGIN</h3>
     <p id="loginDesc">Masukin email dan password kamu.</p>
     <form id="loginForm">
       <input type="email" id="loginEmail" placeholder="Email kamu" required autocomplete="email">
@@ -1772,66 +1680,46 @@
   </div>
 </div>
 
-<!-- ADMIN MODAL DIPERBAIKI -->
 <div id="adminModal" class="login-modal">
   <div class="login-box admin-box">
     <button id="adminCloseBtn" class="login-close">✕</button>
-    
-    <!-- Tab Navigasi Admin -->
-    <div class="admin-tabs">
-      <button class="admin-tab-btn active" data-target="addVideoSection">Tambah Video</button>
-      <button class="admin-tab-btn" data-target="manageVideoSection">Manajemen Video</button>
-    </div>
+    <h3 id="adminFormTitle">Tambah Video Baru</h3>
+    <form id="adminForm">
+      <input type="hidden" id="adminVideoId">
+      <input type="url" id="adminCover" placeholder="URL Cover (link GitHub biasa juga bisa)" required>
+      <input type="url" id="adminUrl" placeholder="URL Video - Server 1 (utama, wajib)" required>
+      <input type="url" id="adminUrl2" placeholder="URL Video - Server 2 (opsional, cadangan)">
+      <input type="url" id="adminUrl3" placeholder="URL Video - Server 3 (opsional, cadangan)">
+      <input type="text" id="adminTitle" placeholder="Judul" required>
+      <input type="text" id="adminStudio" placeholder="Studio">
+      <input type="text" id="adminCast" placeholder="Pemeran (pisahkan koma, contoh: Udin, Idin)">
+      <input type="text" id="adminTags" placeholder="Tag (pisahkan koma, contoh: kartun, malaysia)">
+      <input type="text" id="adminDuration" placeholder="Durasi (contoh: 14:05)">
+      <select id="adminCoverRatio">
+        <option value="16:9">Cover 16:9 (landscape lebar)</option>
+        <option value="3:2">Cover 3:2 (landscape)</option>
+      </select>
+      <div class="admin-form-actions">
+        <button type="button" id="adminCancelEditBtn" style="display:none">Batal Edit</button>
+        <button type="submit" id="adminSubmitBtn">Tambah Video</button>
+      </div>
+    </form>
+    <div id="adminMsg"></div>
 
-    <!-- Bagian 1: Tambah/Edit Video -->
-    <div id="addVideoSection" class="admin-section active">
-      <h3 id="adminFormTitle">Tambah Video Baru</h3>
-      <form id="adminForm">
-        <input type="hidden" id="adminVideoId">
-        <input type="url" id="adminCover" placeholder="URL Cover (link GitHub biasa juga bisa)" required>
-        <input type="url" id="adminUrl" placeholder="URL Video - Server 1 (utama, wajib)" required>
-        <input type="url" id="adminUrl2" placeholder="URL Video - Server 2 (opsional, cadangan)">
-        <input type="url" id="adminUrl3" placeholder="URL Video - Server 3 (opsional, cadangan)">
-        <input type="text" id="adminTitle" placeholder="Judul" required>
-        <input type="text" id="adminStudio" placeholder="Studio">
-        <input type="text" id="adminCast" placeholder="Pemeran (pisahkan koma, contoh: Udin, Idin)">
-        <div class="admin-field-block">
-          <label class="admin-field-label">Kategori (pilih satu atau lebih)</label>
-          <div id="categoryTemplateList" class="category-template-list"></div>
-          <input type="text" id="adminTagsCustom" placeholder="Kategori lain (opsional, pisah koma)">
-        </div>
-        <input type="text" id="adminDuration" placeholder="Durasi (contoh: 14:05)">
-        <select id="adminCoverRatio">
-          <option value="16:9">Cover 16:9 (landscape lebar)</option>
-          <option value="3:2">Cover 3:2 (landscape)</option>
-        </select>
-        <div class="admin-form-actions">
-          <button type="button" id="adminCancelEditBtn" style="display:none">Batal Edit</button>
-          <button type="submit" id="adminSubmitBtn">Tambah Video</button>
-        </div>
-      </form>
-      <div id="adminMsg"></div>
-    </div>
+    <hr class="admin-divider">
 
-    <!-- Bagian 2: Manajemen Video & Tag -->
-    <div id="manageVideoSection" class="admin-section">
-      
-      <!-- Daftar Video -->
-      <h4 class="admin-list-title">Semua Video (<span id="adminVideoCount">0</span>)</h4>
-      <div id="adminVideoList" class="admin-video-list"></div>
+    <h4 class="admin-list-title">Semua Video (<span id="adminVideoCount">0</span>)</h4>
+    <div id="adminVideoList" class="admin-video-list"></div>
 
-      <hr class="admin-divider">
+    <hr class="admin-divider">
 
-      <!-- Pengaturan Tag Unggulan -->
-      <h4 class="admin-list-title">Tag Unggulan di Beranda</h4>
-      <p class="admin-hint">Tiap tag di sini bakal jadi baris tersendiri di beranda (di bawah Video Terbaru). Pisahkan pakai koma.</p>
-      <form id="featuredTagsForm">
-        <input type="text" id="featuredTagsInput" placeholder="Contoh: kartun, aksi, musik">
-        <button type="submit" id="featuredTagsSaveBtn">Simpan Tag Unggulan</button>
-      </form>
-      <div id="featuredTagsMsg"></div>
-    </div>
-
+    <h4 class="admin-list-title">Tag Unggulan di Beranda</h4>
+    <p class="admin-hint">Tiap tag di sini bakal jadi baris tersendiri di beranda (di bawah Video Terbaru). Pisahkan pakai koma.</p>
+    <form id="featuredTagsForm">
+      <input type="text" id="featuredTagsInput" placeholder="Contoh: kartun, aksi, musik">
+      <button type="submit" id="featuredTagsSaveBtn">Simpan Tag Unggulan</button>
+    </form>
+    <div id="featuredTagsMsg"></div>
   </div>
 </div>
 
@@ -1842,14 +1730,20 @@
   <div class="age-gate-box">
     <div class="age-gate-icon">18+</div>
     <h3>Konfirmasi Usia</h3>
-    <p>GO-CR💦T.FUN berisi konten video dewasa yang mungkin gak cocok buat semua umur. Dengan melanjutkan, kamu konfirmasi bahwa usia kamu <strong>18 tahun ke atas</strong>.</p>
+    <p>STREAMINGIN berisi campuran konten (aksi/perkelahian, tema peperangan, hingga kartun anak) yang mungkin gak cocok buat semua umur. Dengan melanjutkan, kamu konfirmasi bahwa usia kamu <strong>12 tahun ke atas</strong>.</p>
     <div class="age-gate-actions">
-      <button type="button" id="ageGateLeaveBtn">Saya belum 18 tahun</button>
-      <button type="button" id="ageGateConfirmBtn">Saya sudah 18 tahun ke atas</button>
+      <button type="button" id="ageGateLeaveBtn">Saya belum 12 tahun</button>
+      <button type="button" id="ageGateConfirmBtn">Saya sudah 12 tahun ke atas</button>
     </div>
   </div>
 </div>
 <aside id="sidebar">
+  <div class="side-section">
+    <button class="side-item active" data-action="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+      <span>Beranda</span>
+    </button>
+  </div>
   <div class="side-section" id="adminSideSection" style="display:none">
     <button class="side-item" id="adminPanelBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
@@ -1859,10 +1753,6 @@
   <div class="side-section">
     <div class="side-label">Daftar Pemeran</div>
     <div id="tagList"></div>
-  </div>
-  <div class="side-section">
-    <div class="side-label">Daftar Kategori</div>
-    <div id="categoryList"></div>
   </div>
 </aside>
 
@@ -1911,14 +1801,14 @@
   </div>
 
   <footer>
-    <p>GO-CR💦T.FUN — Dibuat dengan ☕ dan ❤️ </p>
+    <p>Dibuat dengan ☕ dan ❤️ — STREAMINGIN</p>
   </footer>
 </div>
 
 <script>
 (function(){
   // ============================================
-  // AGE GATE — konfirmasi umur 18+
+  // AGE GATE — konfirmasi umur 12+
   // ============================================
   const AGE_GATE_KEY = 'konfirmasi_usia';
   const ageGate = document.getElementById('ageGate');
@@ -1999,7 +1889,13 @@
   const chipsRow = document.getElementById('chipsRow');
 
   // Drag-to-scroll pakai mouse (klik-tahan-geser)
-  let dragState = null; 
+  // Sistem drag-to-scroll global — listener mousemove/mouseup cuma dipasang
+  // SEKALI di sini, dishare buat semua elemen yang manggil enableDragScroll().
+  // Ini sengaja gak dipasang per-elemen biar gak numpuk tiap kali baris
+  // video di-rebuild (misal pas resize / rebuild homepage) — kalau tiap
+  // enableDragScroll() nempelin listener baru ke window, listener lama gak
+  // pernah kehapus dan numpuk terus, bikin drag "nyangkut" & scroll jadi lag.
+  let dragState = null; // { el, startX, startScroll, moved }
 
   window.addEventListener('mousemove', (e) => {
     if(!dragState) return;
@@ -2019,6 +1915,7 @@
       el.style.cursor = 'grabbing';
     });
 
+    // Cegah klik chip ke-trigger kalau tadi user lagi drag (bukan klik biasa)
     el.addEventListener('click', (e) => {
       if(dragState && dragState.el === el && dragState.moved){
         e.stopPropagation();
@@ -2026,6 +1923,7 @@
       }
     }, true);
 
+    // Roda mouse vertikal -> scroll horizontal (biar bisa scroll pakai wheel biasa juga)
     el.addEventListener('wheel', (e) => {
       if(Math.abs(e.deltaY) > Math.abs(e.deltaX)){
         el.scrollLeft += e.deltaY;
@@ -2035,7 +1933,6 @@
   }
   enableDragScroll(chipsRow);
   const tagListEl = document.getElementById('tagList');
-  const categoryListEl = document.getElementById('categoryList');
   const searchForm = document.getElementById('searchForm');
   const searchInput = document.getElementById('searchInput');
   const hamburger = document.getElementById('hamburger');
@@ -2045,8 +1942,8 @@
   let filteredData = [];
   let currentPage = 1;
   let PER_PAGE = 12;
-  let activeFilter = null; 
-  let activeSort = null; 
+  let activeFilter = null; // { type: 'tag'|'studio'|'cast', value }
+  let activeSort = null; // null | 'trending'
   let searchQuery = '';
   const ROWS_PER_PAGE = 4;
 
@@ -2098,7 +1995,7 @@
   }
 
   function resetToHome(){
-    if(watchView.style.display === 'block') closeWatch();
+    if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
     activeFilter = null;
     activeSort = null;
     searchQuery = '';
@@ -2109,7 +2006,7 @@
   }
 
   function setFilter(type, value){
-    if(watchView.style.display === 'block') closeWatch();
+    if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
     activeSort = null;
     const isSame = activeFilter && activeFilter.type === type && activeFilter.value === value;
     activeFilter = isSame ? null : (value === null ? null : { type, value });
@@ -2120,7 +2017,7 @@
   }
 
   function setTrendingView(){
-    if(watchView.style.display === 'block') closeWatch();
+    if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
     activeFilter = null;
     searchQuery = '';
     searchInput.value = '';
@@ -2131,7 +2028,7 @@
   }
 
   function setTerbaruView(){
-    if(watchView.style.display === 'block') closeWatch();
+    if(watchView.style.display === 'block') closeWatch({ skipHistory: true });
     activeFilter = null;
     searchQuery = '';
     searchInput.value = '';
@@ -2161,8 +2058,6 @@
       filteredData.sort((a, b) => (b.views || 0) - (a.views || 0));
     } else if(activeSort === 'terbaru'){
       filteredData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    } else if(activeSort === 'random'){
-      filteredData = shuffle(filteredData);
     }
   }
 
@@ -2183,34 +2078,23 @@
     const castList = getUniqueCast();
 
     chipsRow.innerHTML = '';
+    const allChip = document.createElement('button');
+    allChip.className = 'chip';
+    allChip.textContent = 'Semua';
+    allChip.dataset.filterType = 'tag';
+    allChip.dataset.tag = '';
+    allChip.addEventListener('click', () => setFilter('tag', null));
+    chipsRow.appendChild(allChip);
 
-    const allBtn = document.createElement('button');
-    allBtn.className = 'chip';
-    allBtn.dataset.sortBtn = 'all';
-    allBtn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Semua Video';
-    allBtn.addEventListener('click', setAllVideosView);
-    chipsRow.appendChild(allBtn);
-
-    const trendingBtn = document.createElement('button');
-    trendingBtn.className = 'chip';
-    trendingBtn.dataset.sortBtn = 'trending';
-    trendingBtn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg> Video Trending';
-    trendingBtn.addEventListener('click', setTrendingView);
-    chipsRow.appendChild(trendingBtn);
-
-    const terbaruBtn = document.createElement('button');
-    terbaruBtn.className = 'chip';
-    terbaruBtn.dataset.sortBtn = 'terbaru';
-    terbaruBtn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg> Video Terbaru';
-    terbaruBtn.addEventListener('click', setTerbaruView);
-    chipsRow.appendChild(terbaruBtn);
-
-    const randomBtn = document.createElement('button');
-    randomBtn.className = 'chip';
-    randomBtn.dataset.sortBtn = 'random';
-    randomBtn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> Video Random';
-    randomBtn.addEventListener('click', setRandomView);
-    chipsRow.appendChild(randomBtn);
+    tags.forEach(tag => {
+      const chip = document.createElement('button');
+      chip.className = 'chip';
+      chip.textContent = '#' + tag;
+      chip.dataset.filterType = 'tag';
+      chip.dataset.tag = tag;
+      chip.addEventListener('click', () => setFilter('tag', tag));
+      chipsRow.appendChild(chip);
+    });
 
     tagListEl.innerHTML = '';
     castList.forEach(person => {
@@ -2223,17 +2107,6 @@
       tagListEl.appendChild(sideBtn);
     });
 
-    categoryListEl.innerHTML = '';
-    tags.forEach(tag => {
-      const sideBtn = document.createElement('button');
-      sideBtn.className = 'side-item';
-      sideBtn.dataset.filterType = 'tag';
-      sideBtn.dataset.categoryTag = tag;
-      sideBtn.innerHTML = '<span class="tag-dot"></span><span>' + titleCase(tag) + '</span>';
-      sideBtn.addEventListener('click', () => setFilter('tag', tag));
-      categoryListEl.appendChild(sideBtn);
-    });
-
     updateActiveChipsAndSideItems();
   }
 
@@ -2241,37 +2114,20 @@
     const activeTagValue = (activeFilter && activeFilter.type === 'tag') ? activeFilter.value : '';
     const activeCastValue = (activeFilter && activeFilter.type === 'cast') ? activeFilter.value : '';
     chipsRow.querySelectorAll('.chip').forEach(el => {
-      el.classList.toggle('active', el.dataset.sortBtn === activeSort);
+      el.classList.toggle('active', el.dataset.tag === (activeTagValue || ''));
     });
     tagListEl.querySelectorAll('.side-item').forEach(el => {
       el.classList.toggle('active', el.dataset.cast === activeCastValue && !!activeCastValue);
     });
-    categoryListEl.querySelectorAll('.side-item').forEach(el => {
-      el.classList.toggle('active', el.dataset.categoryTag === activeTagValue && !!activeTagValue);
+    document.querySelectorAll('.side-item[data-action]').forEach(el => {
+      el.classList.toggle('active', el.dataset.action === 'home' && !activeFilter && !searchQuery && !activeSort);
     });
   }
 
-  function setRandomView(){
-    if(watchView.style.display === 'block') closeWatch();
-    activeFilter = null;
-    searchQuery = '';
-    searchInput.value = '';
-    activeSort = 'random';
-    applyFilters();
-    updateActiveChipsAndSideItems();
-    goToPage(1);
-  }
-
-  function setAllVideosView(){
-    if(watchView.style.display === 'block') closeWatch();
-    activeFilter = null;
-    searchQuery = '';
-    searchInput.value = '';
-    activeSort = 'all';
-    applyFilters();
-    updateActiveChipsAndSideItems();
-    goToPage(1);
-  }
+  document.querySelector('.side-item[data-action="home"]').addEventListener('click', () => {
+    resetToHome();
+    closeMobileSidebar();
+  });
 
   function shuffle(arr){
     const a = arr.slice();
@@ -2331,7 +2187,7 @@
         btn.className = 'pill-btn';
         btn.textContent = row.type === 'tag' ? '#' + val : val;
         btn.addEventListener('click', () => {
-          closeWatch();
+          closeWatch({ skipHistory: true });
           setFilter(row.type, val);
         });
         rowEl.appendChild(btn);
@@ -2358,7 +2214,7 @@
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   let currentUser = null;
-  let currentProfile = null; 
+  let currentProfile = null; // { display_name, avatar_url }
 
   const profileModal = document.getElementById('profileModal');
   const profileCloseBtn = document.getElementById('profileCloseBtn');
@@ -2396,17 +2252,17 @@
   const commentLoginPrompt = document.getElementById('commentLoginPrompt');
   const commentLoginBtn = document.getElementById('commentLoginBtn');
 
-  let authMode = 'login'; 
+  let authMode = 'login'; // 'login' | 'signup'
 
   function updateAuthModalUI(){
     if(authMode === 'login'){
-      loginTitle.textContent = 'Masuk ke GO-CR💦T.FUN';
+      loginTitle.textContent = 'Masuk ke STREAMINGIN';
       loginDesc.textContent = 'Masukin email dan password akun kamu.';
       loginSubmitBtn.textContent = 'Masuk';
       authToggleText.innerHTML = 'Belum punya akun? <button type="button" id="toggleAuthBtn">Daftar di sini</button>';
     } else {
       loginTitle.textContent = 'Daftar Akun Baru';
-      loginDesc.textContent = 'Bikin akun dulu buat bisa komentar di GO-CR💦T.FUN.';
+      loginDesc.textContent = 'Bikin akun dulu buat bisa komentar di STREAMINGIN.';
       loginSubmitBtn.textContent = 'Daftar';
       authToggleText.innerHTML = 'Sudah punya akun? <button type="button" id="toggleAuthBtn">Masuk di sini</button>';
     }
@@ -2487,6 +2343,8 @@
       });
       loginSubmitBtn.disabled = false;
 
+      // Supabase quirk: kalau email sudah terdaftar & confirm-email aktif,
+      // signUp tetap "sukses" tanpa error tapi identities-nya kosong.
       const emailAlreadyUsed = !error && data && data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0;
 
       if(error){
@@ -2596,7 +2454,7 @@
   profileModal.addEventListener('click', (e) => { if(e.target === profileModal) closeProfileModal(); });
 
   // ============================================
-  // CROP FOTO PROFIL
+  // CROP FOTO PROFIL (pan + zoom sebelum jadi avatar)
   // ============================================
   const cropModal = document.getElementById('cropModal');
   const cropCloseBtn = document.getElementById('cropCloseBtn');
@@ -2775,7 +2633,7 @@
   });
 
   // ============================================
-  // ADMIN PANEL LOGIC (UPDATED)
+  // ADMIN PANEL — tambah, edit, hapus video
   // ============================================
   const adminSideSection = document.getElementById('adminSideSection');
   const adminPanelBtn = document.getElementById('adminPanelBtn');
@@ -2790,8 +2648,7 @@
   const adminTitle = document.getElementById('adminTitle');
   const adminStudio = document.getElementById('adminStudio');
   const adminCast = document.getElementById('adminCast');
-  const categoryTemplateList = document.getElementById('categoryTemplateList');
-  const adminTagsCustom = document.getElementById('adminTagsCustom');
+  const adminTags = document.getElementById('adminTags');
   const adminDuration = document.getElementById('adminDuration');
   const adminCoverRatio = document.getElementById('adminCoverRatio');
   const adminFormTitle = document.getElementById('adminFormTitle');
@@ -2799,40 +2656,6 @@
   const adminCancelEditBtn = document.getElementById('adminCancelEditBtn');
   const adminMsg = document.getElementById('adminMsg');
   const adminVideoList = document.getElementById('adminVideoList');
-
-  const CATEGORY_TEMPLATES = [
-    'masak', 'kartun', 'action', 'drama', 'komedi', 'horror',
-    'musik', 'olahraga', 'edukasi', 'anime', 'misteri', 'romantis',
-    'dokumenter', 'vlog', 'trailer'
-  ];
-
-  CATEGORY_TEMPLATES.forEach(cat => {
-    const chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = 'category-chip';
-    chip.dataset.cat = cat;
-    chip.textContent = titleCase(cat);
-    chip.addEventListener('click', () => chip.classList.toggle('selected'));
-    categoryTemplateList.appendChild(chip);
-  });
-
-  function getSelectedCategories(){
-    const templateSelected = [...categoryTemplateList.querySelectorAll('.category-chip.selected')].map(el => el.dataset.cat);
-    const custom = parseCommaList(adminTagsCustom.value);
-    return [...new Set([...templateSelected, ...custom])];
-  }
-
-  function setSelectedCategories(tags){
-    const tagSet = new Set(tags || []);
-    const leftover = [];
-    categoryTemplateList.querySelectorAll('.category-chip').forEach(chip => {
-      const isMatch = tagSet.has(chip.dataset.cat);
-      chip.classList.toggle('selected', isMatch);
-      if(isMatch) tagSet.delete(chip.dataset.cat);
-    });
-    tagSet.forEach(t => leftover.push(t));
-    adminTagsCustom.value = leftover.join(', ');
-  }
   const adminVideoCount = document.getElementById('adminVideoCount');
   const featuredTagsForm = document.getElementById('featuredTagsForm');
   const featuredTagsInput = document.getElementById('featuredTagsInput');
@@ -2842,7 +2665,6 @@
   function resetAdminForm(){
     adminVideoIdInput.value = '';
     adminForm.reset();
-    categoryTemplateList.querySelectorAll('.category-chip.selected').forEach(chip => chip.classList.remove('selected'));
     adminFormTitle.textContent = 'Tambah Video Baru';
     adminSubmitBtn.textContent = 'Tambah Video';
     adminCancelEditBtn.style.display = 'none';
@@ -2857,10 +2679,6 @@
     featuredTagsInput.value = featuredTags.join(', ');
     featuredTagsMsg.textContent = '';
     featuredTagsMsg.className = '';
-    
-    // Reset tab to first one
-    switchAdminTab('addVideoSection');
-    
     adminModal.classList.add('open');
   }
   function closeAdminModal(){
@@ -2868,26 +2686,6 @@
   }
   adminPanelBtn.addEventListener('click', () => { openAdminModal(); closeMobileSidebar(); });
   adminCloseBtn.addEventListener('click', closeAdminModal);
-
-  // Admin Tab Logic
-  const adminTabs = document.querySelectorAll('.admin-tab-btn');
-  adminTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const targetId = tab.dataset.target;
-      switchAdminTab(targetId);
-    });
-  });
-
-  function switchAdminTab(targetId) {
-    // Update buttons
-    adminTabs.forEach(t => {
-      t.classList.toggle('active', t.dataset.target === targetId);
-    });
-    // Update sections
-    document.querySelectorAll('.admin-section').forEach(s => {
-      s.classList.toggle('active', s.id === targetId);
-    });
-  }
 
   featuredTagsForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -2912,7 +2710,8 @@
     showToast('Tag unggulan homepage berhasil diperbarui');
     updateHomeViewMode();
   });
-
+  // Sengaja TIDAK ada klik-di-luar-buat-nutup di sini,
+  // biar form gak ke-cancel gak sengaja pas lagi diisi/edit.
   adminCancelEditBtn.addEventListener('click', resetAdminForm);
 
   function parseCommaList(str){
@@ -2921,6 +2720,9 @@
 
   function toRawGithubUrl(url){
     if(!url) return url;
+    // Ubah link "blob" GitHub biasa jadi link raw.githubusercontent.com
+    // Contoh: https://github.com/user/repo/blob/main/cover.jpg
+    // Jadi:   https://raw.githubusercontent.com/user/repo/main/cover.jpg
     const match = url.match(/^https:\/\/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/?#]+)\/([^?#]+)/);
     if(match){
       const [, owner, repo, branch, path] = match;
@@ -2943,7 +2745,7 @@
       title: adminTitle.value.trim(),
       studio: adminStudio.value.trim() || null,
       cast_names: parseCommaList(adminCast.value),
-      tags: getSelectedCategories(),
+      tags: parseCommaList(adminTags.value),
       duration: adminDuration.value.trim() || null,
       cover_ratio: adminCoverRatio.value
     };
@@ -2971,11 +2773,6 @@
     resetAdminForm();
     await reloadVideosFromDB();
     renderAdminVideoList();
-    
-    // If editing, switch back to list after save
-    if(wasEdit) {
-       switchAdminTab('manageVideoSection');
-    }
   });
 
   async function renderAdminVideoList(){
@@ -3022,7 +2819,7 @@
         adminTitle.value = v.title;
         adminStudio.value = v.studio || '';
         adminCast.value = (v.cast_names || []).join(', ');
-        setSelectedCategories(v.tags || []);
+        adminTags.value = (v.tags || []).join(', ');
         adminDuration.value = v.duration || '';
         adminCoverRatio.value = v.cover_ratio || '16:9';
         adminFormTitle.textContent = 'Edit Video';
@@ -3030,11 +2827,6 @@
         adminCancelEditBtn.style.display = 'inline-block';
         adminMsg.textContent = '';
         adminMsg.className = '';
-        
-        // Switch to Add/Edit tab when editing
-        switchAdminTab('addVideoSection');
-        
-        // Scroll to form
         adminForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
 
@@ -3058,7 +2850,7 @@
   }
 
   // ============================================
-  // KOMENTAR (Supabase)
+  // KOMENTAR (Supabase) — reply, edit, hapus, reaksi
   // ============================================
   const REACTIONS = ['👍', '❤️', '😂'];
 
@@ -3564,38 +3356,16 @@
     }
   }
 
-  // ============================================
-  // FIX NAVIGATION BUG (POPSTATE)
-  // ============================================
-  window.addEventListener('popstate', (e) => {
-    const state = e.state;
+  window.addEventListener('popstate', () => {
     const vid = getVideoIdFromUrl();
-
-    if (vid) {
-      // Jika URL punya parameter 'v', buka mode watch
+    if(vid){
       const item = findItemByVideoId(vid);
-      if (item) {
-        // Jika sedang di home, buka watch. Jika sudah di watch, replace state saja
-        if (watchView.style.display === 'none') {
-          openWatch(item, { replace: true });
-        }
-      } else {
-        // Video tidak ditemukan, kembali ke home
-        closeWatch({ skipHistory: true });
-      }
+      if(item) openWatch(item, { replace: true });
+      else closeWatch({ skipHistory: true });
     } else {
-      // Jika tidak ada 'v', pastikan kita di home
-      if (watchView.style.display === 'block') {
-        closeWatch({ skipHistory: true });
-      }
-      
-      // Handle pagination state if needed
+      closeWatch({ skipHistory: true });
       const p = getPageFromUrl();
-      if(p !== currentPage){ 
-        currentPage = p; 
-        render(filteredData); 
-        renderPagination(filteredData); 
-      }
+      if(p !== currentPage){ currentPage = p; render(filteredData); renderPagination(filteredData); }
     }
   });
 
@@ -3710,6 +3480,9 @@
     const row = document.createElement('div');
     row.className = 'home-row';
     items.forEach((item, i) => row.appendChild(createVideoCard(item, i)));
+    // Sengaja gak pakai enableDragScroll di sini — di PC/desktop navigasi
+    // baris ini murni lewat tombol panah, bukan drag/scroll mouse.
+    // Di HP/tablet tetap bisa di-swipe normal (native touch scroll browser).
 
     prevBtn.addEventListener('click', () => {
       row.scrollBy({ left: -row.clientWidth * 0.85, behavior: 'smooth' });
@@ -3728,10 +3501,6 @@
 
   const HOME_ROW_LIMIT = 10;
 
-  function titleCase(str){
-    return str.replace(/(^|[\s-])\S/g, c => c.toUpperCase());
-  }
-
   function buildHomeSections(){
     homeSections.innerHTML = '';
     const videos = allData;
@@ -3749,7 +3518,7 @@
     featuredTags.forEach(tag => {
       const tagged = videos.filter(v => (v.tags || []).includes(tag)).slice(0, HOME_ROW_LIMIT);
       if(tagged.length){
-        homeSections.appendChild(buildHomeRow(titleCase(tag), tagged, { onSeeAll: () => setFilter('tag', tag) }));
+        homeSections.appendChild(buildHomeRow('#' + tag, tagged, { onSeeAll: () => setFilter('tag', tag) }));
       }
     });
   }
@@ -3831,20 +3600,6 @@
 
     const url = new URL(window.location);
     if(currentPage > 1 && !isBrowsing) url.searchParams.set('page', currentPage); else url.searchParams.delete('page');
-
-    url.searchParams.delete('ftype');
-    url.searchParams.delete('fval');
-    url.searchParams.delete('sort');
-    url.searchParams.delete('q');
-    if(activeFilter){
-      url.searchParams.set('ftype', activeFilter.type);
-      url.searchParams.set('fval', activeFilter.value);
-    } else if(activeSort){
-      url.searchParams.set('sort', activeSort);
-    } else if(searchQuery){
-      url.searchParams.set('q', searchQuery);
-    }
-
     history.replaceState(null, '', url);
     if(!opts.skipScroll){
       window.scrollTo({ top: 0, behavior: 'auto' });
@@ -3917,23 +3672,6 @@
     }, 200);
   });
 
-  function restoreStateFromUrl(){
-    const params = new URLSearchParams(window.location.search);
-    const ftype = params.get('ftype');
-    const fval = params.get('fval');
-    const sort = params.get('sort');
-    const q = params.get('q');
-
-    if(ftype && fval){
-      activeFilter = { type: ftype, value: fval };
-    } else if(sort === 'trending' || sort === 'terbaru' || sort === 'random' || sort === 'all'){
-      activeSort = sort;
-    } else if(q){
-      searchQuery = q.toLowerCase();
-      searchInput.value = q;
-    }
-  }
-
   (async () => {
     const [videos, settingsRes] = await Promise.all([
       fetchVideosFromDB(),
@@ -3948,10 +3686,8 @@
     }
 
     allData = videos;
-    restoreStateFromUrl();
-    applyFilters();
+    filteredData = allData.slice();
     buildChipsAndSidebar();
-    updateActiveChipsAndSideItems();
     PER_PAGE = calcPerPage();
 
     const vid = getVideoIdFromUrl();
