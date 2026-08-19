@@ -163,14 +163,24 @@
     .brand span.txt{ display:none; }
   }
 
-  /* Auth Area (Hidden by default for public) */
+  /* Auth */
   #authArea{
-    display: none; /* Disembunyikan dari publik */
-  }
-  #authArea.visible {
     display: flex;
+    align-items: center;
   }
-  
+  .auth-login-btn{
+    background: var(--amber);
+    color: #0a0a0d;
+    border: 0;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .auth-login-btn:hover{ opacity: .88; }
   .auth-user{
     display: flex;
     align-items: center;
@@ -225,6 +235,18 @@
     border: 1px solid var(--line);
     border-radius: 16px;
     padding: 28px 24px;
+  }
+  .login-box h3{
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .login-box p{
+    margin: 0 0 18px;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
   }
   .login-close{
     position: absolute; top: 12px; right: 12px;
@@ -297,6 +319,23 @@
   }
   #loginMsg.success{ color: var(--amber); }
   #loginMsg.error{ color: #ff6b6b; }
+  .auth-toggle-text{
+    margin-top: 14px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    text-align: center;
+  }
+  .auth-toggle-text button{
+    background: none;
+    border: 0;
+    color: var(--amber);
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+  }
 
   /* Age gate */
   .age-gate{
@@ -398,7 +437,7 @@
   .toast.error{ border-left-color: #ff6b6b; }
   .toast.show{ opacity: 1; transform: translateY(0); }
 
-  /* Admin panel — full page layout */
+  /* Admin panel — full page, bukan card kecil di tengah */
   #adminModal{
     padding: 0;
     align-items: stretch;
@@ -414,9 +453,6 @@
     border: 0;
     overflow-y: auto;
     padding: 24px 24px 60px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
   }
   @media (min-width: 720px){
     .admin-box{
@@ -426,51 +462,8 @@
       max-width: 640px;
       margin-left: auto;
       margin-right: auto;
-      width: 100%;
     }
   }
-  
-  /* Admin Tabs */
-  .admin-tabs {
-    display: flex;
-    gap: 12px;
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 12px;
-    margin-bottom: 12px;
-  }
-  .admin-tab-btn {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 700;
-    padding: 8px 16px;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.2s;
-  }
-  .admin-tab-btn:hover {
-    color: var(--text);
-    background: var(--bg-soft);
-  }
-  .admin-tab-btn.active {
-    background: var(--amber);
-    color: #0a0a0d;
-  }
-  
-  .admin-section {
-    display: none;
-    animation: fadeIn 0.3s ease;
-  }
-  .admin-section.active {
-    display: block;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
   #adminForm{
     display: flex;
     flex-direction: column;
@@ -540,12 +533,63 @@
   }
   #adminMsg.success{ color: var(--amber); }
   #adminMsg.error{ color: #ff6b6b; }
-  
+  .admin-divider{
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 20px 0 14px;
+  }
+  .admin-list-title{
+    margin: 0 0 12px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .admin-hint{
+    margin: -6px 0 12px;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  #featuredTagsForm{
+    display: flex;
+    gap: 8px;
+  }
+  #featuredTagsInput{
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+  }
+  #featuredTagsInput:focus{ border-color: var(--amber-dim); }
+  #featuredTagsSaveBtn{
+    background: var(--amber);
+    color: #0a0a0d;
+    border: 0;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 9px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  #featuredTagsMsg{
+    margin-top: 10px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+  #featuredTagsMsg.success{ color: var(--amber); }
+  #featuredTagsMsg.error{ color: #ff6b6b; }
   .admin-video-list{
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 400px;
+    max-height: 300px;
     overflow-y: auto;
   }
   .admin-video-row{
@@ -590,42 +634,6 @@
   }
   .admin-video-actions button:hover{ color: var(--amber); border-color: var(--amber-dim); }
   .admin-video-actions button.danger:hover{ color: #ff6b6b; border-color: #ff6b6b; }
-
-  #featuredTagsForm{
-    display: flex;
-    gap: 8px;
-  }
-  #featuredTagsInput{
-    flex: 1;
-    background: var(--bg);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 9px 12px;
-    color: var(--text);
-    font-family: inherit;
-    font-size: 13px;
-    outline: none;
-  }
-  #featuredTagsInput:focus{ border-color: var(--amber-dim); }
-  #featuredTagsSaveBtn{
-    background: var(--amber);
-    color: #0a0a0d;
-    border: 0;
-    font-family: inherit;
-    font-size: 12.5px;
-    font-weight: 700;
-    padding: 9px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-  #featuredTagsMsg{
-    margin-top: 10px;
-    font-size: 12.5px;
-    color: var(--text-dim);
-  }
-  #featuredTagsMsg.success{ color: var(--amber); }
-  #featuredTagsMsg.error{ color: #ff6b6b; }
 
   /* Sidebar */
   #sidebar{
@@ -1178,9 +1186,21 @@
 
   .comment-login-prompt{
     margin-bottom: 20px;
-    display: none; /* Hidden because no public login */
   }
-  
+  #commentLoginBtn{
+    background: var(--bg-soft);
+    border: 1px dashed var(--line);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 13px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+  }
+  #commentLoginBtn:hover{ border-color: var(--amber-dim); color: var(--amber); }
+
   #commentList{
     display: flex;
     flex-direction: column;
@@ -1677,16 +1697,15 @@
   </div>
 </div>
 
-<!-- Login Modal (Only accessible via /admin) -->
 <div id="loginModal" class="login-modal">
   <div class="login-box">
     <button id="loginCloseBtn" class="login-close">✕</button>
-    <h3 id="loginTitle">Admin Login</h3>
-    <p id="loginDesc">Masukin email dan password admin.</p>
+    <h3 id="loginTitle">Masuk ke GO-CR💦T.FUN</h3>
+    <p id="loginDesc">Masukin email dan password kamu.</p>
     <form id="loginForm">
-      <input type="email" id="loginEmail" placeholder="Email admin" required autocomplete="email">
+      <input type="email" id="loginEmail" placeholder="Email kamu" required autocomplete="email">
       <div class="password-field">
-        <input type="password" id="loginPassword" placeholder="Password" minlength="6" required autocomplete="current-password">
+        <input type="password" id="loginPassword" placeholder="Password (minimal 6 karakter)" minlength="6" required autocomplete="current-password">
         <button type="button" id="togglePasswordBtn" class="toggle-password-btn" aria-label="Tampilkan password">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
@@ -1694,6 +1713,7 @@
       <button type="submit" id="loginSubmitBtn">Masuk</button>
     </form>
     <div id="loginMsg"></div>
+    <div class="auth-toggle-text" id="authToggleText"></div>
   </div>
 </div>
 
@@ -1733,66 +1753,55 @@
   </div>
 </div>
 
-<!-- ADMIN MODAL -->
 <div id="adminModal" class="login-modal">
   <div class="login-box admin-box">
     <button id="adminCloseBtn" class="login-close">✕</button>
-    
-    <!-- Tab Navigasi Admin -->
-    <div class="admin-tabs">
-      <button class="admin-tab-btn active" data-target="addVideoSection">Tambah Video</button>
-      <button class="admin-tab-btn" data-target="manageVideoSection">Manajemen Video</button>
-    </div>
+    <h3 id="adminFormTitle">Tambah Video Baru</h3>
+    <form id="adminForm">
+      <input type="hidden" id="adminVideoId">
+      <input type="url" id="adminCover" placeholder="URL Cover (link GitHub biasa juga bisa)" required>
+      <input type="url" id="adminUrl" placeholder="URL Video - Server 1 (utama, wajib)" required>
+      <input type="url" id="adminUrl2" placeholder="URL Video - Server 2 (opsional, cadangan)">
+      <input type="url" id="adminUrl3" placeholder="URL Video - Server 3 (opsional, cadangan)">
+      <input type="text" id="adminTitle" placeholder="Judul" required>
+      <input type="text" id="adminStudio" placeholder="Studio">
+      <input type="text" id="adminCast" placeholder="Pemeran (pisahkan koma, contoh: Udin, Idin)">
+      <div class="admin-field-block">
+        <label class="admin-field-label">Kategori (pilih satu atau lebih)</label>
+        <div id="categoryTemplateList" class="category-template-list"></div>
+        <input type="text" id="adminTagsCustom" placeholder="Kategori lain (opsional, pisah koma)">
+      </div>
+      <input type="text" id="adminDuration" placeholder="Durasi (contoh: 14:05)">
+      <select id="adminCoverRatio">
+        <option value="16:9">Cover 16:9 (landscape lebar)</option>
+        <option value="3:2">Cover 3:2 (landscape)</option>
+      </select>
+      <div class="admin-form-actions">
+        <button type="button" id="adminCancelEditBtn" style="display:none">Batal</button>
+        <button type="submit" id="adminSubmitBtn">Tambah Video</button>
+      </div>
+    </form>
+    <div id="adminMsg"></div>
+  </div>
+</div>
 
-    <!-- Bagian 1: Tambah/Edit Video -->
-    <div id="addVideoSection" class="admin-section active">
-      <h3 id="adminFormTitle">Tambah Video Baru</h3>
-      <form id="adminForm">
-        <input type="hidden" id="adminVideoId">
-        <input type="url" id="adminCover" placeholder="URL Cover (link GitHub biasa juga bisa)" required>
-        <input type="url" id="adminUrl" placeholder="URL Video - Server 1 (utama, wajib)" required>
-        <input type="url" id="adminUrl2" placeholder="URL Video - Server 2 (opsional, cadangan)">
-        <input type="url" id="adminUrl3" placeholder="URL Video - Server 3 (opsional, cadangan)">
-        <input type="text" id="adminTitle" placeholder="Judul" required>
-        <input type="text" id="adminStudio" placeholder="Studio">
-        <input type="text" id="adminCast" placeholder="Pemeran (pisahkan koma, contoh: Udin, Idin)">
-        <div class="admin-field-block">
-          <label class="admin-field-label">Kategori (pilih satu atau lebih)</label>
-          <div id="categoryTemplateList" class="category-template-list"></div>
-          <input type="text" id="adminTagsCustom" placeholder="Kategori lain (opsional, pisah koma)">
-        </div>
-        <input type="text" id="adminDuration" placeholder="Durasi (contoh: 14:05)">
-        <select id="adminCoverRatio">
-          <option value="16:9">Cover 16:9 (landscape lebar)</option>
-          <option value="3:2">Cover 3:2 (landscape)</option>
-        </select>
-        <div class="admin-form-actions">
-          <button type="button" id="adminCancelEditBtn" style="display:none">Batal Edit</button>
-          <button type="submit" id="adminSubmitBtn">Tambah Video</button>
-        </div>
-      </form>
-      <div id="adminMsg"></div>
-    </div>
+<div id="adminManageModal" class="login-modal">
+  <div class="login-box admin-box">
+    <button id="adminManageCloseBtn" class="login-close">✕</button>
+    <h3>Manajemen Video</h3>
 
-    <!-- Bagian 2: Manajemen Video & Tag -->
-    <div id="manageVideoSection" class="admin-section">
-      
-      <!-- Daftar Video -->
-      <h4 class="admin-list-title">Semua Video (<span id="adminVideoCount">0</span>)</h4>
-      <div id="adminVideoList" class="admin-video-list"></div>
+    <h4 class="admin-list-title">Tag Unggulan di Beranda</h4>
+    <p class="admin-hint">Tiap tag di sini bakal jadi baris tersendiri di beranda (di bawah Video Terbaru). Pisahkan pakai koma.</p>
+    <form id="featuredTagsForm">
+      <input type="text" id="featuredTagsInput" placeholder="Contoh: kartun, aksi, musik">
+      <button type="submit" id="featuredTagsSaveBtn">Simpan Tag Unggulan</button>
+    </form>
+    <div id="featuredTagsMsg"></div>
 
-      <hr class="admin-divider">
+    <hr class="admin-divider">
 
-      <!-- Pengaturan Tag Unggulan -->
-      <h4 class="admin-list-title">Tag Unggulan di Beranda</h4>
-      <p class="admin-hint">Tiap tag di sini bakal jadi baris tersendiri di beranda (di bawah Video Terbaru). Pisahkan pakai koma.</p>
-      <form id="featuredTagsForm">
-        <input type="text" id="featuredTagsInput" placeholder="Contoh: kartun, aksi, musik">
-        <button type="submit" id="featuredTagsSaveBtn">Simpan Tag Unggulan</button>
-      </form>
-      <div id="featuredTagsMsg"></div>
-    </div>
-
+    <h4 class="admin-list-title">Semua Video (<span id="adminVideoCount">0</span>)</h4>
+    <div id="adminVideoList" class="admin-video-list"></div>
   </div>
 </div>
 
@@ -1812,9 +1821,13 @@
 </div>
 <aside id="sidebar">
   <div class="side-section" id="adminSideSection" style="display:none">
+    <button class="side-item" id="addVideoPanelBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span>Tambah Video</span>
+    </button>
     <button class="side-item" id="adminPanelBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-      <span>Kelola Video</span>
+      <span>Manajemen Video</span>
     </button>
   </div>
   <div class="side-section">
@@ -1858,6 +1871,9 @@
             <textarea id="commentText" placeholder="Tulis komentar..." maxlength="500" required></textarea>
             <button type="submit">Kirim</button>
           </form>
+          <div id="commentLoginPrompt" class="comment-login-prompt">
+            <button id="commentLoginBtn">Masuk buat komentar</button>
+          </div>
           <div id="commentList"></div>
         </div>
       </div>
@@ -1957,7 +1973,13 @@
   const chipsRow = document.getElementById('chipsRow');
 
   // Drag-to-scroll pakai mouse (klik-tahan-geser)
-  let dragState = null; 
+  // Sistem drag-to-scroll global — listener mousemove/mouseup cuma dipasang
+  // SEKALI di sini, dishare buat semua elemen yang manggil enableDragScroll().
+  // Ini sengaja gak dipasang per-elemen biar gak numpuk tiap kali baris
+  // video di-rebuild (misal pas resize / rebuild homepage) — kalau tiap
+  // enableDragScroll() nempelin listener baru ke window, listener lama gak
+  // pernah kehapus dan numpuk terus, bikin drag "nyangkut" & scroll jadi lag.
+  let dragState = null; // { el, startX, startScroll, moved }
 
   window.addEventListener('mousemove', (e) => {
     if(!dragState) return;
@@ -1977,6 +1999,7 @@
       el.style.cursor = 'grabbing';
     });
 
+    // Cegah klik chip ke-trigger kalau tadi user lagi drag (bukan klik biasa)
     el.addEventListener('click', (e) => {
       if(dragState && dragState.el === el && dragState.moved){
         e.stopPropagation();
@@ -1984,6 +2007,7 @@
       }
     }, true);
 
+    // Roda mouse vertikal -> scroll horizontal (biar bisa scroll pakai wheel biasa juga)
     el.addEventListener('wheel', (e) => {
       if(Math.abs(e.deltaY) > Math.abs(e.deltaX)){
         el.scrollLeft += e.deltaY;
@@ -2003,8 +2027,8 @@
   let filteredData = [];
   let currentPage = 1;
   let PER_PAGE = 12;
-  let activeFilter = null; 
-  let activeSort = null; 
+  let activeFilter = null; // { type: 'tag'|'studio'|'cast', value }
+  let activeSort = null; // null | 'trending'
   let searchQuery = '';
   const ROWS_PER_PAGE = 4;
 
@@ -2316,7 +2340,7 @@
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   let currentUser = null;
-  let currentProfile = null; 
+  let currentProfile = null; // { display_name, avatar_url }
 
   const profileModal = document.getElementById('profileModal');
   const profileCloseBtn = document.getElementById('profileCloseBtn');
@@ -2350,6 +2374,71 @@
   const loginTitle = document.getElementById('loginTitle');
   const loginDesc = document.getElementById('loginDesc');
   const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+  const authToggleText = document.getElementById('authToggleText');
+  const commentLoginPrompt = document.getElementById('commentLoginPrompt');
+  const commentLoginBtn = document.getElementById('commentLoginBtn');
+
+  let authMode = 'login'; // 'login' | 'signup'
+
+  function updateAuthModalUI(){
+    if(authMode === 'login'){
+      loginTitle.textContent = 'Masuk ke GO-CR💦T.FUN';
+      loginDesc.textContent = 'Masukin email dan password akun kamu.';
+      loginSubmitBtn.textContent = 'Masuk';
+      authToggleText.innerHTML = 'Belum punya akun? <button type="button" id="toggleAuthBtn">Daftar di sini</button>';
+    } else {
+      loginTitle.textContent = 'Daftar Akun Baru';
+      loginDesc.textContent = 'Bikin akun dulu buat bisa komentar di GO-CR💦T.FUN.';
+      loginSubmitBtn.textContent = 'Daftar';
+      authToggleText.innerHTML = 'Sudah punya akun? <button type="button" id="toggleAuthBtn">Masuk di sini</button>';
+    }
+    document.getElementById('toggleAuthBtn').addEventListener('click', () => {
+      authMode = (authMode === 'login') ? 'signup' : 'login';
+      loginMsg.textContent = '';
+      loginMsg.className = '';
+      updateAuthModalUI();
+    });
+  }
+
+  function openLoginModal(mode){
+    authMode = mode || 'login';
+    loginMsg.textContent = '';
+    loginMsg.className = '';
+    loginForm.reset();
+    loginPassword.type = 'password';
+    togglePasswordBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>';
+    updateAuthModalUI();
+    loginModal.classList.add('open');
+  }
+  function closeLoginModal(){
+    loginModal.classList.remove('open');
+  }
+  loginCloseBtn.addEventListener('click', closeLoginModal);
+  loginModal.addEventListener('click', (e) => { if(e.target === loginModal) closeLoginModal(); });
+  commentLoginBtn.addEventListener('click', () => openLoginModal('login'));
+
+  function translateAuthError(message){
+    const m = (message || '').toLowerCase();
+    if(m.includes('invalid login credentials')){
+      return 'Email atau password salah. Kalau belum punya akun, daftar dulu di bawah.';
+    }
+    if(m.includes('user already registered') || m.includes('already registered') || m.includes('already exists')){
+      return 'Email ini udah kedaftar. Coba masuk aja, atau pakai email lain.';
+    }
+    if(m.includes('password should be at least') || m.includes('password is too short')){
+      return 'Password minimal 6 karakter.';
+    }
+    if(m.includes('invalid email') || m.includes('unable to validate email')){
+      return 'Format email gak valid. Cek lagi penulisannya.';
+    }
+    if(m.includes('email rate limit') || m.includes('rate limit exceeded') || m.includes('too many requests')){
+      return 'Kebanyakan percobaan dalam waktu singkat. Coba lagi beberapa menit lagi.';
+    }
+    if(m.includes('network')){
+      return 'Gagal terhubung ke server. Cek koneksi internet kamu.';
+    }
+    return message;
+  }
 
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -2359,21 +2448,46 @@
 
     loginSubmitBtn.disabled = true;
     loginMsg.className = '';
-    loginMsg.textContent = 'Sedang masuk...';
 
-    const { error } = await sb.auth.signInWithPassword({ email, password });
-    loginSubmitBtn.disabled = false;
-    
-    if(error){
-      loginMsg.textContent = 'Login gagal: ' + error.message;
-      loginMsg.className = 'error';
+    if(authMode === 'login'){
+      loginMsg.textContent = 'Sedang masuk...';
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      loginSubmitBtn.disabled = false;
+      if(error){
+        loginMsg.textContent = translateAuthError(error.message);
+        loginMsg.className = 'error';
+      } else {
+        loginMsg.textContent = 'Berhasil masuk!';
+        loginMsg.className = 'success';
+      }
     } else {
-      loginMsg.textContent = 'Berhasil masuk!';
-      loginMsg.className = 'success';
-      setTimeout(() => {
-        closeLoginModal();
-        checkAdminAccess(); // Cek ulang setelah login
-      }, 1000);
+      loginMsg.textContent = 'Membuat akun...';
+      const { data, error } = await sb.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: window.location.origin + window.location.pathname }
+      });
+      loginSubmitBtn.disabled = false;
+
+      // Supabase quirk: kalau email sudah terdaftar & confirm-email aktif,
+      // signUp tetap "sukses" tanpa error tapi identities-nya kosong.
+      const emailAlreadyUsed = !error && data && data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0;
+
+      if(error){
+        loginMsg.textContent = translateAuthError(error.message);
+        loginMsg.className = 'error';
+      } else if(emailAlreadyUsed){
+        loginMsg.textContent = 'Email ini udah kedaftar. Coba masuk aja, atau pakai email lain.';
+        loginMsg.className = 'error';
+      } else if(data.session){
+        loginMsg.textContent = 'Akun berhasil dibuat, kamu langsung masuk!';
+        loginMsg.className = 'success';
+      } else {
+        loginMsg.textContent = 'Akun berhasil dibuat! Cek email kamu buat verifikasi dulu sebelum bisa masuk.';
+        loginMsg.className = 'success';
+        authMode = 'login';
+        updateAuthModalUI();
+      }
     }
   });
 
@@ -2392,8 +2506,7 @@
 
   function renderAuthArea(){
     authArea.innerHTML = '';
-    if(currentUser && currentProfile && currentProfile.is_admin){
-      authArea.classList.add('visible');
+    if(currentUser){
       const wrap = document.createElement('div');
       wrap.className = 'auth-user';
 
@@ -2424,17 +2537,21 @@
       logoutBtn.textContent = 'Keluar';
       logoutBtn.addEventListener('click', async () => {
         await sb.auth.signOut();
-        window.location.href = window.location.pathname; // Refresh ke halaman utama tanpa /admin
       });
       wrap.appendChild(logoutBtn);
 
       authArea.appendChild(wrap);
     } else {
-      authArea.classList.remove('visible');
+      const btn = document.createElement('button');
+      btn.className = 'auth-login-btn';
+      btn.textContent = 'Masuk';
+      btn.addEventListener('click', () => openLoginModal('login'));
+      authArea.appendChild(btn);
     }
 
-    commentForm.style.display = (currentUser && currentProfile && currentProfile.is_admin) ? 'flex' : 'none';
-    
+    commentForm.style.display = currentUser ? 'flex' : 'none';
+    commentLoginPrompt.style.display = currentUser ? 'none' : 'block';
+
     const isAdmin = !!(currentProfile && currentProfile.is_admin);
     document.getElementById('adminSideSection').style.display = isAdmin ? 'block' : 'none';
   }
@@ -2463,7 +2580,7 @@
   profileModal.addEventListener('click', (e) => { if(e.target === profileModal) closeProfileModal(); });
 
   // ============================================
-  // CROP FOTO PROFIL
+  // CROP FOTO PROFIL (pan + zoom sebelum jadi avatar)
   // ============================================
   const cropModal = document.getElementById('cropModal');
   const cropCloseBtn = document.getElementById('cropCloseBtn');
@@ -2637,40 +2754,12 @@
     currentUser = session ? session.user : null;
     await loadCurrentProfile();
     renderAuthArea();
-    if(currentUser) checkAdminAccess(); // Re-check admin status
+    if(currentUser) closeLoginModal();
     if(currentWatchItem) renderComments(currentWatchItem);
   });
 
   // ============================================
-  // ADMIN ACCESS CHECK (/admin)
-  // ============================================
-  function checkAdminAccess() {
-    const path = window.location.pathname;
-    const isAdminPath = path.endsWith('/admin') || path.endsWith('/admin.html');
-    
-    if (isAdminPath) {
-      if (currentUser && currentProfile && currentProfile.is_admin) {
-        // Sudah login sebagai admin, buka panel
-        openAdminModal();
-      } else {
-        // Belum login atau bukan admin, tampilkan form login
-        loginModal.classList.add('open');
-      }
-    }
-  }
-
-  function closeLoginModal(){
-    loginModal.classList.remove('open');
-    // Jika menutup login modal di halaman /admin tanpa login, redirect ke home
-    if (window.location.pathname.endsWith('/admin')) {
-       window.history.pushState({}, '', window.location.pathname.replace('/admin', ''));
-    }
-  }
-  loginCloseBtn.addEventListener('click', closeLoginModal);
-  loginModal.addEventListener('click', (e) => { if(e.target === loginModal) closeLoginModal(); });
-
-  // ============================================
-  // ADMIN PANEL LOGIC
+  // ADMIN PANEL — tambah, edit, hapus video
   // ============================================
   const adminSideSection = document.getElementById('adminSideSection');
   const adminPanelBtn = document.getElementById('adminPanelBtn');
@@ -2745,44 +2834,42 @@
     adminMsg.className = '';
   }
 
-  function openAdminModal(){
+  const addVideoPanelBtn = document.getElementById('addVideoPanelBtn');
+  const adminManageModal = document.getElementById('adminManageModal');
+  const adminManageCloseBtn = document.getElementById('adminManageCloseBtn');
+  let cameFromManage = false;
+
+  function openAddVideoModal(){
     if(!currentProfile || !currentProfile.is_admin) return;
     resetAdminForm();
+    adminModal.classList.add('open');
+  }
+  function closeAdminModal(opts = {}){
+    adminModal.classList.remove('open');
+    if(cameFromManage && !opts.skipReturn){
+      cameFromManage = false;
+      openManageModal();
+    } else {
+      cameFromManage = false;
+    }
+  }
+
+  function openManageModal(){
+    if(!currentProfile || !currentProfile.is_admin) return;
     renderAdminVideoList();
     featuredTagsInput.value = featuredTags.join(', ');
     featuredTagsMsg.textContent = '';
     featuredTagsMsg.className = '';
-    
-    // Reset tab to first one
-    switchAdminTab('addVideoSection');
-    
-    adminModal.classList.add('open');
+    adminManageModal.classList.add('open');
   }
-  function closeAdminModal(){
-    adminModal.classList.remove('open');
+  function closeManageModal(){
+    adminManageModal.classList.remove('open');
   }
-  adminPanelBtn.addEventListener('click', () => { openAdminModal(); closeMobileSidebar(); });
-  adminCloseBtn.addEventListener('click', closeAdminModal);
 
-  // Admin Tab Logic
-  const adminTabs = document.querySelectorAll('.admin-tab-btn');
-  adminTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const targetId = tab.dataset.target;
-      switchAdminTab(targetId);
-    });
-  });
-
-  function switchAdminTab(targetId) {
-    // Update buttons
-    adminTabs.forEach(t => {
-      t.classList.toggle('active', t.dataset.target === targetId);
-    });
-    // Update sections
-    document.querySelectorAll('.admin-section').forEach(s => {
-      s.classList.toggle('active', s.id === targetId);
-    });
-  }
+  addVideoPanelBtn.addEventListener('click', () => { openAddVideoModal(); closeMobileSidebar(); });
+  adminPanelBtn.addEventListener('click', () => { openManageModal(); closeMobileSidebar(); });
+  adminCloseBtn.addEventListener('click', () => closeAdminModal());
+  adminManageCloseBtn.addEventListener('click', closeManageModal);
 
   featuredTagsForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -2807,8 +2894,9 @@
     showToast('Tag unggulan homepage berhasil diperbarui');
     updateHomeViewMode();
   });
-
-  adminCancelEditBtn.addEventListener('click', resetAdminForm);
+  // Sengaja TIDAK ada klik-di-luar-buat-nutup di sini,
+  // biar form gak ke-cancel gak sengaja pas lagi diisi/edit.
+  adminCancelEditBtn.addEventListener('click', () => closeAdminModal());
 
   function parseCommaList(str){
     return str.split(',').map(s => s.trim()).filter(Boolean);
@@ -2816,6 +2904,9 @@
 
   function toRawGithubUrl(url){
     if(!url) return url;
+    // Ubah link "blob" GitHub biasa jadi link raw.githubusercontent.com
+    // Contoh: https://github.com/user/repo/blob/main/cover.jpg
+    // Jadi:   https://raw.githubusercontent.com/user/repo/main/cover.jpg
     const match = url.match(/^https:\/\/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/?#]+)\/([^?#]+)/);
     if(match){
       const [, owner, repo, branch, path] = match;
@@ -2860,16 +2951,16 @@
 
     const wasEdit = !!adminVideoIdInput.value;
     const successText = wasEdit ? 'Perubahan berhasil disimpan!' : 'Video berhasil ditambahkan!';
-    adminMsg.textContent = successText;
-    adminMsg.className = 'success';
     showToast(successText);
-    resetAdminForm();
     await reloadVideosFromDB();
-    renderAdminVideoList();
-    
-    // If editing, switch back to list after save
-    if(wasEdit) {
-       switchAdminTab('manageVideoSection');
+
+    if(wasEdit){
+      resetAdminForm();
+      closeAdminModal();
+    } else {
+      adminMsg.textContent = successText;
+      adminMsg.className = 'success';
+      resetAdminForm();
     }
   });
 
@@ -2925,12 +3016,9 @@
         adminCancelEditBtn.style.display = 'inline-block';
         adminMsg.textContent = '';
         adminMsg.className = '';
-        
-        // Switch to Add/Edit tab when editing
-        switchAdminTab('addVideoSection');
-        
-        // Scroll to form
-        adminForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        cameFromManage = true;
+        closeManageModal();
+        adminModal.classList.add('open');
       });
 
       const delBtn = document.createElement('button');
@@ -2953,7 +3041,7 @@
   }
 
   // ============================================
-  // KOMENTAR (Supabase)
+  // KOMENTAR (Supabase) — reply, edit, hapus, reaksi
   // ============================================
   const REACTIONS = ['👍', '❤️', '😂'];
 
@@ -3122,7 +3210,7 @@
       btn.className = 'reaction-btn' + (myReaction && myReaction.emoji === emoji ? ' active' : '');
       btn.textContent = emoji + (count > 0 ? ' ' + count : '');
       btn.addEventListener('click', async () => {
-        if(!currentUser){ return; } // Only admin can react now
+        if(!currentUser){ openLoginModal('login'); return; }
         if(myReaction && myReaction.emoji === emoji){
           await sb.from('comment_reactions').delete().eq('comment_id', c.id).eq('user_id', currentUser.id);
         } else {
@@ -3138,7 +3226,7 @@
       replyBtn.className = 'reply-btn';
       replyBtn.textContent = 'Balas';
       replyBtn.addEventListener('click', () => {
-        if(!currentUser){ return; } // Only admin can reply
+        if(!currentUser){ openLoginModal('login'); return; }
         replyForm.classList.toggle('open');
         if(replyForm.classList.contains('open')) replyForm.querySelector('textarea').focus();
       });
@@ -3295,7 +3383,7 @@
 
   likeBtn.addEventListener('click', async () => {
     if(!currentWatchItem) return;
-    if(!currentUser){ return; } // Only admin can like
+    if(!currentUser){ openLoginModal('login'); return; }
     likeBtn.disabled = true;
     if(likeBtn.classList.contains('liked')){
       await sb.from('video_likes').delete().eq('video_url', currentWatchItem.url).eq('user_id', currentUser.id);
@@ -3459,38 +3547,28 @@
     }
   }
 
-  // ============================================
-  // FIX NAVIGATION BUG (POPSTATE)
-  // ============================================
-  window.addEventListener('popstate', (e) => {
-    const state = e.state;
-    const vid = getVideoIdFromUrl();
+  function closeAnyOpenModal(){
+    let closedSomething = false;
+    if(loginModal.classList.contains('open')){ closeLoginModal(); closedSomething = true; }
+    if(profileModal.classList.contains('open')){ closeProfileModal(); closedSomething = true; }
+    if(cropModal.classList.contains('open')){ closeCropModal(); closedSomething = true; }
+    if(adminModal.classList.contains('open')){ closeAdminModal({ skipReturn: true }); closedSomething = true; }
+    if(adminManageModal.classList.contains('open')){ closeManageModal(); closedSomething = true; }
+    return closedSomething;
+  }
 
-    if (vid) {
-      // Jika URL punya parameter 'v', buka mode watch
+  window.addEventListener('popstate', () => {
+    if(closeAnyOpenModal()) return;
+
+    const vid = getVideoIdFromUrl();
+    if(vid){
       const item = findItemByVideoId(vid);
-      if (item) {
-        // Jika sedang di home, buka watch. Jika sudah di watch, replace state saja
-        if (watchView.style.display === 'none') {
-          openWatch(item, { replace: true });
-        }
-      } else {
-        // Video tidak ditemukan, kembali ke home
-        closeWatch({ skipHistory: true });
-      }
+      if(item) openWatch(item, { replace: true });
+      else closeWatch({ skipHistory: true });
     } else {
-      // Jika tidak ada 'v', pastikan kita di home
-      if (watchView.style.display === 'block') {
-        closeWatch({ skipHistory: true });
-      }
-      
-      // Handle pagination state if needed
+      closeWatch({ skipHistory: true });
       const p = getPageFromUrl();
-      if(p !== currentPage){ 
-        currentPage = p; 
-        render(filteredData); 
-        renderPagination(filteredData); 
-      }
+      if(p !== currentPage){ currentPage = p; render(filteredData); renderPagination(filteredData); }
     }
   });
 
@@ -3605,6 +3683,9 @@
     const row = document.createElement('div');
     row.className = 'home-row';
     items.forEach((item, i) => row.appendChild(createVideoCard(item, i)));
+    // Sengaja gak pakai enableDragScroll di sini — di PC/desktop navigasi
+    // baris ini murni lewat tombol panah, bukan drag/scroll mouse.
+    // Di HP/tablet tetap bisa di-swipe normal (native touch scroll browser).
 
     prevBtn.addEventListener('click', () => {
       row.scrollBy({ left: -row.clientWidth * 0.85, behavior: 'smooth' });
@@ -3860,9 +3941,6 @@
       const startPage = Math.min(getPageFromUrl(), totalPages);
       goToPage(startPage, { skipScroll: true });
     }
-    
-    // Check for admin access on load
-    checkAdminAccess();
   })();
 })();
 </script>
