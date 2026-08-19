@@ -2400,6 +2400,17 @@
     });
   }
 
+  function pushModalState(name){
+    const url = new URL(window.location);
+    url.searchParams.set('modal', name);
+    history.pushState({ modal: name }, '', url);
+  }
+  function popModalState(){
+    const url = new URL(window.location);
+    url.searchParams.delete('modal');
+    history.pushState(null, '', url);
+  }
+
   function openLoginModal(mode){
     authMode = mode || 'login';
     loginMsg.textContent = '';
@@ -2409,9 +2420,11 @@
     togglePasswordBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>';
     updateAuthModalUI();
     loginModal.classList.add('open');
+    pushModalState('login');
   }
-  function closeLoginModal(){
+  function closeLoginModal(opts = {}){
     loginModal.classList.remove('open');
+    if(!opts.skipHistory) popModalState();
   }
   loginCloseBtn.addEventListener('click', closeLoginModal);
   loginModal.addEventListener('click', (e) => { if(e.target === loginModal) closeLoginModal(); });
@@ -2572,11 +2585,13 @@
       profileAvatarPlaceholder.textContent = displayNameFor(currentUser.id, currentUser.email).charAt(0).toUpperCase();
     }
     profileModal.classList.add('open');
+    pushModalState('profile');
   }
-  function closeProfileModal(){
+  function closeProfileModal(opts = {}){
     profileModal.classList.remove('open');
+    if(!opts.skipHistory) popModalState();
   }
-  profileCloseBtn.addEventListener('click', closeProfileModal);
+  profileCloseBtn.addEventListener('click', () => closeProfileModal());
   profileModal.addEventListener('click', (e) => { if(e.target === profileModal) closeProfileModal(); });
 
   // ============================================
@@ -2627,13 +2642,15 @@
       cropClamp();
       cropApplyTransform();
       cropModal.classList.add('open');
+      pushModalState('crop');
     };
   }
-  function closeCropModal(){
+  function closeCropModal(opts = {}){
     cropModal.classList.remove('open');
+    if(!opts.skipHistory) popModalState();
   }
-  cropCloseBtn.addEventListener('click', closeCropModal);
-  cropCancelBtn.addEventListener('click', closeCropModal);
+  cropCloseBtn.addEventListener('click', () => closeCropModal());
+  cropCancelBtn.addEventListener('click', () => closeCropModal());
   cropModal.addEventListener('click', (e) => { if(e.target === cropModal) closeCropModal(); });
 
   cropZoom.addEventListener('input', () => {
@@ -2843,14 +2860,16 @@
     if(!currentProfile || !currentProfile.is_admin) return;
     resetAdminForm();
     adminModal.classList.add('open');
+    pushModalState('add-video');
   }
   function closeAdminModal(opts = {}){
     adminModal.classList.remove('open');
-    if(cameFromManage && !opts.skipReturn){
+    if(opts.skipHistory) return;
+    if(cameFromManage){
       cameFromManage = false;
       openManageModal();
     } else {
-      cameFromManage = false;
+      popModalState();
     }
   }
 
@@ -2861,15 +2880,17 @@
     featuredTagsMsg.textContent = '';
     featuredTagsMsg.className = '';
     adminManageModal.classList.add('open');
+    pushModalState('manage-video');
   }
-  function closeManageModal(){
+  function closeManageModal(opts = {}){
     adminManageModal.classList.remove('open');
+    if(!opts.skipHistory) popModalState();
   }
 
   addVideoPanelBtn.addEventListener('click', () => { openAddVideoModal(); closeMobileSidebar(); });
   adminPanelBtn.addEventListener('click', () => { openManageModal(); closeMobileSidebar(); });
   adminCloseBtn.addEventListener('click', () => closeAdminModal());
-  adminManageCloseBtn.addEventListener('click', closeManageModal);
+  adminManageCloseBtn.addEventListener('click', () => closeManageModal());
 
   featuredTagsForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -3017,8 +3038,9 @@
         adminMsg.textContent = '';
         adminMsg.className = '';
         cameFromManage = true;
-        closeManageModal();
+        closeManageModal({ skipHistory: true });
         adminModal.classList.add('open');
+        pushModalState('edit-video');
       });
 
       const delBtn = document.createElement('button');
@@ -3549,11 +3571,11 @@
 
   function closeAnyOpenModal(){
     let closedSomething = false;
-    if(loginModal.classList.contains('open')){ closeLoginModal(); closedSomething = true; }
-    if(profileModal.classList.contains('open')){ closeProfileModal(); closedSomething = true; }
-    if(cropModal.classList.contains('open')){ closeCropModal(); closedSomething = true; }
-    if(adminModal.classList.contains('open')){ closeAdminModal({ skipReturn: true }); closedSomething = true; }
-    if(adminManageModal.classList.contains('open')){ closeManageModal(); closedSomething = true; }
+    if(loginModal.classList.contains('open')){ closeLoginModal({ skipHistory: true }); closedSomething = true; }
+    if(profileModal.classList.contains('open')){ closeProfileModal({ skipHistory: true }); closedSomething = true; }
+    if(cropModal.classList.contains('open')){ closeCropModal({ skipHistory: true }); closedSomething = true; }
+    if(adminModal.classList.contains('open')){ cameFromManage = false; closeAdminModal({ skipHistory: true }); closedSomething = true; }
+    if(adminManageModal.classList.contains('open')){ closeManageModal({ skipHistory: true }); closedSomething = true; }
     return closedSomething;
   }
 
